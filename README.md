@@ -37,3 +37,7 @@ Nowy wspaniały projekt.
 <br><br>
 A tak to **może** koncepcyjnie wyglądać: <br><br>
 ![](koncepcja.png)
+
+<br><br>
+A tak wygląda **koncepcja** bazy danych: <br><br>
+![](koncepcja_bazy_danych.png)
