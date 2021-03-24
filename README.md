@@ -35,9 +35,9 @@ Nowy wspaniały projekt.
 	* Przy tworzeniu czegoś możliwość wprowadzenia "kodu produktu" zczytując qr/barcode
 
 <br><br>
-A tak to **może** koncepcyjnie wyglądać: <br><br>
-![](koncepcja.png)
+UML na miarę naszych możliwości: <br><br>
+![](nibyuml.png)
 
 <br><br>
-A tak wygląda **koncepcja** bazy danych: <br><br>
+A tak wygląda **wstępna koncepcja** bazy danych: <br><br>
 ![](koncepcja_bazy_danych.png)
