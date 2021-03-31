@@ -15,6 +15,19 @@ Nowy wspaniały projekt.
 	* https://github.com/woboq/qmetaobject-rs
 	* https://dev.to/davidedelpapa/rust-gui-introduction-a-k-a-the-state-of-rust-gui-libraries-as-of-january-2021-40gl
 
+## Baza danych do testów
+* XAMPP: https://www.apachefriends.org/pl/index.html
+	* Zintegrowany webserwer z aplikacją do zarządzania mysql (phpMyAdmin)
+	* Ew zwykła instalacja mySQL + jakiś tool do zarządzania
+* Zaimportowanie sos.sql (docelowo będzie *kiedyś* zawierał właściwą bazę danych)
+
+## Gdyby był problem z bibliotekami dla diesela
+* Zainstalować: https://downloads.mysql.com/archives/c-c/
+* Dodać zmienną środowiskową MYSQLCLIENT_LIB_DIR wskazującą na C:\Program Files\MySQL\MySQL Connector C 6.1\lib\vs14
+
+## Gdyby wymagało builda nightly rusta
+* rustup toolchain install nightly
+* rustup default nightly
 
 ## Założenia projektowe
 
@@ -36,8 +49,8 @@ Nowy wspaniały projekt.
 
 <br><br>
 UML na miarę naszych możliwości: <br><br>
-![](nibyuml.png)
+![](docs/nibyuml.png)
 
 <br><br>
 A tak wygląda **wstępna koncepcja** bazy danych: <br><br>
-![](koncepcja_bazy_danych.png)
+![](docs/koncepcja_bazy_danych.png)
