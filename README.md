@@ -26,8 +26,8 @@ Nowy wspaniały projekt.
 * Dodać zmienną środowiskową MYSQLCLIENT_LIB_DIR wskazującą na C:\Program Files\MySQL\MySQL Connector C 6.1\lib\vs14
 
 ## Gdyby wymagało builda nightly rusta
-* rustup toolchain install nightly
-* rustup default nightly
+* CMD: rustup toolchain install nightly
+* CMD: rustup default nightly
 
 ## Założenia projektowe
 
