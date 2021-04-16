@@ -29,6 +29,10 @@ Nowy wspaniały projekt.
 * CMD: rustup toolchain install nightly
 * CMD: rustup default nightly
 
+## cargo-make
+* CMD: cargo install cargo-make
+* CMD: cargo make -V
+
 ## Założenia projektowe
 
 * Zewnętrzna (?wewnętrzna - sqlite???) baza danych - praca aplikacji na zasadzie nakładki do bazy.
