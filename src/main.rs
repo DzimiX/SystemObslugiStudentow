@@ -4,42 +4,41 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
 #[macro_use] extern crate diesel;
+extern crate dotenv;
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate rocket_contrib;
 
+#[database("sosbeta")]
+pub struct DbConn(diesel::MysqlConnection);
 
-
-use mysql;
-
-#[derive(Debug, PartialEq, Eq)]
-struct Payment {
-    customer_id: i32,
-    amount: i32,
-    account_name: Option<String>,
-}
-
-use rocket_contrib::json::Json;
-use serde::Deserialize;
-
-//#[database("sosbeta")]
-//pub struct DbConn(diesel::MysqlConnection);
+use diesel::prelude::*;
+use diesel::mysql::MysqlConnection;
 
 pub mod router;
 pub mod routes;
+mod models;
+mod schema;
 
 fn main() {
-    let pool = mysql::Pool::new("mysql://root@localhost/sosbeta").unwrap();    
 
-    /* 
-    
-    Z jakiegoś czarodziejskiego powodu nie widzi metod prepare, prep_exec ani niczego co może uruchomić sqla na bazie
+    let database_url = "mysql://root@127.0.0.1/sosbeta";
+    let conn = MysqlConnection::establish(&database_url).unwrap();
 
-    pool.prepare(r"CREATE TEMPORARY TABLE tmp.payment (
-       customer_id int not null,
-        amount int not null,
-        account_name text
-    )", ()).unwrap();
-    */
+    // TESTY dodawanie do bazy
+
+    let uzytkownik = models::NowyUzytkownik {
+        login: String::from("anowak"),
+        imie: String::from("Adam"),
+        nazwisko: String::from("Nowak"),
+    };
+
+    if models::Uzytkownik::add(uzytkownik, &conn) {
+        println!("Poszłykoniepobetonie");
+    } else {
+        println!("Zmieniamyormporaz95");
+    }
+
+    // https://youtu.be/X4MeByx38-4?t=2
 
     rocket();
 }

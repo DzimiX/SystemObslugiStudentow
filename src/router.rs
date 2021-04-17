@@ -20,9 +20,5 @@ pub fn login(login: String, password: String) -> String {
     return format!("Przesłany login: {} przesłane hasło: {}", login, password);
 }
 
-use crate::routes::user;
+//use crate::routes::user;
 
-#[get("/user")]
-pub fn user() -> String{
-  return user::page();
-}
