@@ -1,59 +1,44 @@
-#![allow(unused_variables)]
-#![allow(dead_code)]
-
 #![feature(proc_macro_hygiene, decl_macro)]
 
 #[macro_use] extern crate diesel;
-extern crate dotenv;
+
+extern crate r2d2;
+extern crate r2d2_diesel;
+
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate rocket_contrib;
 
-#[database("sosbeta")]
-pub struct DbConn(diesel::MysqlConnection);
+#[macro_use] extern crate serde_derive;
+#[macro_use] extern crate serde_json;
 
 use diesel::prelude::*;
 use diesel::mysql::MysqlConnection;
 
-pub mod router;
-pub mod routes;
+mod router;
+mod routes;
 mod models;
 mod schema;
+mod static_html;
+
+mod db;
 
 fn main() {
-
-    let database_url = "mysql://root@127.0.0.1/sosbeta";
-    let conn = MysqlConnection::establish(&database_url).unwrap();
-
-    // TESTY dodawanie do bazy
-
-    let uzytkownik = models::NowyUzytkownik {
-        login: String::from("anowak"),
-        imie: String::from("Adam"),
-        nazwisko: String::from("Nowak"),
-    };
-
-    if models::Uzytkownik::add(uzytkownik, &conn) {
-        println!("Poszłykoniepobetonie");
-    } else {
-        println!("Zmieniamyormporaz95");
-    }
-
-    // https://youtu.be/X4MeByx38-4?t=2
-
     rocket();
 }
 
 fn rocket() {
+
+    let database_url = "mysql://root@127.0.0.1/sosbeta";
+    let pool = db::init_pool(database_url.to_string());
+
     rocket::ignite()
-        //.attach(DbConn::fairing())
+        .manage(pool)
         .mount("/", routes![
-            router::index,
-            router::testy,
-            router::test_sql,
-            router::login,
-            //router::user,
-            routes::user::page,
-            routes::courses::page,
+            static_html::index,
+            static_html::all,
+            router::uzytkownicy_index,
+            router::uzytkownicy_nowy,
+            router::uzytkownicy_id,
         ])
         .launch();
 }

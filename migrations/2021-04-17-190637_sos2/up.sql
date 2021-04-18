@@ -27,7 +27,7 @@ CREATE TABLE `uprawnienia` (
 
 CREATE TABLE `uzytkownicy` (
   `id` int(11) NOT NULL,
-  `login` varchar(255) NOT NULL,
+  `login` varchar(255) NOT NULL UNIQUE,
   `imie` varchar(255) NOT NULL,
   `nazwisko` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
