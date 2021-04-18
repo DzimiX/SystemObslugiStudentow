@@ -14,12 +14,19 @@ Nowy wspaniały projekt.
 	* https://github.com/MoAlyousef/fltk-rs
 	* https://github.com/woboq/qmetaobject-rs
 	* https://dev.to/davidedelpapa/rust-gui-introduction-a-k-a-the-state-of-rust-gui-libraries-as-of-january-2021-40gl
+* Jeden z lepszych guide jak zrobić api w rust
+	* https://www.youtube.com/watch?v=VMZdGX9wC4g
 
 ## Baza danych do testów
 * XAMPP: https://www.apachefriends.org/pl/index.html
 	* Zintegrowany webserwer z aplikacją do zarządzania mysql (phpMyAdmin)
 	* Ew zwykła instalacja mySQL + jakiś tool do zarządzania
 * Zaimportowanie sos.sql (docelowo będzie *kiedyś* zawierał właściwą bazę danych)
+
+## Do testowania api
+* Postman
+	* https://www.postman.com/
+	* eit-pa-sos, invite: https://app.getpostman.com/join-team?invite_code=631ae24d11a891b8cdf23269d6fbe396&ws=08dea26f-2149-4142-8872-973fd783a4cd
 
 ## Gdyby był problem z bibliotekami dla diesela
 * Zainstalować: https://downloads.mysql.com/archives/c-c/
@@ -28,6 +35,10 @@ Nowy wspaniały projekt.
 ## Gdyby wymagało builda nightly rusta
 * CMD: rustup toolchain install nightly
 * CMD: rustup default nightly
+
+## cargo-make
+* CMD: cargo install cargo-make
+* CMD: cargo make -V
 
 ## Założenia projektowe
 
