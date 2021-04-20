@@ -1,14 +1,37 @@
-<!DOCTYPE html>
-<html lang="PL-pl">
+<!doctype html>
 
-    <head>
-        <title>
-            System Obsługi Studentów
-        </title>
-    </head>
-    <body>
+<html lang="pl">
+	<head>
+		<meta charset="utf-8">
+		<title>System obsługi studentów</title>
+		<meta name="description" content="System Obsługi Studentów">
+	</head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<body>
+		<p>Wersja beta systemu obsługi studentów</p>
+		
+		<p>Listowanie użytkowników:</p>
+		<div id="content"></div>
+		<button id="users">Użytkownicy!</button>
+		<script>
+			var SendInfo = { "token" : "abc" };
 
-        TESTY Strona główna TESTY
-
-    </body>
+			$("#users").click(function() {
+				//alert("test");
+				
+				$.ajax({
+					url: '/uzytkownicy',
+					context: document.body,
+					success: function (data) {
+						console.log(data.result);
+						for( let i = 0; i < data.result.length; i++){
+							$("#content").append(
+								"ID: "+data.result[i]['id']+", Imie: "+data.result[i]['imie']+", Nazwisko: "+data.result[i]['nazwisko']+"</br>"
+							);
+						}
+					}
+				});
+			});
+		</script>
+	</body>
 </html>
