@@ -15,7 +15,6 @@ use diesel::prelude::*;
 use diesel::mysql::MysqlConnection;
 
 mod router;
-mod routes;
 mod models;
 mod schema;
 mod static_html;
@@ -23,6 +22,9 @@ mod static_html;
 mod db;
 
 fn main() {
+
+    let mut tokens = 0;
+
     rocket();
 }
 
@@ -39,6 +41,8 @@ fn rocket() {
             router::uzytkownicy_index,
             router::uzytkownicy_nowy,
             router::uzytkownicy_id,
+            
+            //router::logowanie,
         ])
         .launch();
 }

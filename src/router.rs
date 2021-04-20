@@ -3,6 +3,7 @@ use rocket_contrib::json::Json;
 use serde_json::Value;
 
 use crate::models::{Uzytkownik, NowyUzytkownik};
+use crate::models::{AuthLogin, Auth};
 
 #[get("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn) -> Json<Value> {
@@ -34,21 +35,24 @@ pub fn uzytkownicy_id(conn: DbConn, id:i32) -> Json<Value> {
     }))
 }
 
+/*
+Jakieś 2h zabawy czemu poniższy endpoint nie działa i rzuca:
 
-#[get("/testy")]
-pub fn testy() -> &'static str {
-    println!("x");
-    // baza danych odpytanie
-    "testy"
+the trait bound `rocket_contrib::json::Json<models::AuthLogin>: rocket::data::FromData<'_>` is not satisfied
+
+tldr: 
+(1) dodać w modelu do makra derive Deserialize
+(2) zapamiętać że czasami szybkość działania kodu nie zrekompensuje spędzonego nad nim czasu i python wcale nie jest zły
+(3) używać oryginalnych dodatków w ide które mają pełnego helpa a nie polecanych przez hindusa z bazaru
+*/
+
+#[post("/login", format = "application/json", data = "<login_dane>")] 
+pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>) -> Json<Value> { // 2h zabawy czemu 
+
+    // kiedyś się to zrobi
+
+    Json(json!({
+        "status" : "A",
+        "result" : "B",
+    }))
 }
-
-#[get("/testsql")]
-pub fn test_sql() -> &'static str {
-    "tu będzie wspaniała odpowiedź z bazy danych"
-}
-
-#[get("/login/<login>/<password>")]
-pub fn login(login: String, password: String) -> String {
-    return format!("Przesłany login: {} przesłane hasło: {}", login, password);
-}
-
