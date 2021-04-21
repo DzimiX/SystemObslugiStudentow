@@ -22,9 +22,6 @@ mod static_html;
 mod db;
 
 fn main() {
-
-    let mut tokens = 0;
-
     rocket();
 }
 
@@ -38,11 +35,12 @@ fn rocket() {
         .mount("/", routes![
             static_html::index,
             static_html::all,
+            
             router::uzytkownicy_index,
             router::uzytkownicy_nowy,
             router::uzytkownicy_id,
             
-            //router::logowanie,
+            router::logowanie,
         ])
         .launch();
 }

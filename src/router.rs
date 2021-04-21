@@ -35,24 +35,40 @@ pub fn uzytkownicy_id(conn: DbConn, id:i32) -> Json<Value> {
     }))
 }
 
-/*
-Jakieś 2h zabawy czemu poniższy endpoint nie działa i rzuca:
-
-the trait bound `rocket_contrib::json::Json<models::AuthLogin>: rocket::data::FromData<'_>` is not satisfied
-
-tldr: 
-(1) dodać w modelu do makra derive Deserialize
-(2) zapamiętać że czasami szybkość działania kodu nie zrekompensuje spędzonego nad nim czasu i python wcale nie jest zły
-(3) używać oryginalnych dodatków w ide które mają pełnego helpa a nie polecanych przez hindusa z bazaru
-*/
-
 #[post("/login", format = "application/json", data = "<login_dane>")] 
 pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>) -> Json<Value> { // 2h zabawy czemu 
 
-    // kiedyś się to zrobi
+    let login = format!("{}",login_dane.login);
+    let id = AuthLogin::getId(login, &conn);
 
-    Json(json!({
-        "status" : "A",
-        "result" : "B",
+    if(id != -1){
+        // odpytać teraz uzytkownicy_hasla czy hash hasła się zgadza
+        let hash = format!("{}",login_dane.haslo);
+        // TODO konwersja       ^^^^^^^^^^^^^^^^ jako HASH!!!
+        
+        //println!("hash: {}", hash);
+        
+        let zgadza = AuthLogin::checkHash(id, hash, &conn);
+
+        if(zgadza){
+            // użytkownik istnieje, hasło się zgadza
+            // trzeba sformułować templatke tokenu i go dodać do bazy i zwrócić użytkownikowi
+            
+            // jeżeli się zgadza to zrobić token i go dać użytkownikowi
+            
+            
+            
+            return Json(json!({
+                "status" : 200,
+                "result" : "OK, token itd...",
+            }))
+        }
+    }
+
+    return Json(json!({
+        "status" : 400,
+        "result" : "Bad Request",
     }))
+
+    
 }
