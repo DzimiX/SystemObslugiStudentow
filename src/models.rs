@@ -2,11 +2,14 @@ use diesel;
 use diesel::prelude::*;
 use diesel::mysql::MysqlConnection;
 
+use rand::{thread_rng, Rng};
+use rand::distributions::Alphanumeric;
+use std::time::SystemTime;
+
 use crate::schema::tokeny;
 use crate::schema::uzytkownicy_hasla;
 use crate::schema::uzytkownicy_uprawnienia;
 use crate::schema::uprawnienia;
-
 
 use crate::schema::uzytkownicy;
 use crate::schema::uzytkownicy::dsl::uzytkownicy as all_uzytkownicy;
@@ -50,14 +53,14 @@ impl Uzytkownik {
     }
 }
 
-#[derive(Queryable, Serialize)]
+#[derive(Queryable, Serialize, Deserialize)]
 //#[table_name = "tokeny"]
 pub struct Auth {
     pub id: i32,
     pub id_uzytkownik: i32,
     pub id_uprawnienie: i32,
     pub token: String,
-    pub data: i64,
+    //pub data: Datetime,
 }
 
 #[derive(Queryable, Serialize, Deserialize)]
@@ -108,11 +111,43 @@ impl AuthLogin {
 
         println!("data.haslo: {}", data.haslo);
         println!("hash: {}", hash);
-        if (data.haslo == hash){
+        if data.haslo == hash {
             return true;
         }
         return false;
     }
 
-    
+    pub fn getPrivilegeId(id: i32, conn: &MysqlConnection) -> i32 {
+        let data : UzytkownikUprawnienia = uzytkownicy_uprawnienia::table
+            .filter(uzytkownicy_uprawnienia::id_uzytkownik.eq(id))
+            .order(uzytkownicy_uprawnienia::id_uprawnienie.desc())
+            .first(conn)
+            .expect("Błędne dane.");
+        
+        return data.id_uprawnienie;
+    }
+
+    pub fn generateFreshToken(conn: &MysqlConnection) -> String {
+        const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                                 abcdefghijklmnopqrstuvwxyz\
+                                 0123456789)(*&^%$#@!~";
+
+        let mut rng = rand::thread_rng();
+        let token: String = (0..512)
+            .map(|_| {
+                let idx = rng.gen_range(0..CHARSET.len());
+                CHARSET[idx] as char
+            })
+            .collect();
+        // sprawdzić czy istnieje już w bazie danych
+
+        let data : Result<Auth,diesel::result::Error> = tokeny::table
+            .filter(tokeny::token.eq(&token))
+            .first(conn);
+
+        let data = match data {
+            Ok(data) => return String::from("False"),
+            Err(error) => return token,
+        };
+    }
 }

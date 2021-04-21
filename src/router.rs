@@ -2,6 +2,11 @@ use crate::db::Conn as DbConn;
 use rocket_contrib::json::Json;
 use serde_json::Value;
 
+extern crate chrono;
+use chrono::offset::Utc;
+use chrono::DateTime;
+use std::time::SystemTime;
+
 use crate::models::{Uzytkownik, NowyUzytkownik};
 use crate::models::{AuthLogin, Auth};
 
@@ -55,9 +60,18 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>) -> Json<Value> { // 
             // trzeba sformułować templatke tokenu i go dodać do bazy i zwrócić użytkownikowi
             
             // jeżeli się zgadza to zrobić token i go dać użytkownikowi
+            let id_uprawnienie = AuthLogin::getPrivilegeId(id, &conn);
+            //println!("ID_UPRAWNIENIE: {}", id_uprawnienie);
+
+            let system_time = SystemTime::now();
+            let datetime: DateTime<Utc> = system_time.into();
+            let time = datetime.format("%d/%m/%Y %T");
             
-            
-            
+            //
+            let token = AuthLogin::generateFreshToken(&conn);
+            println!("{}", token);
+            //
+
             return Json(json!({
                 "status" : 200,
                 "result" : "OK, token itd...",

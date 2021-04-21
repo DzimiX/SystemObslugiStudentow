@@ -1202,6 +1202,7 @@ dependencies = [
  "pear",
  "r2d2",
  "r2d2-diesel",
+ "rand",
  "rocket",
  "rocket_codegen",
  "rocket_contrib",

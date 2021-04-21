@@ -30,7 +30,7 @@ table! {
         id_uzytkownik -> Integer,
         id_uprawnienie -> Integer,
         token -> Varchar,
-        data -> Datetime,
+        //data -> Datetime,
     }
 }
 
