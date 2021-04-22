@@ -1,6 +1,6 @@
 [global]
 address = "127.0.0.1"
-port = 8080
+port = 9090
 
 [global.databases]
 sos = { url = "mysql://root@127.0.0.1/sosbeta" }

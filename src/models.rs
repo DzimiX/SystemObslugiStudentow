@@ -4,6 +4,10 @@ use diesel::mysql::MysqlConnection;
 
 use rand::Rng;
 
+use rocket::Outcome;
+use rocket::request::{self, Request, FromRequest};
+use rocket::http::Status;
+
 use crate::schema::tokeny;
 
 use crate::schema::uzytkownicy_hasla;
@@ -200,10 +204,4 @@ impl AuthLogin {
             },
         };
     }
-
-    /*
-    pub fn get_user_token(dane : AuthNowy) -> Vec<Auth> {
-        
-    }
-    */
 }

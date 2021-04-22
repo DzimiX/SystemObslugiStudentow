@@ -6,22 +6,48 @@ extern crate chrono;
 use chrono::offset::Utc;
 use chrono::DateTime;
 use std::time::SystemTime;
+use std::option::Option;
+
+use rocket::http::{Cookie, Cookies};
 
 use crate::models::{Uzytkownik, NowyUzytkownik};
 use crate::models::{AuthLogin, Auth, AuthNowy, AuthToken};
 
 #[get("/uzytkownicy", format = "application/json")]
-pub fn uzytkownicy_index(conn: DbConn) -> Json<Value> {
-    let uzytkownicy = Uzytkownik::all(&conn);
+pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
+    
+    
+    let cookie_temp = Cookie::new("token", "False");
+    let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
+    println!("{}", token );
 
-    Json(json!({
-        "status" : 200,
-        "result" : uzytkownicy,
+    if &token != "False" {
+        
+        println!("DZIAŁAM");
+        let auth : Auth = AuthLogin::check_token(&token, &conn);
+        println!("{}", auth.token);
+        println!("{}", auth.id_uprawnienie);
+
+        if auth.token != "False" && auth.id_uprawnienie > 4 {
+            let uzytkownicy = Uzytkownik::all(&conn);
+
+            return Json(json!({
+                "status" : 200,
+                "result" : uzytkownicy,
+            }))
+        }
+    }
+
+    return Json(json!({
+        "status" : 401,
+        "result" : "Unauthorized",
     }))
 }
 
 #[post("/uzytkownicy", format = "application/json", data = "<nowy_uzytkownik>")]
 pub fn uzytkownicy_nowy(conn: DbConn, nowy_uzytkownik: Json<NowyUzytkownik>) -> Json<Value> {
+    //println!("{}",String::from(token));
+    
     Json(json!({
         "status" : Uzytkownik::add(nowy_uzytkownik.into_inner(), &conn),
         "result" : Uzytkownik::all(&conn).first(),
@@ -41,7 +67,7 @@ pub fn uzytkownicy_id(conn: DbConn, id:i32) -> Json<Value> {
 }
 
 #[post("/login", format = "application/json", data = "<login_dane>")] 
-pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>) -> Json<Value> { // 2h zabawy czemu 
+pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookies) -> Json<Value> { // 2h zabawy czemu 
 
     let login : String = format!("{}",login_dane.login);
     let id_uzytkownik : i32 = AuthLogin::get_id(&login, &conn);
@@ -74,7 +100,7 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>) -> Json<Value> { // 
 
             let mut token : String = AuthLogin::generate_fresh_token(&conn);
             
-            while token == "False"{
+            while &token == "False"{
                 token = AuthLogin::generate_fresh_token(&conn);
             }
             
@@ -91,6 +117,9 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>) -> Json<Value> { // 
             AuthLogin::add_user_token(nowy_auth, &conn);
 
             if &token != "False" {
+
+                cookies.add(Cookie::new("token", String::from(&token)));
+
                 return Json(json!({
                     "status" : 200,
                     "result" : {

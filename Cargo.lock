@@ -1192,6 +1192,7 @@ dependencies = [
  "atty",
  "base64 0.12.3",
  "chrono",
+ "cookie",
  "diesel 1.4.6",
  "diesel_codegen",
  "itoa",
