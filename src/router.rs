@@ -8,7 +8,7 @@ use chrono::DateTime;
 use std::time::SystemTime;
 
 use crate::models::{Uzytkownik, NowyUzytkownik};
-use crate::models::{AuthLogin, Auth, AuthNowy};
+use crate::models::{AuthLogin, Auth, AuthNowy, AuthToken};
 
 #[get("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn) -> Json<Value> {
@@ -108,4 +108,24 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>) -> Json<Value> { // 
         "result" : "Bad Request",
     }))
 
+}
+
+#[post("/auth", format = "application/json", data = "<token_data>")] 
+pub fn autoryzacja(conn: DbConn, token_data: Json<AuthToken>) -> Json<Value> {
+
+    let token_parsed = &token_data.token;
+
+    let zwrotka : Auth = AuthLogin::check_token(&token_parsed, &conn);
+
+    if zwrotka.token != "False" {
+        return Json(json!({
+            "status" : 200,
+            "result" : "Authorized",
+        }))
+    } else {
+        return Json(json!({
+            "status" : 401,
+            "result" : "Unauthorized",
+        }))
+    }
 }

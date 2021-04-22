@@ -77,6 +77,11 @@ pub struct AuthLogin {
     pub haslo: String,
 }
 
+#[derive(Queryable, Serialize, Deserialize)]
+pub struct AuthToken {
+    pub token: String,
+}
+
 #[derive(Insertable, Queryable, Serialize)]
 #[table_name = "uzytkownicy_hasla"]
 pub struct UzytkownikHaslo {
@@ -178,6 +183,22 @@ impl AuthLogin {
             .values(&dane)
             .execute(conn)
             .is_ok()
+    }
+
+    pub fn check_token(token : &String, conn : &MysqlConnection) -> Auth {
+        let data : Result<Auth,diesel::result::Error> = tokeny::table
+            .filter(tokeny::token.eq(&token))
+            .first(conn);
+
+        match data {
+            Ok(data) => return data,
+            Err(_error) => return Auth{
+                id : -1,
+                id_uzytkownik: -1,
+                id_uprawnienie: -1,
+                token: String::from("False"),
+            },
+        };
     }
 
     /*

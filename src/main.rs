@@ -42,6 +42,7 @@ fn rocket() {
             router::uzytkownicy_id,
             
             router::logowanie,
+            router::autoryzacja,
         ])
         .launch();
 }
