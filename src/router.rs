@@ -8,7 +8,7 @@ use chrono::DateTime;
 use std::time::SystemTime;
 
 use crate::models::{Uzytkownik, NowyUzytkownik};
-use crate::models::{AuthLogin, Auth};
+use crate::models::{AuthLogin, Auth, AuthNowy};
 
 #[get("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn) -> Json<Value> {
@@ -44,26 +44,26 @@ pub fn uzytkownicy_id(conn: DbConn, id:i32) -> Json<Value> {
 pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>) -> Json<Value> { // 2h zabawy czemu 
 
     let login : String = format!("{}",login_dane.login);
-    let id : i32 = AuthLogin::get_id(login, &conn);
+    let id_uzytkownik : i32 = AuthLogin::get_id(&login, &conn);
 
-    if id != -1 {
+    if id_uzytkownik != -1 {
         // odpytać teraz uzytkownicy_hasla czy hash hasła się zgadza
         let hash = format!("{}",login_dane.haslo);
         // TODO konwersja       ^^^^^^^^^^^^^^^^ jako HASH!!!
         
         //println!("hash: {}", hash);
         
-        let zgadza : bool = AuthLogin::check_hash(id, hash, &conn);
+        let zgadza : bool = AuthLogin::check_hash(id_uzytkownik, hash, &conn);
 
         if zgadza {
             // użytkownik istnieje, hasło się zgadza
             // trzeba sformułować templatke tokenu i go dodać do bazy i zwrócić użytkownikowi
             
             // jeżeli się zgadza to zrobić token i go dać użytkownikowi
-            let id_uprawnienie : i32 = AuthLogin::get_privilege_id(id, &conn);
+            let id_uprawnienie : i32 = AuthLogin::get_privilege_id(id_uzytkownik, &conn);
             //println!("ID_UPRAWNIENIE: {}", id_uprawnienie);
 
-             
+                
             /*
             Ogarnąć jakoś datetime do db kiedyś
 
@@ -78,14 +78,28 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>) -> Json<Value> { // 
                 token = AuthLogin::generate_fresh_token(&conn);
             }
             
-            println!("{}", token);
+            //println!("{}", &token);
 
-            
+            AuthLogin::delete_user_token(id_uzytkownik, &conn);
 
-            return Json(json!({
-                "status" : 200,
-                "result" : "OK, token itd...",
-            }))
+            let nowy_auth = AuthNowy {
+                id_uzytkownik : id_uzytkownik,
+                id_uprawnienie : id_uprawnienie,
+                token : String::from(&token),
+            };
+
+            AuthLogin::add_user_token(nowy_auth, &conn);
+
+            if &token != "False" {
+                return Json(json!({
+                    "status" : 200,
+                    "result" : {
+                        "id_uzytkownik": id_uzytkownik,
+                        "id_uprawnienie": id_uprawnienie,
+                        "token": token
+                    },
+                }))
+            }
         }
     }
 
@@ -94,5 +108,4 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>) -> Json<Value> { // 
         "result" : "Bad Request",
     }))
 
-    
 }

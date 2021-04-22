@@ -41,7 +41,6 @@ CREATE TABLE `tokeny` (
   `id_uzytkownik` int(11) NOT NULL,
   `id_uprawnienie` int(11) NOT NULL,
   `token` varchar(512) NOT NULL
-  --`data` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

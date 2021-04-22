@@ -2,12 +2,9 @@ use diesel;
 use diesel::prelude::*;
 use diesel::mysql::MysqlConnection;
 
-use rand::{thread_rng, Rng};
-use rand::distributions::Alphanumeric;
-use std::time::SystemTime;
+use rand::Rng;
 
 use crate::schema::tokeny;
-use crate::schema::tokeny::dsl::tokeny as all_tokeny;
 
 use crate::schema::uzytkownicy_hasla;
 use crate::schema::uzytkownicy_uprawnienia;
@@ -65,6 +62,15 @@ pub struct Auth {
     //pub data: Datetime,
 }
 
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "tokeny"]
+pub struct AuthNowy {
+    pub id_uzytkownik: i32,
+    pub id_uprawnienie: i32,
+    pub token: String,
+    //pub data: Datetime,
+}
+
 #[derive(Queryable, Serialize, Deserialize)]
 pub struct AuthLogin {
     pub login: String,
@@ -97,22 +103,24 @@ pub struct Uprawnienia {
 
 impl AuthLogin {
 
-    pub fn get_id(login: String, conn: &MysqlConnection) -> i32 { // jeżeli pomyślna to zwrot id dla podanego loginu
-        let data : Uzytkownik = uzytkownicy::table
-            .filter(uzytkownicy::login.eq(login))
-            .first(conn)
-            .expect("Błędne dane.");
-        return data.id;
+    pub fn get_id(login: &String, conn: &MysqlConnection) -> i32 { // jeżeli pomyślna to zwrot id dla podanego loginu
+        let data : Result<Uzytkownik,diesel::result::Error> = uzytkownicy::table
+            .filter(uzytkownicy::login.eq(&login))
+            .first(conn);
+        match data {
+            Ok(data) => return data.id,
+            Err(_error) => return -1,
+        };
     }
 
     pub fn check_hash(id: i32, hash: String, conn: &MysqlConnection) -> bool { // jeżeli pomyślna to zwrot id dla podanego loginu
         let data : UzytkownikHaslo = uzytkownicy_hasla::table
-            .filter(uzytkownicy_hasla::id_uzytkownik.eq(id))
+            .filter(uzytkownicy_hasla::id_uzytkownik.eq(&id))
             .first(conn)
             .expect("Błędne dane.");
 
-        println!("data.haslo: {}", data.haslo);
-        println!("hash: {}", hash);
+        //println!("data.haslo: {}", data.haslo);
+        //println!("hash: {}", hash);
         if data.haslo == hash {
             return true;
         }
@@ -147,23 +155,34 @@ impl AuthLogin {
             .filter(tokeny::token.eq(&token))
             .first(conn);
 
-        let data = match data {
-            Ok(data) => return String::from("False"),
-            Err(error) => return token,
+        match data {
+            Ok(_data) => return String::from("False"),
+            Err(_error) => return token,
         };
     }
 
-    /*
-    pub fn delete_user_tokens(id: i32, conn: &MysqlConnection) -> bool {
+    pub fn delete_user_token(id: i32, conn: &MysqlConnection) -> bool {
+        
+        diesel::delete(tokeny::table
+            .filter(tokeny::id_uzytkownik.eq(id))
+        )
+        .execute(conn)
+        .expect("Błąd.");
 
-        tokeny::table
-            .filter(tokeny::id.eq(id))
-            .delete(conn)
-            .expect("Błędne dane.");
-
-        diesel::delete(uzytkownicy).execute(conn);
-
+        //println!("Wykonano usunięcie tokenu");
         return true
+    }
+
+    pub fn add_user_token(dane : AuthNowy, conn : &MysqlConnection) -> bool {
+        diesel::insert_into(tokeny::table)
+            .values(&dane)
+            .execute(conn)
+            .is_ok()
+    }
+
+    /*
+    pub fn get_user_token(dane : AuthNowy) -> Vec<Auth> {
+        
     }
     */
 }
