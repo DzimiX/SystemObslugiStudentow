@@ -7,6 +7,8 @@ use rand::distributions::Alphanumeric;
 use std::time::SystemTime;
 
 use crate::schema::tokeny;
+use crate::schema::tokeny::dsl::tokeny as all_tokeny;
+
 use crate::schema::uzytkownicy_hasla;
 use crate::schema::uzytkownicy_uprawnienia;
 use crate::schema::uprawnienia;
@@ -95,7 +97,7 @@ pub struct Uprawnienia {
 
 impl AuthLogin {
 
-    pub fn getId(login: String, conn: &MysqlConnection) -> i32 { // jeżeli pomyślna to zwrot id dla podanego loginu
+    pub fn get_id(login: String, conn: &MysqlConnection) -> i32 { // jeżeli pomyślna to zwrot id dla podanego loginu
         let data : Uzytkownik = uzytkownicy::table
             .filter(uzytkownicy::login.eq(login))
             .first(conn)
@@ -103,7 +105,7 @@ impl AuthLogin {
         return data.id;
     }
 
-    pub fn checkHash(id: i32, hash: String, conn: &MysqlConnection) -> bool { // jeżeli pomyślna to zwrot id dla podanego loginu
+    pub fn check_hash(id: i32, hash: String, conn: &MysqlConnection) -> bool { // jeżeli pomyślna to zwrot id dla podanego loginu
         let data : UzytkownikHaslo = uzytkownicy_hasla::table
             .filter(uzytkownicy_hasla::id_uzytkownik.eq(id))
             .first(conn)
@@ -117,7 +119,7 @@ impl AuthLogin {
         return false;
     }
 
-    pub fn getPrivilegeId(id: i32, conn: &MysqlConnection) -> i32 {
+    pub fn get_privilege_id(id: i32, conn: &MysqlConnection) -> i32 {
         let data : UzytkownikUprawnienia = uzytkownicy_uprawnienia::table
             .filter(uzytkownicy_uprawnienia::id_uzytkownik.eq(id))
             .order(uzytkownicy_uprawnienia::id_uprawnienie.desc())
@@ -127,7 +129,7 @@ impl AuthLogin {
         return data.id_uprawnienie;
     }
 
-    pub fn generateFreshToken(conn: &MysqlConnection) -> String {
+    pub fn generate_fresh_token(conn: &MysqlConnection) -> String {
         const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
                                  abcdefghijklmnopqrstuvwxyz\
                                  0123456789)(*&^%$#@!~";
@@ -150,4 +152,18 @@ impl AuthLogin {
             Err(error) => return token,
         };
     }
+
+    /*
+    pub fn delete_user_tokens(id: i32, conn: &MysqlConnection) -> bool {
+
+        tokeny::table
+            .filter(tokeny::id.eq(id))
+            .delete(conn)
+            .expect("Błędne dane.");
+
+        diesel::delete(uzytkownicy).execute(conn);
+
+        return true
+    }
+    */
 }

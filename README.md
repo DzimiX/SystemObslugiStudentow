@@ -28,9 +28,13 @@ Nowy wspaniały projekt.
 	* https://www.postman.com/
 	* eit-pa-sos, invite: https://app.getpostman.com/join-team?invite_code=631ae24d11a891b8cdf23269d6fbe396&ws=08dea26f-2149-4142-8872-973fd783a4cd
 
+## Diesel:
+* Zainstalować: cargo install diesel_cli --no-default-features --features mysql
+
 ## Gdyby był problem z bibliotekami dla diesela
 * Zainstalować: https://downloads.mysql.com/archives/c-c/
 * Dodać zmienną środowiskową MYSQLCLIENT_LIB_DIR wskazującą na C:\Program Files\MySQL\MySQL Connector C 6.1\lib\vs14
+* Ew: setx MYSQLCLIENT_LIB_DIR "C:\Program Files\MySQL\MySQL Connector C 6.1\lib\vs14"
 
 ## Gdyby wymagało builda nightly rusta
 * CMD: rustup toolchain install nightly

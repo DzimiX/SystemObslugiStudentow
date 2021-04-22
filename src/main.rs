@@ -35,7 +35,8 @@ fn rocket() {
         .mount("/", routes![
             static_html::index,
             static_html::all,
-            
+        ])
+        .mount("/api", routes![
             router::uzytkownicy_index,
             router::uzytkownicy_nowy,
             router::uzytkownicy_id,

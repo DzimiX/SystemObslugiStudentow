@@ -43,34 +43,44 @@ pub fn uzytkownicy_id(conn: DbConn, id:i32) -> Json<Value> {
 #[post("/login", format = "application/json", data = "<login_dane>")] 
 pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>) -> Json<Value> { // 2h zabawy czemu 
 
-    let login = format!("{}",login_dane.login);
-    let id = AuthLogin::getId(login, &conn);
+    let login : String = format!("{}",login_dane.login);
+    let id : i32 = AuthLogin::get_id(login, &conn);
 
-    if(id != -1){
+    if id != -1 {
         // odpytać teraz uzytkownicy_hasla czy hash hasła się zgadza
         let hash = format!("{}",login_dane.haslo);
         // TODO konwersja       ^^^^^^^^^^^^^^^^ jako HASH!!!
         
         //println!("hash: {}", hash);
         
-        let zgadza = AuthLogin::checkHash(id, hash, &conn);
+        let zgadza : bool = AuthLogin::check_hash(id, hash, &conn);
 
-        if(zgadza){
+        if zgadza {
             // użytkownik istnieje, hasło się zgadza
             // trzeba sformułować templatke tokenu i go dodać do bazy i zwrócić użytkownikowi
             
             // jeżeli się zgadza to zrobić token i go dać użytkownikowi
-            let id_uprawnienie = AuthLogin::getPrivilegeId(id, &conn);
+            let id_uprawnienie : i32 = AuthLogin::get_privilege_id(id, &conn);
             //println!("ID_UPRAWNIENIE: {}", id_uprawnienie);
+
+             
+            /*
+            Ogarnąć jakoś datetime do db kiedyś
 
             let system_time = SystemTime::now();
             let datetime: DateTime<Utc> = system_time.into();
             let time = datetime.format("%d/%m/%Y %T");
+            */
+
+            let mut token : String = AuthLogin::generate_fresh_token(&conn);
             
-            //
-            let token = AuthLogin::generateFreshToken(&conn);
+            while token == "False"{
+                token = AuthLogin::generate_fresh_token(&conn);
+            }
+            
             println!("{}", token);
-            //
+
+            
 
             return Json(json!({
                 "status" : 200,
