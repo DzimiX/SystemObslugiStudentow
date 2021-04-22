@@ -11,10 +11,30 @@ diesel_codegen = { version = "*", features = ["mysql"] }
 r2d2 = "*"
 r2d2-diesel = "*"
 
-rocket = "*"
-rocket_codegen = "*"
-rocket_contrib = { version = "*", features = ["json", "diesel_mysql_pool"] }
+rocket = "0.4.7"
+rocket_codegen = "0.4.7"
+rocket_http = "0.4.7"
 
-serde_json = "*"
-serde = "*"
-serde_derive = "*"
+rocket_contrib = { version = "0.4.7", features = ["json", "diesel_mysql_pool"] }
+
+serde = "1.0"
+serde_json = "1.0.26"
+serde_derive = "1.0.125"
+
+chrono = "*"
+
+atty = "0.2"
+base64 = "0.12"
+log = "0.4"
+memchr = "2"
+num_cpus = "1.0"
+pear = "0.1"
+state = "0.4.1"
+time = "0.1"
+toml = "0.4.7"
+yansi = "0.5"
+version_check = "0.9.1"
+notify = "4.0.6"
+itoa = "0.4.3"
+ryu = "1.0"
+rand = "*"

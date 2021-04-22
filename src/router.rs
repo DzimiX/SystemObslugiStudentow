@@ -2,7 +2,13 @@ use crate::db::Conn as DbConn;
 use rocket_contrib::json::Json;
 use serde_json::Value;
 
+extern crate chrono;
+use chrono::offset::Utc;
+use chrono::DateTime;
+use std::time::SystemTime;
+
 use crate::models::{Uzytkownik, NowyUzytkownik};
+use crate::models::{AuthLogin, Auth};
 
 #[get("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn) -> Json<Value> {
@@ -34,21 +40,59 @@ pub fn uzytkownicy_id(conn: DbConn, id:i32) -> Json<Value> {
     }))
 }
 
+#[post("/login", format = "application/json", data = "<login_dane>")] 
+pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>) -> Json<Value> { // 2h zabawy czemu 
 
-#[get("/testy")]
-pub fn testy() -> &'static str {
-    println!("x");
-    // baza danych odpytanie
-    "testy"
+    let login : String = format!("{}",login_dane.login);
+    let id : i32 = AuthLogin::get_id(login, &conn);
+
+    if id != -1 {
+        // odpytać teraz uzytkownicy_hasla czy hash hasła się zgadza
+        let hash = format!("{}",login_dane.haslo);
+        // TODO konwersja       ^^^^^^^^^^^^^^^^ jako HASH!!!
+        
+        //println!("hash: {}", hash);
+        
+        let zgadza : bool = AuthLogin::check_hash(id, hash, &conn);
+
+        if zgadza {
+            // użytkownik istnieje, hasło się zgadza
+            // trzeba sformułować templatke tokenu i go dodać do bazy i zwrócić użytkownikowi
+            
+            // jeżeli się zgadza to zrobić token i go dać użytkownikowi
+            let id_uprawnienie : i32 = AuthLogin::get_privilege_id(id, &conn);
+            //println!("ID_UPRAWNIENIE: {}", id_uprawnienie);
+
+             
+            /*
+            Ogarnąć jakoś datetime do db kiedyś
+
+            let system_time = SystemTime::now();
+            let datetime: DateTime<Utc> = system_time.into();
+            let time = datetime.format("%d/%m/%Y %T");
+            */
+
+            let mut token : String = AuthLogin::generate_fresh_token(&conn);
+            
+            while token == "False"{
+                token = AuthLogin::generate_fresh_token(&conn);
+            }
+            
+            println!("{}", token);
+
+            
+
+            return Json(json!({
+                "status" : 200,
+                "result" : "OK, token itd...",
+            }))
+        }
+    }
+
+    return Json(json!({
+        "status" : 400,
+        "result" : "Bad Request",
+    }))
+
+    
 }
-
-#[get("/testsql")]
-pub fn test_sql() -> &'static str {
-    "tu będzie wspaniała odpowiedź z bazy danych"
-}
-
-#[get("/login/<login>/<password>")]
-pub fn login(login: String, password: String) -> String {
-    return format!("Przesłany login: {} przesłane hasło: {}", login, password);
-}
-

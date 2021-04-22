@@ -1189,16 +1189,33 @@ dependencies = [
 name = "system_obslugi_studentow"
 version = "0.1.0"
 dependencies = [
+ "atty",
+ "base64 0.12.3",
+ "chrono",
  "diesel 1.4.6",
  "diesel_codegen",
+ "itoa",
+ "log 0.4.14",
+ "memchr",
+ "notify",
+ "num_cpus",
+ "pear",
  "r2d2",
  "r2d2-diesel",
+ "rand",
  "rocket",
  "rocket_codegen",
  "rocket_contrib",
+ "rocket_http",
+ "ryu",
  "serde",
  "serde_derive",
  "serde_json",
+ "state",
+ "time",
+ "toml",
+ "version_check 0.9.3",
+ "yansi",
 ]
 
 [[package]]
