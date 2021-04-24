@@ -14,6 +14,8 @@ extern crate r2d2_diesel;
 use diesel::prelude::*;
 use diesel::mysql::MysqlConnection;
 
+use bcrypt;
+
 mod router;
 mod models;
 mod schema;
@@ -40,9 +42,10 @@ fn rocket() {
             router::uzytkownicy_index,
             router::uzytkownicy_nowy,
             router::uzytkownicy_id,
+
+            router::uzytkownik_nowe_haslo,
             
             router::logowanie,
-            router::autoryzacja,
         ])
         .launch();
 }
