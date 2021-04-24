@@ -369,3 +369,22 @@ ALTER TABLE `wiadomosci_uczestnicy`
   ADD CONSTRAINT `wiadomosci_uczestnicy_ibfk_2` FOREIGN KEY (`id_wiadomosc`) REFERENCES `wiadomosci` (`id`);
 
 
+INSERT INTO `uprawnienia` (`id`, `nazwa`) VALUES
+  (1, 'Użytkownik'),
+  (2, 'Student'),
+  (3, 'Prowadzący'),
+  (4, 'Pracownik'),
+  (5, 'Administrator');
+
+INSERT INTO `uzytkownicy` (`id`, `login`, `imie`, `nazwisko`) VALUES
+  (1, 'anowak', 'Adam', 'Nowak'),
+  (2, 'jkowalski', 'Jan', 'Kowalski');
+
+INSERT INTO `uzytkownicy_hasla` (`id`, `id_uzytkownik`, `haslo`) VALUES
+  (1, 1, 'cba'),
+  (2, 2, 'abc');
+
+INSERT INTO `uzytkownicy_uprawnienia` (`id`, `id_uzytkownik`, `id_uprawnienie`) VALUES
+  (1, 1, 5),
+  (2, 2, 4);
+
