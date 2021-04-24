@@ -4,10 +4,6 @@ use diesel::mysql::MysqlConnection;
 
 use rand::Rng;
 
-use rocket::Outcome;
-use rocket::request::{self, Request, FromRequest};
-use rocket::http::Status;
-
 use bcrypt;
 
 use crate::schema::tokeny;
@@ -74,6 +70,7 @@ impl Uzytkownik {
             Err(_error) => print!("Hash error"),
         };
         data.haslo = hash_string;
+        //println!("Debug hash: {}", &data.haslo);
 
         diesel::delete(uzytkownicy_hasla::table
             .filter(uzytkownicy_hasla::id_uzytkownik.eq(data.id_uzytkownik))
@@ -160,10 +157,10 @@ impl AuthLogin {
             .first(conn)
             .expect("Błędne dane.");
         
-            println!("Hash co przyszedł: {}", &haslo);
-            println!("Hash w bazie     : {}", &data.haslo);
+            //println!("Hash co przyszedł: {}", &haslo);
+            //println!("Hash w bazie     : {}", &data.haslo);
             let verify = bcrypt::verify(&haslo, &data.haslo);
-            let mut verify_bool : bool;
+            let verify_bool : bool;
 
             match verify {
                 Ok(data) => verify_bool = bool::from(data),

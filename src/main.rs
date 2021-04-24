@@ -6,15 +6,10 @@ extern crate r2d2;
 extern crate r2d2_diesel;
 
 #[macro_use] extern crate rocket;
-#[macro_use] extern crate rocket_contrib;
+extern crate rocket_contrib;
 
 #[macro_use] extern crate serde_derive;
 #[macro_use] extern crate serde_json;
-
-use diesel::prelude::*;
-use diesel::mysql::MysqlConnection;
-
-use bcrypt;
 
 mod router;
 mod models;

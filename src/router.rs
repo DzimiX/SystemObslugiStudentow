@@ -2,32 +2,24 @@ use crate::db::Conn as DbConn;
 use rocket_contrib::json::Json;
 use serde_json::Value;
 
-extern crate chrono;
-use chrono::offset::Utc;
-use chrono::DateTime;
-use std::time::SystemTime;
-use std::option::Option;
-
-use bcrypt;
-
 use rocket::http::{Cookie, Cookies};
 
 use crate::models::{Uzytkownik, NowyUzytkownik, NoweHaslo};
-use crate::models::{AuthLogin, Auth, AuthNowy, AuthToken};
+use crate::models::{AuthLogin, Auth, AuthNowy};
 
 #[get("/uzytkownicy", format = "application/json")]
-pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
+pub fn uzytkownicy_index(conn: DbConn, cookies: Cookies) -> Json<Value> {
     
     let cookie_temp = Cookie::new("token", "False");
     let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
-    println!("{}", token );
+    //println!("{}", token );
 
     if &token != "False" {
         
-        println!("DZIAŁAM");
+        //println!("DZIAŁAM");
         let auth : Auth = AuthLogin::check_token(&token, &conn);
-        println!("{}", auth.token);
-        println!("{}", auth.id_uprawnienie);
+        //println!("{}", auth.token);
+        //println!("{}", auth.id_uprawnienie);
 
         if auth.token != "False" && auth.id_uprawnienie > 4 {
             let uzytkownicy = Uzytkownik::all(&conn);
@@ -72,7 +64,7 @@ pub fn uzytkownik_nowe_haslo(conn: DbConn, nowe_haslo: Json<NoweHaslo>) -> Json<
     //println!("{}",String::from(token));
 
     let wynik = Uzytkownik::set_password(nowe_haslo.into_inner(), &conn);
-    if (wynik == true){
+    if wynik {
         return Json(json!({
             "status" : 200,
             "result" : "OK",
@@ -96,21 +88,6 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
     if id_uzytkownik != -1 {
 
         let haslo = format!("{}",login_dane.haslo);
-
-        /*
-        let hash = bcrypt::hash(format!("{}",login_dane.haslo), 8);
-        let mut hash_string : String = String::from("False");
-
-        match hash {
-            Ok(data) => hash_string = String::from(data),
-            Err(_error) => print!("Hash error"),
-        };
-
-        println!("{}", hash_string);
-
-
-        */
-        //println!("hash: {}", hash);
         
         let zgadza : bool = AuthLogin::check_hash(id_uzytkownik, haslo, &conn);
 
