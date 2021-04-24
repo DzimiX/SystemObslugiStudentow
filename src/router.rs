@@ -2,31 +2,24 @@ use crate::db::Conn as DbConn;
 use rocket_contrib::json::Json;
 use serde_json::Value;
 
-extern crate chrono;
-use chrono::offset::Utc;
-use chrono::DateTime;
-use std::time::SystemTime;
-use std::option::Option;
-
 use rocket::http::{Cookie, Cookies};
 
-use crate::models::{Uzytkownik, NowyUzytkownik};
-use crate::models::{AuthLogin, Auth, AuthNowy, AuthToken};
+use crate::models::{Uzytkownik, NowyUzytkownik, NoweHaslo};
+use crate::models::{AuthLogin, Auth, AuthNowy};
 
 #[get("/uzytkownicy", format = "application/json")]
-pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
-    
+pub fn uzytkownicy_index(conn: DbConn, cookies: Cookies) -> Json<Value> {
     
     let cookie_temp = Cookie::new("token", "False");
     let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
-    println!("{}", token );
+    //println!("{}", token );
 
     if &token != "False" {
         
-        println!("DZIAŁAM");
+        //println!("DZIAŁAM");
         let auth : Auth = AuthLogin::check_token(&token, &conn);
-        println!("{}", auth.token);
-        println!("{}", auth.id_uprawnienie);
+        //println!("{}", auth.token);
+        //println!("{}", auth.id_uprawnienie);
 
         if auth.token != "False" && auth.id_uprawnienie > 4 {
             let uzytkownicy = Uzytkownik::all(&conn);
@@ -58,12 +51,32 @@ pub fn uzytkownicy_nowy(conn: DbConn, nowy_uzytkownik: Json<NowyUzytkownik>) -> 
 pub fn uzytkownicy_id(conn: DbConn, id:i32) -> Json<Value> {
     
     let result = Uzytkownik::get(id, &conn);
-    let status = if result.is_empty() { 404 } else { 200};
+    let status = if result.is_empty() { 404 } else { 200 };
 
     Json(json!({
         "status" : status,
         "result" : result.get(0),
     }))
+}
+
+#[post("/uzytkownik/nowehaslo", format = "application/json", data = "<nowe_haslo>")]
+pub fn uzytkownik_nowe_haslo(conn: DbConn, nowe_haslo: Json<NoweHaslo>) -> Json<Value> {
+    //println!("{}",String::from(token));
+
+    let wynik = Uzytkownik::set_password(nowe_haslo.into_inner(), &conn);
+    if wynik {
+        return Json(json!({
+            "status" : 200,
+            "result" : "OK",
+        }))
+    } else {
+        return Json(json!({
+            "status" : 400,
+            "result" : "Error",
+        }))
+    }
+
+    
 }
 
 #[post("/login", format = "application/json", data = "<login_dane>")] 
@@ -73,22 +86,14 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
     let id_uzytkownik : i32 = AuthLogin::get_id(&login, &conn);
 
     if id_uzytkownik != -1 {
-        // odpytać teraz uzytkownicy_hasla czy hash hasła się zgadza
-        let hash = format!("{}",login_dane.haslo);
-        // TODO konwersja       ^^^^^^^^^^^^^^^^ jako HASH!!!
+
+        let haslo = format!("{}",login_dane.haslo);
         
-        //println!("hash: {}", hash);
-        
-        let zgadza : bool = AuthLogin::check_hash(id_uzytkownik, hash, &conn);
+        let zgadza : bool = AuthLogin::check_hash(id_uzytkownik, haslo, &conn);
 
         if zgadza {
-            // użytkownik istnieje, hasło się zgadza
-            // trzeba sformułować templatke tokenu i go dodać do bazy i zwrócić użytkownikowi
-            
-            // jeżeli się zgadza to zrobić token i go dać użytkownikowi
-            let id_uprawnienie : i32 = AuthLogin::get_privilege_id(id_uzytkownik, &conn);
-            //println!("ID_UPRAWNIENIE: {}", id_uprawnienie);
 
+            let id_uprawnienie : i32 = AuthLogin::get_privilege_id(id_uzytkownik, &conn);
                 
             /*
             Ogarnąć jakoś datetime do db kiedyś
@@ -103,8 +108,6 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
             while &token == "False"{
                 token = AuthLogin::generate_fresh_token(&conn);
             }
-            
-            //println!("{}", &token);
 
             AuthLogin::delete_user_token(id_uzytkownik, &conn);
 
@@ -139,6 +142,7 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
 
 }
 
+/* w sumie to do niczego nie potrzebne
 #[post("/auth", format = "application/json", data = "<token_data>")] 
 pub fn autoryzacja(conn: DbConn, token_data: Json<AuthToken>) -> Json<Value> {
 
@@ -158,3 +162,4 @@ pub fn autoryzacja(conn: DbConn, token_data: Json<AuthToken>) -> Json<Value> {
         }))
     }
 }
+*/

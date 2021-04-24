@@ -6,13 +6,10 @@ extern crate r2d2;
 extern crate r2d2_diesel;
 
 #[macro_use] extern crate rocket;
-#[macro_use] extern crate rocket_contrib;
+extern crate rocket_contrib;
 
 #[macro_use] extern crate serde_derive;
 #[macro_use] extern crate serde_json;
-
-use diesel::prelude::*;
-use diesel::mysql::MysqlConnection;
 
 mod router;
 mod models;
@@ -40,9 +37,10 @@ fn rocket() {
             router::uzytkownicy_index,
             router::uzytkownicy_nowy,
             router::uzytkownicy_id,
+
+            router::uzytkownik_nowe_haslo,
             
             router::logowanie,
-            router::autoryzacja,
         ])
         .launch();
 }

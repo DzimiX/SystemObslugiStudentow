@@ -4,9 +4,7 @@ use diesel::mysql::MysqlConnection;
 
 use rand::Rng;
 
-use rocket::Outcome;
-use rocket::request::{self, Request, FromRequest};
-use rocket::http::Status;
+use bcrypt;
 
 use crate::schema::tokeny;
 
@@ -33,6 +31,13 @@ pub struct NowyUzytkownik {
     pub nazwisko: String,
 }
 
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "uzytkownicy_hasla"]
+pub struct NoweHaslo {
+    pub id_uzytkownik: i32,
+    pub haslo: String,
+}
+
 impl Uzytkownik {
     pub fn add(uzytkownik: NowyUzytkownik, conn: &MysqlConnection) -> bool {
         diesel::insert_into(uzytkownicy::table)
@@ -53,6 +58,30 @@ impl Uzytkownik {
             .find(id)
             .load::<Uzytkownik>(conn)
             .expect("Problem z wczytaniem użytkownika.")
+    }
+
+    pub fn set_password(mut data: NoweHaslo, conn: &MysqlConnection) -> bool {
+
+        let hash = bcrypt::hash(format!("{}",data.haslo), 8);
+        let mut hash_string : String = String::from("False");
+
+        match hash {
+            Ok(data) => hash_string = String::from(data),
+            Err(_error) => print!("Hash error"),
+        };
+        data.haslo = hash_string;
+        //println!("Debug hash: {}", &data.haslo);
+
+        diesel::delete(uzytkownicy_hasla::table
+            .filter(uzytkownicy_hasla::id_uzytkownik.eq(data.id_uzytkownik))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+
+        diesel::insert_into(uzytkownicy_hasla::table)
+            .values(&data)
+            .execute(conn)
+            .is_ok()
     }
 }
 
@@ -122,15 +151,25 @@ impl AuthLogin {
         };
     }
 
-    pub fn check_hash(id: i32, hash: String, conn: &MysqlConnection) -> bool { // jeżeli pomyślna to zwrot id dla podanego loginu
+    pub fn check_hash(id: i32, haslo: String, conn: &MysqlConnection) -> bool { // jeżeli pomyślna to zwrot id dla podanego loginu
         let data : UzytkownikHaslo = uzytkownicy_hasla::table
             .filter(uzytkownicy_hasla::id_uzytkownik.eq(&id))
             .first(conn)
             .expect("Błędne dane.");
+        
+            //println!("Hash co przyszedł: {}", &haslo);
+            //println!("Hash w bazie     : {}", &data.haslo);
+            let verify = bcrypt::verify(&haslo, &data.haslo);
+            let verify_bool : bool;
+
+            match verify {
+                Ok(data) => verify_bool = bool::from(data),
+                Err(_error) => return false,
+            };
 
         //println!("data.haslo: {}", data.haslo);
         //println!("hash: {}", hash);
-        if data.haslo == hash {
+        if verify_bool {
             return true;
         }
         return false;
