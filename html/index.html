@@ -10,11 +10,56 @@
 	<body>
 		<p>Wersja beta systemu obsługi studentów</p>
 		
+		<p>Logowanie</p>
+		<span>Admin: [ anowak, cba ]</span></br>
+		<span>Pracownik: [ jkowalski, abc ]</span></br></br>
+
+		<label for="form-login">Login:</label><br>
+		<input type="text" id="form-login" name="login"><br>
+		<label for="form-password">Hasło:</label><br>
+		<input type="password" id="form-password" name="password"></br>
+		<button id="login-button">Zaloguj się</button>
+
+		<button id='logout'>Wyloguj się</button>
+
 		<p>Listowanie użytkowników:</p>
 		<div id="content"></div>
 		<button id="users">Użytkownicy!</button>
 		<script>
-			var SendInfo = { "token" : "abc" };
+			$("#logout").click(function() {
+				//alert("test");
+
+				document.cookie = "token=False"; 
+
+			});
+
+			$("#login-button").click(function() {
+				//alert("test");
+
+				data_json = {
+					"login" : document.getElementById("form-login").value,
+					"haslo" : document.getElementById("form-password").value
+				}
+				
+				console.log(data_json);
+
+				$.ajax({
+					url: '/api/login',
+					type: "POST",
+					data: JSON.stringify(data_json),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							document.cookie = "token="+data.result['token'];
+						}
+					}
+				});
+			});
 
 			$("#users").click(function() {
 				//alert("test");
@@ -23,11 +68,18 @@
 					url: '/api/uzytkownicy',
 					context: document.body,
 					success: function (data) {
+						console.log(data.status);
 						console.log(data.result);
-						for( let i = 0; i < data.result.length; i++){
-							$("#content").append(
-								"ID: "+data.result[i]['id']+", Imie: "+data.result[i]['imie']+", Nazwisko: "+data.result[i]['nazwisko']+"</br>"
-							);
+						
+						if (data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							$("#content").empty();
+							for( let i = 0; i < data.result.length; i++){
+								$("#content").append(
+									"ID: "+data.result[i]['id']+", Imie: "+data.result[i]['imie']+", Nazwisko: "+data.result[i]['nazwisko']+"</br>"
+								);
+							}
 						}
 					}
 				});
