@@ -264,3 +264,20 @@ impl AuthLogin {
         }
     }
 }
+
+#[derive(Queryable, Serialize, Deserialize)]
+pub struct Wiadomosc {
+    pub id: i32,
+    pub id_uzytkownik: i32,
+    pub temat: i32,
+    pub data: i64,
+    pub tresc: String,
+}
+
+#[derive(Queryable, Serialize, Deserialize)]
+pub struct WiadomoscNowa {
+    pub id_uzytkownik: i32,
+    pub temat: i32,
+    pub data: i64,
+    pub tresc: String,
+}
