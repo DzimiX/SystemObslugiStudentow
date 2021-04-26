@@ -4,29 +4,101 @@ use serde_json::Value;
 
 use rocket::http::{Cookie, Cookies};
 
-use crate::models::{Uzytkownik, NowyUzytkownik, NoweHaslo};
+use chrono::{Local};
+
+use super::ADMINISTRATOR;
+use super::PRACOWNIK;
+use super::PROWADZACY;
+use super::STUDENT;
+use super::UZYTKOWNIK;
+
+use crate::models::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
 use crate::models::{AuthLogin, Auth, AuthNowy};
 
 #[get("/uzytkownicy", format = "application/json")]
-pub fn uzytkownicy_index(conn: DbConn, cookies: Cookies) -> Json<Value> {
+pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
     
     let cookie_temp = Cookie::new("token", "False");
-    let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
-    //println!("{}", token );
+    let token = String::from(cookies.get_private("token").unwrap_or(cookie_temp).value());
 
     if &token != "False" {
-        
-        //println!("DZIAŁAM");
+    
+        let now_timestamp = Local::now().timestamp();
         let auth : Auth = AuthLogin::check_token(&token, &conn);
-        //println!("{}", auth.token);
-        //println!("{}", auth.id_uprawnienie);
 
-        if auth.token != "False" && auth.id_uprawnienie > 4 {
+        if (auth.token != "False" && now_timestamp < auth.data) && (
+            auth.id_uprawnienie == ADMINISTRATOR ||
+            auth.id_uprawnienie == PRACOWNIK
+        ) {
             let uzytkownicy = Uzytkownik::all(&conn);
 
             return Json(json!({
                 "status" : 200,
                 "result" : uzytkownicy,
+            }))
+        } else {
+            if now_timestamp < auth.data { // token przeterminowany, trzeba się zalogować ponownie
+                return Json(json!({
+                    "status" : 401,
+                    "result" : "Unauthorized",
+                }));
+            } else { // po prostu brak uprawnień do zasobu
+                return Json(json!({
+                    "status" : 403,
+                    "result" : "Forbidden",
+                }))
+            }
+        }
+    }
+
+    return Json(json!({
+        "status" : 401,
+        "result" : "Unauthorized",
+    }))
+}
+
+#[post("/uzytkownik/nowy", format = "application/json", data = "<nowy_uzytkownik>")]
+pub fn uzytkownicy_nowy(conn: DbConn, nowy_uzytkownik: Json<NowyUzytkownik>) -> Json<Value> { 
+    Json(json!({
+        "status" : Uzytkownik::add(nowy_uzytkownik.into_inner(), &conn),
+        "result" : Uzytkownik::all(&conn).first(),
+    }))
+}
+
+#[post("/uzytkownik", format = "application/json", data = "<id>")]
+pub fn uzytkownik(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) -> Json<Value> {
+
+    let cookie_temp = Cookie::new("token", "False");
+    let token = String::from(cookies.get_private("token").unwrap_or(cookie_temp).value());
+
+    if &token != "False" {
+    
+        let now_timestamp = Local::now().timestamp();
+        let auth : Auth = AuthLogin::check_token(&token, &conn);
+        
+        if (auth.token != "False" && now_timestamp < auth.data) && (
+            auth.id_uprawnienie > 4 ||
+            auth.id_uzytkownik == id.id
+        ) {
+            
+            let result = Uzytkownik::get(id.id, &conn);
+            let status = if result.is_empty() { 404 } else { 200 };
+            
+            if status == 200 {
+                return Json(json!({
+                    "status" : 200,
+                    "result" : result.get(0),
+                }))
+            } else {
+                return Json(json!({
+                    "status" : 404,
+                    "result" : "Not Found",
+                }))
+            }
+        } else {
+            return Json(json!({
+                "status" : 403,
+                "result" : "Forbidden",
             }))
         }
     }
@@ -37,45 +109,47 @@ pub fn uzytkownicy_index(conn: DbConn, cookies: Cookies) -> Json<Value> {
     }))
 }
 
-#[post("/uzytkownicy", format = "application/json", data = "<nowy_uzytkownik>")]
-pub fn uzytkownicy_nowy(conn: DbConn, nowy_uzytkownik: Json<NowyUzytkownik>) -> Json<Value> {
-    //println!("{}",String::from(token));
-    
-    Json(json!({
-        "status" : Uzytkownik::add(nowy_uzytkownik.into_inner(), &conn),
-        "result" : Uzytkownik::all(&conn).first(),
-    }))
-}
-
-#[get("/uzytkownicy/<id>", format = "application/json")]
-pub fn uzytkownicy_id(conn: DbConn, id:i32) -> Json<Value> {
-    
-    let result = Uzytkownik::get(id, &conn);
-    let status = if result.is_empty() { 404 } else { 200 };
-
-    Json(json!({
-        "status" : status,
-        "result" : result.get(0),
-    }))
-}
-
 #[post("/uzytkownik/nowehaslo", format = "application/json", data = "<nowe_haslo>")]
-pub fn uzytkownik_nowe_haslo(conn: DbConn, nowe_haslo: Json<NoweHaslo>) -> Json<Value> {
-    //println!("{}",String::from(token));
+pub fn uzytkownik_nowe_haslo(conn: DbConn, nowe_haslo: Json<NoweHaslo>, mut cookies: Cookies) -> Json<Value> {
 
-    let wynik = Uzytkownik::set_password(nowe_haslo.into_inner(), &conn);
-    if wynik {
-        return Json(json!({
-            "status" : 200,
-            "result" : "OK",
-        }))
-    } else {
-        return Json(json!({
-            "status" : 400,
-            "result" : "Error",
-        }))
+    let cookie_temp = Cookie::new("token", "False");
+    let token = String::from(cookies.get_private("token").unwrap_or(cookie_temp).value());
+
+    if &token != "False" {
+    
+        let now_timestamp = Local::now().timestamp();
+        let auth : Auth = AuthLogin::check_token(&token, &conn);
+
+        if (auth.token != "False" && now_timestamp < auth.data) && (
+            auth.id_uprawnienie == ADMINISTRATOR ||
+            auth.id_uzytkownik == nowe_haslo.id_uzytkownik
+        ) {
+            
+            let wynik = Uzytkownik::set_password(nowe_haslo.into_inner(), &conn);
+            
+            if wynik {
+                return Json(json!({
+                    "status" : 200,
+                    "result" : "OK",
+                }))
+            } else {
+                return Json(json!({
+                    "status" : 400,
+                    "result" : "Error",
+                }))
+            }
+        } else {
+            return Json(json!({
+                "status" : 403,
+                "result" : "Forbidden",
+            }))
+        }
     }
 
+    return Json(json!({
+        "status" : 401,
+        "result" : "Unauthorized",
+    }))
     
 }
 
@@ -95,13 +169,8 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
 
             let id_uprawnienie : i32 = AuthLogin::get_privilege_id(id_uzytkownik, &conn);
                 
-            /*
-            Ogarnąć jakoś datetime do db kiedyś
-
-            let system_time = SystemTime::now();
-            let datetime: DateTime<Utc> = system_time.into();
-            let time = datetime.format("%d/%m/%Y %T");
-            */
+            let now_timestamp = Local::now().timestamp();
+            let delayed_timestamp = now_timestamp + 36000; // + 36000s = + 10h
 
             let mut token : String = AuthLogin::generate_fresh_token(&conn);
             
@@ -115,21 +184,25 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
                 id_uzytkownik : id_uzytkownik,
                 id_uprawnienie : id_uprawnienie,
                 token : String::from(&token),
+                data : delayed_timestamp,
             };
 
             AuthLogin::add_user_token(nowy_auth, &conn);
 
             if &token != "False" {
 
-                cookies.add(Cookie::new("token", String::from(&token)));
+                cookies.add_private(Cookie::new("token", String::from(&token)));
+                cookies.add(Cookie::new("id", id_uzytkownik.to_string()));
+                cookies.add(Cookie::new("id_uprawnienie", id_uprawnienie.to_string()));
 
                 return Json(json!({
                     "status" : 200,
-                    "result" : {
-                        "id_uzytkownik": id_uzytkownik,
-                        "id_uprawnienie": id_uprawnienie,
-                        "token": token
-                    },
+                    "result" : "Authorized"
+                    //{
+                        //"id_uzytkownik": id_uzytkownik,
+                        //"id_uprawnienie": id_uprawnienie,
+                        //"token": token
+                    //},
                 }))
             }
         }
@@ -142,15 +215,17 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
 
 }
 
-/* w sumie to do niczego nie potrzebne
-#[post("/auth", format = "application/json", data = "<token_data>")] 
-pub fn autoryzacja(conn: DbConn, token_data: Json<AuthToken>) -> Json<Value> {
+#[get("/auth", format = "application/json")] 
+pub fn autoryzacja(conn: DbConn, mut cookies : Cookies) -> Json<Value> {
 
-    let token_parsed = &token_data.token;
+    let cookie_temp = Cookie::new("token", "False");
+    let token = String::from(cookies.get_private("token").unwrap_or(cookie_temp).value());
 
-    let zwrotka : Auth = AuthLogin::check_token(&token_parsed, &conn);
+    let auth : Auth = AuthLogin::check_token(&token, &conn);
 
-    if zwrotka.token != "False" {
+    let now_timestamp = Local::now().timestamp();
+
+    if auth.token != "False" && now_timestamp < auth.data {
         return Json(json!({
             "status" : 200,
             "result" : "Authorized",
@@ -162,4 +237,3 @@ pub fn autoryzacja(conn: DbConn, token_data: Json<AuthToken>) -> Json<Value> {
         }))
     }
 }
-*/

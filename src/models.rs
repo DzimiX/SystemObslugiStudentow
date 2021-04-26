@@ -6,6 +6,8 @@ use rand::Rng;
 
 use bcrypt;
 
+use chrono::{Local};
+
 use crate::schema::tokeny;
 
 use crate::schema::uzytkownicy_hasla;
@@ -21,6 +23,12 @@ pub struct Uzytkownik {
     pub login: String,
     pub imie: String,
     pub nazwisko: String,
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "uzytkownicy"]
+pub struct UzytkownikID {
+    pub id: i32,
 }
 
 #[derive(Insertable, Serialize, Deserialize)]
@@ -70,7 +78,6 @@ impl Uzytkownik {
             Err(_error) => print!("Hash error"),
         };
         data.haslo = hash_string;
-        //println!("Debug hash: {}", &data.haslo);
 
         diesel::delete(uzytkownicy_hasla::table
             .filter(uzytkownicy_hasla::id_uzytkownik.eq(data.id_uzytkownik))
@@ -92,7 +99,7 @@ pub struct Auth {
     pub id_uzytkownik: i32,
     pub id_uprawnienie: i32,
     pub token: String,
-    //pub data: Datetime,
+    pub data: i64,
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
@@ -101,7 +108,7 @@ pub struct AuthNowy {
     pub id_uzytkownik: i32,
     pub id_uprawnienie: i32,
     pub token: String,
-    //pub data: Datetime,
+    pub data: i64,
 }
 
 #[derive(Queryable, Serialize, Deserialize)]
@@ -156,9 +163,7 @@ impl AuthLogin {
             .filter(uzytkownicy_hasla::id_uzytkownik.eq(&id))
             .first(conn)
             .expect("Błędne dane.");
-        
-            //println!("Hash co przyszedł: {}", &haslo);
-            //println!("Hash w bazie     : {}", &data.haslo);
+    
             let verify = bcrypt::verify(&haslo, &data.haslo);
             let verify_bool : bool;
 
@@ -167,8 +172,6 @@ impl AuthLogin {
                 Err(_error) => return false,
             };
 
-        //println!("data.haslo: {}", data.haslo);
-        //println!("hash: {}", hash);
         if verify_bool {
             return true;
         }
@@ -197,7 +200,6 @@ impl AuthLogin {
                 CHARSET[idx] as char
             })
             .collect();
-        // sprawdzić czy istnieje już w bazie danych
 
         let data : Result<Auth,diesel::result::Error> = tokeny::table
             .filter(tokeny::token.eq(&token))
@@ -217,7 +219,6 @@ impl AuthLogin {
         .execute(conn)
         .expect("Błąd.");
 
-        //println!("Wykonano usunięcie tokenu");
         return true
     }
 
@@ -234,13 +235,32 @@ impl AuthLogin {
             .first(conn);
 
         match data {
-            Ok(data) => return data,
+            Ok(data) => {
+                AuthLogin::renew_token(&token, &conn);
+                return data;
+            },
             Err(_error) => return Auth{
                 id : -1,
                 id_uzytkownik: -1,
                 id_uprawnienie: -1,
                 token: String::from("False"),
+                data: -1,
             },
         };
+    }
+
+    fn renew_token(token : &String, conn : &MysqlConnection) {
+
+        let now_timestamp = Local::now().timestamp();
+        let delayed_timestamp = now_timestamp + 36000; // + 36000s = + 10h
+
+        let updated_row = diesel::update(tokeny::table.filter(tokeny::token.eq(&token)))
+            .set(tokeny::data.eq(delayed_timestamp))
+            .execute(conn)
+            .is_ok();
+
+        if updated_row == false {
+            println!("Problem połączenia z bazą danych, ale to nie krytyczna funkcja...")
+        }
     }
 }
