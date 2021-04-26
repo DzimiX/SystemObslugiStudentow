@@ -23,6 +23,12 @@ pub struct Uzytkownik {
     pub nazwisko: String,
 }
 
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "uzytkownicy"]
+pub struct UzytkownikID {
+    pub id: i32,
+}
+
 #[derive(Insertable, Serialize, Deserialize)]
 #[table_name = "uzytkownicy"]
 pub struct NowyUzytkownik {
@@ -70,7 +76,6 @@ impl Uzytkownik {
             Err(_error) => print!("Hash error"),
         };
         data.haslo = hash_string;
-        //println!("Debug hash: {}", &data.haslo);
 
         diesel::delete(uzytkownicy_hasla::table
             .filter(uzytkownicy_hasla::id_uzytkownik.eq(data.id_uzytkownik))
@@ -156,9 +161,7 @@ impl AuthLogin {
             .filter(uzytkownicy_hasla::id_uzytkownik.eq(&id))
             .first(conn)
             .expect("Błędne dane.");
-        
-            //println!("Hash co przyszedł: {}", &haslo);
-            //println!("Hash w bazie     : {}", &data.haslo);
+    
             let verify = bcrypt::verify(&haslo, &data.haslo);
             let verify_bool : bool;
 
@@ -167,8 +170,6 @@ impl AuthLogin {
                 Err(_error) => return false,
             };
 
-        //println!("data.haslo: {}", data.haslo);
-        //println!("hash: {}", hash);
         if verify_bool {
             return true;
         }
@@ -197,7 +198,6 @@ impl AuthLogin {
                 CHARSET[idx] as char
             })
             .collect();
-        // sprawdzić czy istnieje już w bazie danych
 
         let data : Result<Auth,diesel::result::Error> = tokeny::table
             .filter(tokeny::token.eq(&token))
@@ -217,7 +217,6 @@ impl AuthLogin {
         .execute(conn)
         .expect("Błąd.");
 
-        //println!("Wykonano usunięcie tokenu");
         return true
     }
 

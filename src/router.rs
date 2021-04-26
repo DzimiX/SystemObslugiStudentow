@@ -4,24 +4,29 @@ use serde_json::Value;
 
 use rocket::http::{Cookie, Cookies};
 
-use crate::models::{Uzytkownik, NowyUzytkownik, NoweHaslo};
+use super::ADMINISTRATOR;
+use super::PRACOWNIK;
+use super::PROWADZACY;
+use super::STUDENT;
+use super::UZYTKOWNIK;
+
+use crate::models::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
 use crate::models::{AuthLogin, Auth, AuthNowy};
 
 #[get("/uzytkownicy", format = "application/json")]
-pub fn uzytkownicy_index(conn: DbConn, cookies: Cookies) -> Json<Value> {
+pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
     
     let cookie_temp = Cookie::new("token", "False");
-    let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
-    //println!("{}", token );
+    let token = String::from(cookies.get_private("token").unwrap_or(cookie_temp).value());
 
     if &token != "False" {
-        
-        //println!("DZIAŁAM");
+    
         let auth : Auth = AuthLogin::check_token(&token, &conn);
-        //println!("{}", auth.token);
-        //println!("{}", auth.id_uprawnienie);
 
-        if auth.token != "False" && auth.id_uprawnienie > 4 {
+        if auth.token != "False" && (
+            auth.id_uprawnienie == ADMINISTRATOR ||
+            auth.id_uprawnienie == PRACOWNIK
+        ) {
             let uzytkownicy = Uzytkownik::all(&conn);
 
             return Json(json!({
@@ -47,35 +52,74 @@ pub fn uzytkownicy_nowy(conn: DbConn, nowy_uzytkownik: Json<NowyUzytkownik>) -> 
     }))
 }
 
-#[get("/uzytkownicy/<id>", format = "application/json")]
-pub fn uzytkownicy_id(conn: DbConn, id:i32) -> Json<Value> {
-    
-    let result = Uzytkownik::get(id, &conn);
-    let status = if result.is_empty() { 404 } else { 200 };
+#[post("/uzytkownik", format = "application/json", data = "<id>")]
+pub fn uzytkownik(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) -> Json<Value> {
 
-    Json(json!({
-        "status" : status,
-        "result" : result.get(0),
+    let cookie_temp = Cookie::new("token", "False");
+    let token = String::from(cookies.get_private("token").unwrap_or(cookie_temp).value());
+
+    if &token != "False" {
+    
+        let auth : Auth = AuthLogin::check_token(&token, &conn);
+        
+        if auth.token != "False" && (auth.id_uprawnienie > 4 || auth.id_uzytkownik == id.id) {
+            
+            let result = Uzytkownik::get(id.id, &conn);
+            let status = if result.is_empty() { 404 } else { 200 };
+            
+            if status == 200 {
+                return Json(json!({
+                    "status" : 200,
+                    "result" : result.get(0),
+                }))
+            } else {
+                return Json(json!({
+                    "status" : 404,
+                    "result" : "Not Found",
+                }))
+            }
+        
+        }
+    }
+
+    return Json(json!({
+        "status" : 401,
+        "result" : "Unauthorized",
     }))
 }
 
 #[post("/uzytkownik/nowehaslo", format = "application/json", data = "<nowe_haslo>")]
-pub fn uzytkownik_nowe_haslo(conn: DbConn, nowe_haslo: Json<NoweHaslo>) -> Json<Value> {
-    //println!("{}",String::from(token));
+pub fn uzytkownik_nowe_haslo(conn: DbConn, nowe_haslo: Json<NoweHaslo>, mut cookies: Cookies) -> Json<Value> {
 
-    let wynik = Uzytkownik::set_password(nowe_haslo.into_inner(), &conn);
-    if wynik {
-        return Json(json!({
-            "status" : 200,
-            "result" : "OK",
-        }))
-    } else {
-        return Json(json!({
-            "status" : 400,
-            "result" : "Error",
-        }))
+    let cookie_temp = Cookie::new("token", "False");
+    let token = String::from(cookies.get_private("token").unwrap_or(cookie_temp).value());
+
+    if &token != "False" {
+    
+        let auth : Auth = AuthLogin::check_token(&token, &conn);
+        
+        if auth.token != "False" && (auth.id_uprawnienie > 4 || auth.id_uzytkownik == nowe_haslo.id_uzytkownik) {
+            
+            let wynik = Uzytkownik::set_password(nowe_haslo.into_inner(), &conn);
+            
+            if wynik {
+                return Json(json!({
+                    "status" : 200,
+                    "result" : "OK",
+                }))
+            } else {
+                return Json(json!({
+                    "status" : 400,
+                    "result" : "Error",
+                }))
+            }
+        }
     }
 
+    return Json(json!({
+        "status" : 401,
+        "result" : "Unauthorized",
+    }))
     
 }
 
@@ -121,15 +165,18 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
 
             if &token != "False" {
 
-                cookies.add(Cookie::new("token", String::from(&token)));
+                cookies.add_private(Cookie::new("token", String::from(&token)));
+                cookies.add_private(Cookie::new("id", id_uzytkownik.to_string()));
+                cookies.add_private(Cookie::new("id_uprawnienie", id_uprawnienie.to_string()));
 
                 return Json(json!({
                     "status" : 200,
-                    "result" : {
-                        "id_uzytkownik": id_uzytkownik,
-                        "id_uprawnienie": id_uprawnienie,
-                        "token": token
-                    },
+                    "result" : "Authorized"
+                    //{
+                        //"id_uzytkownik": id_uzytkownik,
+                        //"id_uprawnienie": id_uprawnienie,
+                        //"token": token
+                    //},
                 }))
             }
         }
