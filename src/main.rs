@@ -47,6 +47,7 @@ fn rocket() {
             router::uzytkownik_nowe_haslo,
             
             router::logowanie,
+            router::autoryzacja,
         ])
         .launch();
 }

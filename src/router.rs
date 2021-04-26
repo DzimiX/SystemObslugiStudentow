@@ -189,13 +189,13 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
 
 }
 
-/* w sumie to do niczego nie potrzebne
-#[post("/auth", format = "application/json", data = "<token_data>")] 
-pub fn autoryzacja(conn: DbConn, token_data: Json<AuthToken>) -> Json<Value> {
+#[get("/auth", format = "application/json")] 
+pub fn autoryzacja(conn: DbConn, mut cookies : Cookies) -> Json<Value> {
 
-    let token_parsed = &token_data.token;
+    let cookie_temp = Cookie::new("token", "False");
+    let token = String::from(cookies.get_private("token").unwrap_or(cookie_temp).value());
 
-    let zwrotka : Auth = AuthLogin::check_token(&token_parsed, &conn);
+    let zwrotka : Auth = AuthLogin::check_token(&token, &conn);
 
     if zwrotka.token != "False" {
         return Json(json!({
@@ -209,4 +209,3 @@ pub fn autoryzacja(conn: DbConn, token_data: Json<AuthToken>) -> Json<Value> {
         }))
     }
 }
-*/
