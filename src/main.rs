@@ -26,7 +26,13 @@ static PROWADZACY    : i32 = 3;
 static STUDENT       : i32 = 2;
 static UZYTKOWNIK    : i32 = 1;
 
+use chrono::{Local};
+
 fn main() {
+
+    let now_timestamp = Local::now().timestamp();
+    println!("{}", now_timestamp);
+
     rocket();
 }
 

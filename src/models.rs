@@ -6,6 +6,8 @@ use rand::Rng;
 
 use bcrypt;
 
+use chrono::{Local};
+
 use crate::schema::tokeny;
 
 use crate::schema::uzytkownicy_hasla;
@@ -97,7 +99,7 @@ pub struct Auth {
     pub id_uzytkownik: i32,
     pub id_uprawnienie: i32,
     pub token: String,
-    //pub data: Datetime,
+    pub data: i64,
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
@@ -106,7 +108,7 @@ pub struct AuthNowy {
     pub id_uzytkownik: i32,
     pub id_uprawnienie: i32,
     pub token: String,
-    //pub data: Datetime,
+    pub data: i64,
 }
 
 #[derive(Queryable, Serialize, Deserialize)]
@@ -233,13 +235,32 @@ impl AuthLogin {
             .first(conn);
 
         match data {
-            Ok(data) => return data,
+            Ok(data) => {
+                AuthLogin::renew_token(&token, &conn);
+                return data;
+            },
             Err(_error) => return Auth{
                 id : -1,
                 id_uzytkownik: -1,
                 id_uprawnienie: -1,
                 token: String::from("False"),
+                data: -1,
             },
         };
+    }
+
+    fn renew_token(token : &String, conn : &MysqlConnection) {
+
+        let now_timestamp = Local::now().timestamp();
+        let delayed_timestamp = now_timestamp + 36000; // + 36000s = + 10h
+
+        let updated_row = diesel::update(tokeny::table.filter(tokeny::token.eq(&token)))
+            .set(tokeny::data.eq(delayed_timestamp))
+            .execute(conn)
+            .is_ok();
+
+        if updated_row == false {
+            println!("Problem połączenia z bazą danych, ale to nie krytyczna funkcja...")
+        }
     }
 }
