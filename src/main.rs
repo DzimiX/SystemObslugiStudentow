@@ -51,6 +51,11 @@ fn rocket() {
             
             router::uzytkownik,
             router::uzytkownik_nowe_haslo,
+
+            router::wiadomosci_nowa,
+            router::wiadomosci_pokaz,
+            router::wiadomosci_dodajodbiorce,
+            router::wiadomosci_domnie,
             
             router::logowanie,
             router::autoryzacja,

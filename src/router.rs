@@ -14,8 +14,9 @@ use super::UZYTKOWNIK;
 
 use crate::models::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
 use crate::models::{AuthLogin, Auth, AuthNowy};
+use crate::models::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscUczestnik};
 
-#[get("/uzytkownicy", format = "application/json")]
+#[post("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
     
     let cookie_temp = Cookie::new("token", "False");
@@ -236,4 +237,44 @@ pub fn autoryzacja(conn: DbConn, mut cookies : Cookies) -> Json<Value> {
             "result" : "Unauthorized",
         }))
     }
+}
+
+#[post("/wiadomosci/nowa", format = "application/json", data = "<nowa_wiadomosc>")]
+pub fn wiadomosci_nowa(conn: DbConn, nowa_wiadomosc: Json<NowaWiadomosc>) -> Json<Value> { 
+    // niebezpieczne
+    Json(json!({
+        "status" : Wiadomosc::add(nowa_wiadomosc.into_inner(), &conn),
+        "result" : "OK",
+    }))
+}
+
+#[post("/wiadomosci/pokaz", format = "application/json", data = "<id_wiadomosc>")]
+pub fn wiadomosci_pokaz(conn: DbConn, id_wiadomosc: Json<WiadomoscId>) -> Json<Value> { 
+    // niebezpieczne
+    let id : i32 = format!("{}",id_wiadomosc.id).parse::<i32>().unwrap();
+
+    Json(json!({
+        "status" : 200,
+        "result" : Wiadomosc::get(id, &conn).first(),
+    }))
+}
+
+#[post("/wiadomosci/dodajodbiorce", format = "application/json", data = "<nowy_wiadomosc_uczestnik>")]
+pub fn wiadomosci_dodajodbiorce(conn: DbConn, nowy_wiadomosc_uczestnik: Json<NowaWiadomoscUczestnik>) -> Json<Value> { 
+    // niebezpieczne
+    Json(json!({
+        "status" : Wiadomosc::add_recipient(nowy_wiadomosc_uczestnik.into_inner(), &conn),
+        "result" : "OK",
+    }))
+}
+
+#[post("/wiadomosci/domnie", format = "application/json", data = "<id_uczestnik>")]
+pub fn wiadomosci_domnie(conn: DbConn, id_uczestnik: Json<WiadomoscId>) -> Json<Value> { 
+    // niebezpieczne
+    let id_uczestnik : i32 = format!("{}",id_uczestnik.id).parse::<i32>().unwrap();
+
+    Json(json!({
+        "status" : 200,
+        "result" : Wiadomosc::get_messages(id_uczestnik, &conn),
+    }))
 }

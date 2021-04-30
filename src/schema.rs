@@ -13,13 +13,6 @@ table! {
         temat -> Varchar,
         widok_od -> Datetime,
         widok_do -> Datetime,
-    }
-}
-
-table! {
-    ogloszenia_tresc (id) {
-        id -> Integer,
-        id_ogloszenie -> Integer,
         dane -> Mediumtext,
     }
 }
@@ -82,16 +75,9 @@ table! {
 table! {
     wiadomosci (id) {
         id -> Integer,
-        nadawca -> Varchar,
+        id_uzytkownik -> Integer,
         temat -> Varchar,
-        priorytet -> Integer,
-    }
-}
-
-table! {
-    wiadomosci_tresc (id) {
-        id -> Integer,
-        id_wiadomosc -> Integer,
+        data -> Bigint,
         dane -> Mediumtext,
     }
 }
@@ -105,7 +91,6 @@ table! {
 }
 
 joinable!(ogloszenia -> uzytkownicy (id_nadawca));
-joinable!(ogloszenia_tresc -> ogloszenia (id_ogloszenie));
 joinable!(tokeny -> uprawnienia (id_uprawnienie));
 joinable!(tokeny -> uzytkownicy (id_uzytkownik));
 joinable!(uzytkownicy_dane -> miasta (id_miasto));
@@ -113,14 +98,13 @@ joinable!(uzytkownicy_dane -> uzytkownicy (id_uzytkownik));
 joinable!(uzytkownicy_hasla -> uzytkownicy (id_uzytkownik));
 joinable!(uzytkownicy_uprawnienia -> uprawnienia (id_uprawnienie));
 joinable!(uzytkownicy_uprawnienia -> uzytkownicy (id_uzytkownik));
-joinable!(wiadomosci_tresc -> wiadomosci (id_wiadomosc));
+joinable!(wiadomosci -> uzytkownicy (id_uzytkownik));
 joinable!(wiadomosci_uczestnicy -> uzytkownicy (id_uczestnik));
 joinable!(wiadomosci_uczestnicy -> wiadomosci (id_wiadomosc));
 
 allow_tables_to_appear_in_same_query!(
     miasta,
     ogloszenia,
-    ogloszenia_tresc,
     tokeny,
     uprawnienia,
     uzytkownicy,
@@ -128,6 +112,5 @@ allow_tables_to_appear_in_same_query!(
     uzytkownicy_hasla,
     uzytkownicy_uprawnienia,
     wiadomosci,
-    wiadomosci_tresc,
     wiadomosci_uczestnicy,
 );

@@ -14,20 +14,9 @@ CREATE TABLE `ogloszenia` (
   `id_nadawca` int(11) NOT NULL,
   `nadawca` varchar(255) NOT NULL,
   `temat` varchar(255) NOT NULL,
+  `dane` mediumtext NOT NULL,
   `widok_od` datetime NOT NULL,
   `widok_do` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ogloszenia_tresc`
---
-
-CREATE TABLE `ogloszenia_tresc` (
-  `id` int(11) NOT NULL,
-  `id_ogloszenie` int(11) NOT NULL,
-  `dane` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -117,21 +106,10 @@ CREATE TABLE `uzytkownicy_uprawnienia` (
 
 CREATE TABLE `wiadomosci` (
   `id` int(11) NOT NULL,
-  `nadawca` varchar(255) NOT NULL,
+  `id_uzytkownik` int(11) NOT NULL,
   `temat` varchar(255) NOT NULL,
-  `priorytet` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `wiadomosci_tresc`
---
-
-CREATE TABLE `wiadomosci_tresc` (
-  `id` int(11) NOT NULL,
-  `id_wiadomosc` int(11) NOT NULL,
-  `dane` mediumtext NOT NULL
+  `dane` mediumtext NOT NULL,
+  `data` bigint(8) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -164,13 +142,6 @@ ALTER TABLE `miasta`
 ALTER TABLE `ogloszenia`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_nadawca` (`id_nadawca`);
-
---
--- Indexes for table `ogloszenia_tresc`
---
-ALTER TABLE `ogloszenia_tresc`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_ogloszenie` (`id_ogloszenie`);
 
 --
 -- Indexes for table `tokeny`
@@ -220,14 +191,9 @@ ALTER TABLE `uzytkownicy_uprawnienia`
 -- Indexes for table `wiadomosci`
 --
 ALTER TABLE `wiadomosci`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `wiadomosci_tresc`
---
-ALTER TABLE `wiadomosci_tresc`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_wiadomosc` (`id_wiadomosc`);
+  ADD KEY `id_uzytkownik` (`id_uzytkownik`);
+
 
 --
 -- Indexes for table `wiadomosci_uczestnicy`
@@ -251,12 +217,6 @@ ALTER TABLE `miasta`
 -- AUTO_INCREMENT for table `ogloszenia`
 --
 ALTER TABLE `ogloszenia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `ogloszenia_tresc`
---
-ALTER TABLE `ogloszenia_tresc`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -302,12 +262,6 @@ ALTER TABLE `wiadomosci`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `wiadomosci_tresc`
---
-ALTER TABLE `wiadomosci_tresc`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `wiadomosci_uczestnicy`
 --
 ALTER TABLE `wiadomosci_uczestnicy`
@@ -322,12 +276,6 @@ ALTER TABLE `wiadomosci_uczestnicy`
 --
 ALTER TABLE `ogloszenia`
   ADD CONSTRAINT `ogloszenia_ibfk_1` FOREIGN KEY (`id_nadawca`) REFERENCES `uzytkownicy` (`id`);
-
---
--- Constraints for table `ogloszenia_tresc`
---
-ALTER TABLE `ogloszenia_tresc`
-  ADD CONSTRAINT `ogloszenia_tresc_ibfk_1` FOREIGN KEY (`id_ogloszenie`) REFERENCES `ogloszenia` (`id`);
 
 --
 -- Constraints for table `tokeny`
@@ -356,11 +304,10 @@ ALTER TABLE `uzytkownicy_uprawnienia`
   ADD CONSTRAINT `uzytkownicy_uprawnienia_ibfk_1` FOREIGN KEY (`id_uzytkownik`) REFERENCES `uzytkownicy` (`id`),
   ADD CONSTRAINT `uzytkownicy_uprawnienia_ibfk_2` FOREIGN KEY (`id_uprawnienie`) REFERENCES `uprawnienia` (`id`);
 
---
--- Constraints for table `wiadomosci_tresc`
---
-ALTER TABLE `wiadomosci_tresc`
-  ADD CONSTRAINT `wiadomosci_tresc_ibfk_1` FOREIGN KEY (`id_wiadomosc`) REFERENCES `wiadomosci` (`id`);
+
+
+ALTER TABLE `wiadomosci`
+  ADD CONSTRAINT `wiadomosci_ibfk_1` FOREIGN KEY (`id_uzytkownik`) REFERENCES `uzytkownicy` (`id`);
 
 --
 -- Constraints for table `wiadomosci_uczestnicy`
