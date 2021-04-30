@@ -14,8 +14,12 @@ use crate::schema::uzytkownicy_hasla;
 use crate::schema::uzytkownicy_uprawnienia;
 use crate::schema::uprawnienia;
 
+use crate::schema::miasta;
+
+use crate::schema::wiadomosci;
+use crate::schema::wiadomosci_uczestnicy;
+
 use crate::schema::uzytkownicy;
-use crate::schema::uzytkownicy::dsl::uzytkownicy as all_uzytkownicy;
 
 #[derive(Queryable, Serialize)]
 pub struct Uzytkownik {
@@ -55,14 +59,14 @@ impl Uzytkownik {
     }
 
     pub fn all(conn: &MysqlConnection) -> Vec<Uzytkownik> {
-        all_uzytkownicy
+        uzytkownicy::table
             .order(uzytkownicy::id.desc())
             .load::<Uzytkownik>(conn)
-            .expect("error loading the books")
+            .expect("Problem z wczytaniem użytkownika.")
     }
 
     pub fn get(id: i32, conn: &MysqlConnection) -> Vec<Uzytkownik> {
-        all_uzytkownicy
+        uzytkownicy::table
             .find(id)
             .load::<Uzytkownik>(conn)
             .expect("Problem z wczytaniem użytkownika.")
@@ -89,6 +93,34 @@ impl Uzytkownik {
             .values(&data)
             .execute(conn)
             .is_ok()
+    }
+}
+
+#[derive(Queryable, Serialize)]
+pub struct Miasto {
+    pub id: i32,
+    pub nazwa: String,
+}
+
+#[derive(Insertable, Serialize, Deserialize)]
+#[table_name = "miasta"]
+pub struct NoweMiasto {
+    pub nazwa: String,
+}
+
+impl Miasto {
+    pub fn add(miasto: NoweMiasto, conn: &MysqlConnection) -> bool {
+        diesel::insert_into(miasta::table)
+            .values(&miasto)
+            .execute(conn)
+            .is_ok()
+    }
+
+    pub fn all(conn: &MysqlConnection) -> Vec<Miasto> {
+        miasta::table
+            .order(miasta::id.desc())
+            .load::<Miasto>(conn)
+            .expect("Problem z wczytaniem miast.")
     }
 }
 
@@ -269,15 +301,55 @@ impl AuthLogin {
 pub struct Wiadomosc {
     pub id: i32,
     pub id_uzytkownik: i32,
-    pub temat: i32,
+    pub temat: String,
     pub data: i64,
-    pub tresc: String,
+    pub dane: String,
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "wiadomosci"]
+pub struct NowaWiadomosc {
+    pub id_uzytkownik: i32,
+    pub temat: String,
+    pub data: i64,
+    pub dane: String,
 }
 
 #[derive(Queryable, Serialize, Deserialize)]
-pub struct WiadomoscNowa {
-    pub id_uzytkownik: i32,
-    pub temat: i32,
-    pub data: i64,
-    pub tresc: String,
+pub struct WiadomoscUczestnik {
+    pub id : i32,
+    pub id_wiadomosc : i32,
+    pub id_uczestnik : i32,
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "wiadomosci_uczestnicy"]
+pub struct NowyWiadomoscUczestnik {
+    pub id_wiadomosc : i32,
+    pub id_uczestnik : i32,
+}
+
+impl Wiadomosc {
+
+    pub fn add(wiadomosc: NowaWiadomosc, conn: &MysqlConnection) -> bool {
+        diesel::insert_into(wiadomosci::table)
+            .values(&wiadomosc)
+            .execute(conn)
+            .is_ok()
+    }
+
+    pub fn get(id: i32, conn: &MysqlConnection) -> Vec<Wiadomosc> {
+        wiadomosci::table
+            .find(id)
+            .load::<Wiadomosc>(conn)
+            .expect("Problem z wczytaniem użytkownika.")
+    }
+
+    pub fn add_recipent(uczestnik: NowyWiadomoscUczestnik, conn: &MysqlConnection) -> bool {
+        diesel::insert_into(wiadomosci_uczestnicy::table)
+            .values(&uczestnik)
+            .execute(conn)
+            .is_ok()
+    }
+
 }
