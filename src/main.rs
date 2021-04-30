@@ -33,6 +33,8 @@ fn main() {
     let now_timestamp = Local::now().timestamp();
     println!("{}", now_timestamp);
 
+    println!("ZAMIAST http:://127.0.0.1:9090/ KORZYSTAĆ Z http://localhost.:9090/ (związane z polityką cookies - w cookies trzymany jest token z autoryzacji)");
+
     rocket();
 }
 
@@ -41,6 +43,9 @@ fn rocket() {
 
     rocket::ignite()
         .manage(pool)
+        .register(catchers![
+            static_html::not_found,
+        ])
         .mount("/", routes![
             static_html::index,
             static_html::all,

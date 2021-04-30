@@ -192,9 +192,10 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
 
             if &token != "False" {
 
-                cookies.add_private(Cookie::new("token", String::from(&token)));
-                cookies.add(Cookie::new("id", id_uzytkownik.to_string()));
-                cookies.add(Cookie::new("id_uprawnienie", id_uprawnienie.to_string()));
+                // secure(true) tylko dla HTTPS!!!
+                cookies.add(Cookie::build("token", String::from(&token)).domain("localhost.").path("/").secure(false).finish());
+                cookies.add(Cookie::build("id", id_uzytkownik.to_string()).domain("localhost.").path("/").secure(false).finish());
+                cookies.add(Cookie::build("id_uprawnienie", id_uprawnienie.to_string()).domain("localhost.").path("/").secure(false).finish());
 
                 return Json(json!({
                     "status" : 200,
@@ -220,7 +221,8 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
 pub fn autoryzacja(conn: DbConn, mut cookies : Cookies) -> Json<Value> {
 
     let cookie_temp = Cookie::new("token", "False");
-    let token = String::from(cookies.get_private("token").unwrap_or(cookie_temp).value());
+    let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
+    println!("{}", &token);
 
     let auth : Auth = AuthLogin::check_token(&token, &conn);
 
