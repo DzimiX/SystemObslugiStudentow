@@ -14,6 +14,7 @@ use super::UZYTKOWNIK;
 
 use crate::models::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
 use crate::models::{AuthLogin, Auth, AuthNowy};
+use crate::models::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscUczestnik};
 
 #[get("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
@@ -237,3 +238,31 @@ pub fn autoryzacja(conn: DbConn, mut cookies : Cookies) -> Json<Value> {
         }))
     }
 }
+
+#[post("/wiadomosci/nowa", format = "application/json", data = "<nowa_wiadomosc>")]
+pub fn wiadomosci_nowa(conn: DbConn, nowa_wiadomosc: Json<NowaWiadomosc>) -> Json<Value> { 
+    Json(json!({
+        "status" : Wiadomosc::add(nowa_wiadomosc.into_inner(), &conn),
+        "result" : "OK",
+    }))
+}
+
+#[post("/wiadomosci/pokaz", format = "application/json", data = "<id_wiadomosc>")]
+pub fn wiadomosci_pokaz(conn: DbConn, id_wiadomosc: Json<WiadomoscId>) -> Json<Value> { 
+    let id : i32 = format!("{}",id_wiadomosc.id).parse::<i32>().unwrap();
+    
+    Json(json!({
+        "status" : 200,
+        "result" : Wiadomosc::get(id, &conn).first(),
+    }))
+}
+
+/*
+#[post("/wiadomosci/dodajodbiorce", format = "application/json", data = "<nowy_wiadomosc_uczestnik>")]
+pub fn wiadomosci_dodajodbiorce(conn: DbConn, nowy_wiadomosc_uczestnik: Json<NowyUzytkownik>) -> Json<Value> { 
+    Json(json!({
+        "status" : Uzytkownik::add(nowy_wiadomosc_uczestnik.into_inner(), &conn),
+        "result" : Uzytkownik::all(&conn).first(),
+    }))
+}
+*/

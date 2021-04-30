@@ -315,7 +315,7 @@ pub struct NowaWiadomosc {
     pub dane: String,
 }
 
-#[derive(Queryable, Serialize, Deserialize)]
+#[derive(Queryable, Serialize)]
 pub struct WiadomoscUczestnik {
     pub id : i32,
     pub id_wiadomosc : i32,
@@ -324,9 +324,16 @@ pub struct WiadomoscUczestnik {
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
 #[table_name = "wiadomosci_uczestnicy"]
-pub struct NowyWiadomoscUczestnik {
+pub struct NowaWiadomoscUczestnik {
     pub id_wiadomosc : i32,
     pub id_uczestnik : i32,
+}
+
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "wiadomosci"]
+pub struct WiadomoscId {
+    pub id: i32,
 }
 
 impl Wiadomosc {
@@ -342,14 +349,37 @@ impl Wiadomosc {
         wiadomosci::table
             .find(id)
             .load::<Wiadomosc>(conn)
-            .expect("Problem z wczytaniem użytkownika.")
+            .expect("Problem z wczytaniem wiadomości.")
     }
 
-    pub fn add_recipent(uczestnik: NowyWiadomoscUczestnik, conn: &MysqlConnection) -> bool {
+    pub fn add_recipient(uczestnik: NowaWiadomoscUczestnik, conn: &MysqlConnection) -> bool {
         diesel::insert_into(wiadomosci_uczestnicy::table)
             .values(&uczestnik)
             .execute(conn)
             .is_ok()
     }
 
+    pub fn get_messages(id_uczestnik : i32, conn : &MysqlConnection) -> Vec<WiadomoscUczestnik> {
+        let data = wiadomosci_uczestnicy::table
+            .filter(wiadomosci_uczestnicy::id_uczestnik.eq(id_uczestnik))
+            .load(conn);
+
+        match data {
+            Ok(data) => {
+                return data;
+            },
+            Err(_error) => {
+
+                let mut temp : Vec<WiadomoscUczestnik> = Vec::new();
+                temp.push(
+                    WiadomoscUczestnik {
+                        id : -1,
+                        id_wiadomosc : -1,
+                        id_uczestnik : -1,    
+                    }
+                );
+                return temp;
+            }
+        };
+    }
 }
