@@ -134,12 +134,12 @@
 			<a href="/">Strona główna</a>
 			<div class="dropdown">
 				<button class="dropbtn">
-					<span class="disabled">Wiadomości</span> 
+					<span>Wiadomości</span> 
 					<i class="arrow down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a href="#"><span class="disabled">Skrzynka odbiorcza</span></a>
-					<a href="#"><span class="disabled">Utwórz wiadomość</span></a>
+					<a href="/wiadomosci.html"><span>Skrzynka odbiorcza</span></a>
+					<a href="#"><span>Utwórz wiadomość</span></a>
 				</div>
 			</div>
 			<div class="dropdown">
@@ -151,6 +151,17 @@
 					<a href="#"><span class="disabled">Lista ogłoszeń</span></a>
 					<a href="#"><span class="disabled">Utwórz nowe ogłoszenie</span></a>
 					<a href="#"><span class="disabled">Edytuj ogłoszenie</span></a>
+				</div>
+			</div>
+			<div class="dropdown">
+				<button class="dropbtn">
+					<span class="disabled">Zarządzanie użytkownikami</span> 
+					<i class="arrow down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a href="#"><span class="disabled">Przeglądanie użytkowników</span></a>
+					<a href="#"><span class="disabled">Tworzenie użytkowników</span></a>
+					<a href="#"><span class="disabled">Edycja użytkowników</span></a>
 				</div>
 			</div>
 			<div class="dropdown">
@@ -231,12 +242,10 @@
 		</div>
 		
 		<script>
-			/*
 			let userdata = {
 				"id" : parseInt(getCookie("id")),
 				"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
 			}
-			*/
 
 			function wyloguj(){
 				deleteAllCookies();
@@ -244,7 +253,27 @@
 			}
 
 			let uzytkownik_id = {
-				"id" : parseInt(getCookie("id"))
+				"id" : userdata.id
+			}
+
+			switch (userdata.id_uprawnien) {
+				case 5 :
+					document.getElementById("auth-ranga").innerHTML = "Administrator";
+					break;
+				case 4 :
+					document.getElementById("auth-ranga").innerHTML = "Pracownik";
+					break;
+				case 3 :
+					document.getElementById("auth-ranga").innerHTML = "Prowadzący";
+					break;
+				case 2 :
+					document.getElementById("auth-ranga").innerHTML = "Student";
+					break;
+				case 1 :
+					document.getElementById("auth-ranga").innerHTML = "Użytkownik";
+					break;
+				default:
+					document.getElementById("auth-ranga").innerHTML = "";
 			}
 
 			$.ajax({

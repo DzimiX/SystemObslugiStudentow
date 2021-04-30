@@ -362,7 +362,7 @@ impl Wiadomosc {
     pub fn get_messages(id_uczestnik : i32, conn : &MysqlConnection) -> Vec<WiadomoscUczestnik> {
         let data = wiadomosci_uczestnicy::table
             .filter(wiadomosci_uczestnicy::id_uczestnik.eq(id_uczestnik))
-            .load(conn);
+            .load::<WiadomoscUczestnik>(conn);
 
         match data {
             Ok(data) => {

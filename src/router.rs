@@ -275,10 +275,10 @@ pub fn wiadomosci_dodajodbiorce(conn: DbConn, nowy_wiadomosc_uczestnik: Json<Now
     }))
 }
 
-#[post("/wiadomosci/domnie", format = "application/json", data = "<id_uczestnik>")]
-pub fn wiadomosci_domnie(conn: DbConn, id_uczestnik: Json<WiadomoscId>) -> Json<Value> { 
+#[post("/wiadomosci/domnie", format = "application/json", data = "<id>")]
+pub fn wiadomosci_domnie(conn: DbConn, id: Json<WiadomoscId>, mut cookies : Cookies) -> Json<Value> { 
     // niebezpieczne
-    let id_uczestnik : i32 = format!("{}",id_uczestnik.id).parse::<i32>().unwrap();
+    let id_uczestnik : i32 = format!("{}", id.id).parse::<i32>().unwrap();
 
     Json(json!({
         "status" : 200,

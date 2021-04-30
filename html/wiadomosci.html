@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pl">
+	<head>
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/main.js"></script>
+		<script>
+			if (getCookie("token") == null) {
+				document.location.href = "/logowanie.html";
+				document.body.innerHTML = "";
+				window.stop();
+			}
+		</script>
+		<meta charset="utf-8">
+		<title>System obsługi studentów</title>
+		<meta name="description" content="System Obsługi Studentów">
+		<style>
+			body {
+				padding: 0px;
+				margin: 0px;
+				font-family: Arial, Helvetica, sans-serif;
+				background-color: #2a2a2e;
+            	color: white;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class="navbar">
+			navbar placeholder
+		</div>
+		<div class="content">
+			<div class="header">
+				System Obsługi Studentów
+			</div>
+			<div class="panel"></div>
+	
+			<button id='logout'>Wyloguj się</button>
+	
+			<div id="odpowiedzAJAX">
+
+            </div>
+		</div>
+		
+		<script>
+			/*
+			let userdata = {
+				"id" : parseInt(getCookie("id")),
+				"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
+			}
+			*/
+
+			function wyloguj(){
+				deleteAllCookies();
+				document.location.href = "/logowanie.html";
+			}
+
+			let uzytkownik_id = {
+				"id" : parseInt(getCookie("id"))
+			}
+
+			$.ajax({
+				url: '/api/wiadomosci/domnie',
+				type: "POST",
+				data: JSON.stringify(uzytkownik_id),
+				contentType: "application/json; charset=UTF-8",
+				success: function (data) {
+					console.log(data.status);
+					console.log(data.result);
+					
+					if (data.status != 200){
+						if (data.status == 401){
+							//wyloguj();
+						}
+					} else if (data.status == 200){
+                        var wiadomosci_id_set = new Set();
+                        for( let i = 0; i < data.result.length; i++){
+                            wiadomosci_id_set.add(data.result[i]['id_wiadomosc']);
+                            /*
+                            $("#odpowiedzAJAX").append(
+                                //"ID: "+data.result[i]['id']+", id_uczestnik: "+data.result[i]['id_uczestnik']+", id_wiadomosc: "+data.result[i]['id_wiadomosc']+"</br>"
+                            );
+                            */
+                        }
+                        
+                        for (let id_wiadomosc of wiadomosci_id_set){
+                            //alert(id_wiadomosc);
+                            temp_JSON = {
+                                "id" : id_wiadomosc
+                            }
+                            listowanie_wiadomosci(temp_JSON);
+                        }
+					}
+				}
+			});
+
+            function listowanie_wiadomosci(temp_JSON){
+                $.ajax({
+                    url: '/api/wiadomosci/pokaz',
+                    type: "POST",
+                    data: JSON.stringify(temp_JSON),
+                    accept: "*/*",
+                    contentType: "application/json; charset=UTF-8",
+                    success: function (data) {
+                        console.log(data.status);
+                        console.log(data.result);
+                        
+                        if (data.status != 200){
+                            alert("nie ok");
+                            if (data.status == 401){
+                                //wyloguj();
+                            }
+                        } else if (data.status == 200){
+                            $("#odpowiedzAJAX").append(
+                                "<b>Nadawca (id)</b>: "+data.result['id_uzytkownik']+", <b>data</b>: "+data.result['data']+", <b>temat</b>: "+data.result['temat']+"</br>"
+                            );
+                        }
+                    }
+                });
+            }
+
+			$("#wyloguj_navbar").click(function() {
+				deleteAllCookies();
+				document.location.href = "/logowanie.html";
+			});
+		</script>
+	</body>
+</html>
