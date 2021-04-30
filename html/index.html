@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="pl">
 	<head>
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/main.js"></script>
 		<script>
 			if (getCookie("token") == null) {
 				document.location.href = "/logowanie.html";
@@ -11,145 +13,122 @@
 		<meta charset="utf-8">
 		<title>System obsługi studentów</title>
 		<meta name="description" content="System Obsługi Studentów">
+		<style>
+			body {
+				padding: 0px;
+				margin: 0px;
+				font-family: Arial, Helvetica, sans-serif;
+				background-color: #2a2a2e;
+            	color: white;
+			}
+
+			.header {
+				font-size: 16px;
+			}
+
+			.navbar {
+				overflow: hidden;
+				background-color: #004aa9;
+			}
+
+			.navbar a {
+				float: left;
+				font-size: 16px;
+				color: white;
+				text-align: center;
+				padding: 14px 16px;
+				text-decoration: none;
+			}
+
+			.dropdown {
+				float: left;
+				overflow: hidden;
+			}
+
+			.dropdown-right {
+				float: right;
+				overflow: hidden;
+			}
+
+			.dropdown .dropbtn, .dropdown-right .dropbtn {
+				font-size: 16px;  
+				border: none;
+				outline: none;
+				color: white;
+				padding: 14px 16px;
+				background-color: inherit;
+				font-family: inherit;
+				margin: 0;
+			}
+
+			.navbar a:hover, .dropdown:hover .dropbtn, .dropdown-right:hover .dropbtn {
+				background-color: #00285c;
+			}
+
+			.dropdown-content {
+				display: none;
+				position: absolute;
+				background-color: #0050b8;
+				min-width: 160px;
+				box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+				z-index: 1;
+			}
+
+			.dropdown-content a {
+				float: none;
+				color: white;
+				padding: 12px 16px;
+				text-decoration: none;
+				display: block;
+				text-align: left;
+			}
+
+			.dropdown-content a:hover {
+				background-color: #00285c;
+			}
+
+			.dropdown:hover .dropdown-content, .dropdown-right:hover .dropdown-content {
+				display: block;
+			}
+
+			.content {
+				margin: 20px;
+			}
+
+			.disabled {
+				text-decoration: line-through;
+			}
+
+			.arrow {
+				border: solid white;
+				border-width: 0 3px 3px 0;
+				display: inline-block;
+				padding: 3px;
+				margin-bottom: 3px;
+			}
+
+			.right {
+				transform: rotate(-45deg);
+				-webkit-transform: rotate(-45deg);
+			}
+
+			.left {
+				transform: rotate(135deg);
+				-webkit-transform: rotate(135deg);
+			}
+
+			.up {
+				transform: rotate(-135deg);
+				-webkit-transform: rotate(-135deg);
+			}
+
+			.down {
+				transform: rotate(45deg);
+				-webkit-transform: rotate(45deg);
+			}
+
+		</style>
 	</head>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<script src="/js/main.js"></script>
-
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<style>
-		
-		body {
-			padding: 0px;
-			margin: 0px;
-			font-family: Arial, Helvetica, sans-serif;
-		}
-
-		.header {
-			font-size: 16px;
-		}
-
-		.navbar {
-			overflow: hidden;
-			background-color: #333;
-			/* 
-			position: fixed;
-			top: 0;
-			width: 100%; 
-			*/
-		}
-
-		.navbar a {
-			float: left;
-			font-size: 16px;
-			color: white;
-			text-align: center;
-			padding: 14px 16px;
-			text-decoration: none;
-		}
-
-		.dropdown {
-			float: left;
-			overflow: hidden;
-		}
-
-		.dropdown-right {
-			float: right;
-			overflow: hidden;
-		}
-
-		.dropdown .dropbtn {
-			font-size: 16px;  
-			border: none;
-			outline: none;
-			color: white;
-			padding: 14px 16px;
-			background-color: inherit;
-			font-family: inherit;
-			margin: 0;
-		}
-
-		.dropdown-right .dropbtn {
-			font-size: 16px;  
-			border: none;
-			outline: none;
-			color: white;
-			padding: 14px 16px;
-			background-color: inherit;
-			font-family: inherit;
-			margin: 0;
-		}
-
-		.navbar a:hover, .dropdown:hover .dropbtn {
-			background-color: red;
-		}
-
-		.dropdown-content {
-			display: none;
-			position: absolute;
-			background-color: #f9f9f9;
-			min-width: 160px;
-			box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-			z-index: 1;
-		}
-
-		.dropdown-content a {
-			float: none;
-			color: black;
-			padding: 12px 16px;
-			text-decoration: none;
-			display: block;
-			text-align: left;
-		}
-
-		.dropdown-content a:hover {
-			background-color: #ddd;
-		}
-
-		.dropdown:hover .dropdown-content {
-			display: block;
-		}
-
-		.dropdown-right:hover .dropdown-content {
-			display: block;
-		}
-
-		.content {
-			margin: 20px;
-		}
-
-		.disabled {
-			text-decoration: line-through;
-		}
-
-		.arrow {
-			border: solid white;
-			border-width: 0 3px 3px 0;
-			display: inline-block;
-			padding: 3px;
-			margin-bottom: 3px;
-		}
-
-		.right {
-			transform: rotate(-45deg);
-			-webkit-transform: rotate(-45deg);
-		}
-
-		.left {
-			transform: rotate(135deg);
-			-webkit-transform: rotate(135deg);
-		}
-
-		.up {
-			transform: rotate(-135deg);
-			-webkit-transform: rotate(-135deg);
-		}
-
-		.down {
-			transform: rotate(45deg);
-			-webkit-transform: rotate(45deg);
-		}
-
-	</style>
 	<body>
 		<div class="navbar">
 			<a href="/">Strona główna</a>
@@ -252,9 +231,41 @@
 		</div>
 		
 		<script>
-			if (getCookie("token") == null) {
+			/*
+			let userdata = {
+				"id" : parseInt(getCookie("id")),
+				"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
+			}
+			*/
+
+			function wyloguj(){
+				deleteAllCookies();
 				document.location.href = "/logowanie.html";
 			}
+
+			let uzytkownik_id = {
+				"id" : parseInt(getCookie("id"))
+			}
+
+			$.ajax({
+				url: '/api/uzytkownik',
+				type: "POST",
+				data: JSON.stringify(uzytkownik_id),
+				contentType: "application/json; charset=UTF-8",
+				success: function (data) {
+					console.log(data.status);
+					console.log(data.result);
+					
+					if (data.status != 200){
+						if (data.status == 401){
+							wyloguj();
+						}
+					} else if (data.status == 200){
+						document.getElementById("auth-imie").innerHTML = data.result['imie'];
+						document.getElementById("auth-nazwisko").innerHTML = data.result['nazwisko'];
+					}
+				}
+			});
 
 			$("#wyloguj_navbar").click(function() {
 				deleteAllCookies();
@@ -265,7 +276,8 @@
 				$.ajax({
 					url: '/api/uzytkownicy',
 					type: "POST",
-					context: document.body,
+					//data: JSON.stringify(0),
+					contentType: "application/json; charset=UTF-8",
 					success: function (data) {
 						console.log(data.status);
 						console.log(data.result);

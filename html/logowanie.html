@@ -6,17 +6,39 @@
 		<title>SOS - Logowanie</title>
 		<meta name="description" content="System Obsługi Studentów">
 	</head>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="/js/jquery.min.js"></script>
     <script src="/js/main.js"></script>
     <style>
+        body {
+            background-color: #2a2a2e;
+            color: white;
+        }
+
+        a:link {
+            text-decoration: none;
+            color: white;
+        }
+        a:visited {
+            text-decoration: none;
+            color: white;
+        }
+        a:hover {
+            text-decoration: underline;
+            color: white;
+        }
+        a:active {
+            text-decoration: underline;
+            color: white;
+        }
+
         .center-container {
             position: fixed;
             left: calc(50% - 250px);
             top: 5%;
-            width: 500px; /* Full width */
+            width: 500px;
             z-index: 1;
             padding: 20px;
-            background-color: red;
+            background-color: #004aa9;
             padding-bottom: 50px;
             border-radius: 15px;
         }
@@ -39,7 +61,7 @@
                 <label for="form-login">Login:</label>
                 <input id="form-login" name="login"></input></br></br>
                 <label for="form-haslo">Hasło:</label>
-                <input id="form-haslo" name="haslo"></input></br></br>
+                <input type="password" id="form-haslo" name="haslo"></input></br></br>
                 <button id="login-button">Zaloguj się</button> lub
                 <a href="/rejestracja.html">Utwórz nowe konto</a>
             </div>
