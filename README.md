@@ -2,6 +2,9 @@
 
 Nowy wspaniały projekt.
 
+# Ważne!
+ZAMIAST http:://127.0.0.1:9090/ KORZYSTAĆ Z http://localhost.:9090/ (związane z polityką cookies - w cookies trzymany jest token z autoryzacji)
+
 ## Jak rust to ogarnąć wypada
 * Coś do nauczenia się rusta xD
 	* https://www.rust-lang.org/learn

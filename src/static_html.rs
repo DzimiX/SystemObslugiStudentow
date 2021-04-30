@@ -2,6 +2,11 @@ use std::io;
 use std::path::{Path, PathBuf};
 use rocket::response::NamedFile;
 
+#[catch(404)]
+pub fn not_found() -> io::Result<NamedFile> {
+    NamedFile::open("html/error/404.html")
+}
+
 #[get("/", rank = 1)]
 pub fn index() -> io::Result<NamedFile> {
     NamedFile::open("html/index.html")
