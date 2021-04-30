@@ -20,7 +20,7 @@ use crate::models::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscUczestni
 pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
     
     let cookie_temp = Cookie::new("token", "False");
-    let token = String::from(cookies.get_private("token").unwrap_or(cookie_temp).value());
+    let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
 
     if &token != "False" {
     
@@ -38,7 +38,7 @@ pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
                 "result" : uzytkownicy,
             }))
         } else {
-            if now_timestamp < auth.data { // token przeterminowany, trzeba się zalogować ponownie
+            if now_timestamp < auth.data || auth.token == "False" { // token przeterminowany, trzeba się zalogować ponownie
                 return Json(json!({
                     "status" : 401,
                     "result" : "Unauthorized",
@@ -70,7 +70,7 @@ pub fn uzytkownicy_nowy(conn: DbConn, nowy_uzytkownik: Json<NowyUzytkownik>) -> 
 pub fn uzytkownik(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) -> Json<Value> {
 
     let cookie_temp = Cookie::new("token", "False");
-    let token = String::from(cookies.get_private("token").unwrap_or(cookie_temp).value());
+    let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
 
     if &token != "False" {
     
@@ -96,6 +96,11 @@ pub fn uzytkownik(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) ->
                     "result" : "Not Found",
                 }))
             }
+        } else if auth.token == "False" {
+            return Json(json!({
+                "status" : 401,
+                "result" : "Unauthorized",
+            }))
         } else {
             return Json(json!({
                 "status" : 403,
@@ -114,7 +119,7 @@ pub fn uzytkownik(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) ->
 pub fn uzytkownik_nowe_haslo(conn: DbConn, nowe_haslo: Json<NoweHaslo>, mut cookies: Cookies) -> Json<Value> {
 
     let cookie_temp = Cookie::new("token", "False");
-    let token = String::from(cookies.get_private("token").unwrap_or(cookie_temp).value());
+    let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
 
     if &token != "False" {
     
