@@ -54,6 +54,8 @@ fn rocket() {
 
             router::wiadomosci_nowa,
             router::wiadomosci_pokaz,
+            router::wiadomosci_dodajodbiorce,
+            router::wiadomosci_domnie,
             
             router::logowanie,
             router::autoryzacja,
