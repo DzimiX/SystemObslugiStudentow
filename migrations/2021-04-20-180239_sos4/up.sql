@@ -108,8 +108,8 @@ CREATE TABLE `wiadomosci` (
   `id` int(11) NOT NULL,
   `id_uzytkownik` int(11) NOT NULL,
   `temat` varchar(255) NOT NULL,
-  `dane` mediumtext NOT NULL,
-  `data` bigint(8) NOT NULL
+  `data` bigint(8) NOT NULL,
+  `dane` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

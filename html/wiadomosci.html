@@ -22,6 +22,10 @@
             	color: white;
 			}
 
+			table tr:not(:first-child):hover {
+				background-color: red;
+			}
+
 		</style>
 	</head>
 	<body>
@@ -35,10 +39,15 @@
 			<div class="panel"></div>
 	
 			<button id='logout'>Wyloguj się</button>
-	
-			<div id="odpowiedzAJAX">
-
-            </div>
+			
+			<table id="odpowiedzAJAX">
+				<tr>
+					<td>ID</td>
+					<td>Nadawca</td>
+					<td>Data</td>
+					<td>Temat</td>
+				</tr>
+			</table>
 		</div>
 		
 		<script>
@@ -93,6 +102,8 @@
 				}
 			});
 
+			var uzytkownik = 0;
+
             function listowanie_wiadomosci(temp_JSON){
                 $.ajax({
                     url: '/api/wiadomosci/pokaz',
@@ -105,18 +116,77 @@
                         console.log(data.result);
                         
                         if (data.status != 200){
-                            alert("nie ok");
+                            //alert("nie ok");
                             if (data.status == 401){
                                 //wyloguj();
                             }
                         } else if (data.status == 200){
-                            $("#odpowiedzAJAX").append(
-                                "<b>Nadawca (id)</b>: "+data.result['id_uzytkownik']+", <b>data</b>: "+data.result['data']+", <b>temat</b>: "+data.result['temat']+"</br>"
-                            );
+
+							id_JSON = {
+                                "id" : data.result['id']
+                            }
+
+							jQuery.when(
+								dane_uzytkownika(id_JSON)
+							).done( function(json) {
+								
+								var date = new Date(data.result['data'] * 1000);
+
+								$("#odpowiedzAJAX").append(
+								"<tr>"+
+									"<td>"+data.result['id']+"</td>"+
+									"<td>"+json.result['imie']+" "+json.result['nazwisko']+"</td>"+
+									"<td>"+data.result['data']+"</td>"+
+									"<td>"+data.result['temat']+"</td>"+
+									"<td><button onclick=\"szczegoly_wiadomosci(\'"+data.result['id']+"\')\">Pokaż szczegóły</button></td>"+
+								"</tr>"
+                                //"ID: wiadomości: "+data.result['id']+" <b>Nadawca (id)</b>: "+data.result['id_uzytkownik']+", <b>data</b>: "+data.result['data']+", <b>temat</b>: "+data.result['temat']+"</br>"
+                            	);
+							
+							});
                         }
                     }
                 });
             }
+
+			function dane_uzytkownika(id_JSON){
+				return $.ajax({
+                    url: '/api/uzytkownik/publiczne',
+                    type: "POST",
+                    data: JSON.stringify(id_JSON),
+                    accept: "*/*",
+                    contentType: "application/json; charset=UTF-8",
+                });
+			}
+
+			function szczegoly_wiadomosci(id){
+				alert(id);
+				//ajax i wyświetlenie popupa
+
+				id_JSON = {
+					"id" : parseInt(id)
+				}
+
+				jQuery.when(
+					$.ajax({
+						url: '/api/wiadomosci/pokaz',
+						type: "POST",
+						data: JSON.stringify(id_JSON),
+						accept: "*/*",
+						contentType: "application/json; charset=UTF-8",
+                	})
+				).done( function(data) {
+					
+					
+					console.log(data);
+				
+				});
+
+			}
+
+			function schowaj_szczegoly(){
+				//cssem chowanie popupa
+			}
 
 			$("#wyloguj_navbar").click(function() {
 				deleteAllCookies();

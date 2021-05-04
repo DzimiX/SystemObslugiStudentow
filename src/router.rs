@@ -84,6 +84,54 @@ pub fn uzytkownik(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) ->
             
             let result = Uzytkownik::get(id.id, &conn);
             let status = if result.is_empty() { 404 } else { 200 };
+
+            // rozbudować pobieranie dodatkowych informacji o użytkowniku
+            
+            if status == 200 {
+                return Json(json!({
+                    "status" : 200,
+                    "result" : result.get(0),
+                }))
+            } else {
+                return Json(json!({
+                    "status" : 404,
+                    "result" : "Not Found",
+                }))
+            }
+        } else if auth.token == "False" {
+            return Json(json!({
+                "status" : 401,
+                "result" : "Unauthorized",
+            }))
+        } else {
+            return Json(json!({
+                "status" : 403,
+                "result" : "Forbidden",
+            }))
+        }
+    }
+
+    return Json(json!({
+        "status" : 401,
+        "result" : "Unauthorized",
+    }))
+}
+
+#[post("/uzytkownik/publiczne", format = "application/json", data = "<id>")]
+pub fn uzytkownik_publiczne(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) -> Json<Value> {
+
+    let cookie_temp = Cookie::new("token", "False");
+    let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
+
+    if &token != "False" {
+    
+        let now_timestamp = Local::now().timestamp();
+        let auth : Auth = AuthLogin::check_token(&token, &conn);
+        
+        if auth.token != "False" && now_timestamp < auth.data {
+            
+            let result = Uzytkownik::get(id.id, &conn);
+            let status = if result.is_empty() { 404 } else { 200 };
             
             if status == 200 {
                 return Json(json!({
