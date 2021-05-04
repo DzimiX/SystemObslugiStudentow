@@ -23,7 +23,68 @@
 			}
 
 			table tr:not(:first-child):hover {
-				background-color: red;
+				background-color: #004aa9;
+			}
+
+			.modal {
+				display: none;
+				position: fixed;
+				z-index: 1;
+				padding-top: 100px;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				overflow: auto;
+				background-color: rgb(0,0,0);
+				background-color: rgba(0,0,0,0.4);
+			}
+
+			.modal-content {
+				position: relative;
+				background-color: #2a2a2e;
+				margin: auto;
+				padding: 0;
+				border: 1px solid #888;
+				width: 800px;
+				box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+				-webkit-animation-name: animatetop;
+				-webkit-animation-duration: 0.4s;
+				animation-name: animatetop;
+				animation-duration: 0.4s
+			}
+
+			@-webkit-keyframes animatetop {
+				from {top:-300px; opacity:0} 
+				to {top:0; opacity:1}
+			}
+
+			@keyframes animatetop {
+				from {top:-300px; opacity:0}
+				to {top:0; opacity:1}
+			}
+
+			.close {
+				color: white;
+				float: right;
+				font-size: 28px;
+				font-weight: bold;
+			}
+
+			.close:hover, .close:focus {
+				color: #000;
+				text-decoration: none;
+				cursor: pointer;
+			}
+
+			.modal-header {
+				padding: 2px 16px;
+				background-color: #004aa9;
+				color: white;
+			}
+
+			.modal-body {
+				padding: 2px 16px;
 			}
 
 		</style>
@@ -49,15 +110,23 @@
 				</tr>
 			</table>
 		</div>
+
+		<div id="modalWiadomosc" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<span id="modalZamknij" class="close">&times;</span>
+					<h2 id='modalWiadomoscTytul'>Modal Header</h2>
+				</div>
+				<div class="modal-body">
+					<p id='modalWiadomoscNadawca'></p>
+					<p id='modalWiadomoscData'></p>
+					<p id='modalWiadomoscTresc'></p>
+				</div>
+			</div>
+		</div>
+
 		
 		<script>
-			/*
-			let userdata = {
-				"id" : parseInt(getCookie("id")),
-				"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
-			}
-			*/
-
 			function wyloguj(){
 				deleteAllCookies();
 				document.location.href = "/logowanie.html";
@@ -82,17 +151,10 @@
 						}
 					} else if (data.status == 200){
                         var wiadomosci_id_set = new Set();
-                        for( let i = 0; i < data.result.length; i++){
+                        for(let i = 0; i < data.result.length; i++){
                             wiadomosci_id_set.add(data.result[i]['id_wiadomosc']);
-                            /*
-                            $("#odpowiedzAJAX").append(
-                                //"ID: "+data.result[i]['id']+", id_uczestnik: "+data.result[i]['id_uczestnik']+", id_wiadomosc: "+data.result[i]['id_wiadomosc']+"</br>"
-                            );
-                            */
                         }
-                        
-                        for (let id_wiadomosc of wiadomosci_id_set){
-                            //alert(id_wiadomosc);
+                        for(let id_wiadomosc of wiadomosci_id_set){
                             temp_JSON = {
                                 "id" : id_wiadomosc
                             }
@@ -130,19 +192,18 @@
 								dane_uzytkownika(id_JSON)
 							).done( function(json) {
 								
-								var date = new Date(data.result['data'] * 1000);
+								let date = new Date(data.result['data'] * 1000);
+								let datestring = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
 
 								$("#odpowiedzAJAX").append(
 								"<tr>"+
 									"<td>"+data.result['id']+"</td>"+
 									"<td>"+json.result['imie']+" "+json.result['nazwisko']+"</td>"+
-									"<td>"+data.result['data']+"</td>"+
+									"<td>"+datestring+"</td>"+
 									"<td>"+data.result['temat']+"</td>"+
-									"<td><button onclick=\"szczegoly_wiadomosci(\'"+data.result['id']+"\')\">Pokaż szczegóły</button></td>"+
+									"<td><button onclick=\"szczegoly_wiadomosci(\'"+data.result['id']+"\',\'"+json.result['imie']+"\',\'"+json.result['nazwisko']+"\')\">Pokaż szczegóły</button></td>"+
 								"</tr>"
-                                //"ID: wiadomości: "+data.result['id']+" <b>Nadawca (id)</b>: "+data.result['id_uzytkownik']+", <b>data</b>: "+data.result['data']+", <b>temat</b>: "+data.result['temat']+"</br>"
                             	);
-							
 							});
                         }
                     }
@@ -159,9 +220,15 @@
                 });
 			}
 
-			function szczegoly_wiadomosci(id){
-				alert(id);
+			$("#modalZamknij").click(function() {
+				$("#modalWiadomosc").hide();
+			});
+
+			function szczegoly_wiadomosci(id,imie,nazwisko){
+				//alert(id);
 				//ajax i wyświetlenie popupa
+
+				$("#modalWiadomosc").show();
 
 				id_JSON = {
 					"id" : parseInt(id)
@@ -177,15 +244,17 @@
                 	})
 				).done( function(data) {
 					
+					let date = new Date(data.result['data'] * 1000);
+					let datestring = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+
+					$("#modalWiadomoscTytul").text(data.result['temat']);
+					$("#modalWiadomoscNadawca").html("<b>Nadawca:</b> "+imie+" "+nazwisko);
+					$("#modalWiadomoscData").html("<b>Data:</b> "+datestring);
+					$("#modalWiadomoscTresc").html("<b>Treść:</b></br></br>"+data.result['dane']);
 					
 					console.log(data);
-				
+		
 				});
-
-			}
-
-			function schowaj_szczegoly(){
-				//cssem chowanie popupa
 			}
 
 			$("#wyloguj_navbar").click(function() {
