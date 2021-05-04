@@ -11,9 +11,9 @@ table! {
         id_nadawca -> Integer,
         nadawca -> Varchar,
         temat -> Varchar,
+        dane -> Mediumtext,
         widok_od -> Datetime,
         widok_do -> Datetime,
-        dane -> Mediumtext,
     }
 }
 
