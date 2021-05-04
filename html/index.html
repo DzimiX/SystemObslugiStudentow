@@ -8,212 +8,109 @@
 				document.location.href = "/logowanie.html";
 				document.body.innerHTML = "";
 				window.stop();
+			} else {
+				var userdata = {
+					"id" : parseInt(getCookie("id")),
+					"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
+				}
+
+				if (userdata.id_uprawnien < 1){ // minimalny poziom uprawnień (zabezpieczenie api osobno)
+					document.location.href = "/";
+					document.body.innerHTML = "";
+					window.stop();
+				}
 			}
 		</script>
 		<meta charset="utf-8">
 		<title>System obsługi studentów</title>
 		<meta name="description" content="System Obsługi Studentów">
-		<style>
-			body {
-				padding: 0px;
-				margin: 0px;
-				font-family: Arial, Helvetica, sans-serif;
-				background-color: #2a2a2e;
-            	color: white;
-			}
-
-			.header {
-				font-size: 16px;
-			}
-
-			.navbar {
-				overflow: hidden;
-				background-color: #004aa9;
-			}
-
-			.navbar a {
-				float: left;
-				font-size: 16px;
-				color: white;
-				text-align: center;
-				padding: 14px 16px;
-				text-decoration: none;
-			}
-
-			.dropdown {
-				float: left;
-				overflow: hidden;
-			}
-
-			.dropdown-right {
-				float: right;
-				overflow: hidden;
-			}
-
-			.dropdown .dropbtn, .dropdown-right .dropbtn {
-				font-size: 16px;  
-				border: none;
-				outline: none;
-				color: white;
-				padding: 14px 16px;
-				background-color: inherit;
-				font-family: inherit;
-				margin: 0;
-			}
-
-			.navbar a:hover, .dropdown:hover .dropbtn, .dropdown-right:hover .dropbtn {
-				background-color: #00285c;
-			}
-
-			.dropdown-content {
-				display: none;
-				position: absolute;
-				background-color: #0050b8;
-				min-width: 160px;
-				box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-				z-index: 1;
-			}
-
-			.dropdown-content a {
-				float: none;
-				color: white;
-				padding: 12px 16px;
-				text-decoration: none;
-				display: block;
-				text-align: left;
-			}
-
-			.dropdown-content a:hover {
-				background-color: #00285c;
-			}
-
-			.dropdown:hover .dropdown-content, .dropdown-right:hover .dropdown-content {
-				display: block;
-			}
-
-			.content {
-				margin: 20px;
-			}
-
-			.disabled {
-				text-decoration: line-through;
-			}
-
-			.arrow {
-				border: solid white;
-				border-width: 0 3px 3px 0;
-				display: inline-block;
-				padding: 3px;
-				margin-bottom: 3px;
-			}
-
-			.right {
-				transform: rotate(-45deg);
-				-webkit-transform: rotate(-45deg);
-			}
-
-			.left {
-				transform: rotate(135deg);
-				-webkit-transform: rotate(135deg);
-			}
-
-			.up {
-				transform: rotate(-135deg);
-				-webkit-transform: rotate(-135deg);
-			}
-
-			.down {
-				transform: rotate(45deg);
-				-webkit-transform: rotate(45deg);
-			}
-
+		<link rel="stylesheet" href="/css/navbar.css">
+		<link rel="stylesheet" href="/css/main.css">
 		</style>
 	</head>
 	<body>
 		<div class="navbar">
-			<a href="/">Strona główna</a>
-			<div class="dropdown">
+			<a id="menu-strona" href="/">Strona główna</a>
+			<div id="dropdown-wiadomosci" class="dropdown">
 				<button class="dropbtn">
 					<span>Wiadomości</span> 
 					<i class="arrow down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a href="/wiadomosci.html"><span>Skrzynka odbiorcza</span></a>
-					<a href="#"><span>Utwórz wiadomość</span></a>
+					<a id="dropdown-wiadomosci-skrzynka" href="/wiadomosci.html"><span>Skrzynka odbiorcza</span></a>
+					<a id="dropdown-wiadomosci-utworz" href="/wiadomosc_nowa.html"><span>Utwórz wiadomość</span></a>
 				</div>
 			</div>
-			<div class="dropdown">
+			<div id="dropdown-ogloszenia" class="dropdown">
 				<button class="dropbtn">
 					<span class="disabled">Zarządzanie ogłoszeniami</span> 
 					<i class="arrow down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a href="#"><span class="disabled">Lista ogłoszeń</span></a>
-					<a href="#"><span class="disabled">Utwórz nowe ogłoszenie</span></a>
-					<a href="#"><span class="disabled">Edytuj ogłoszenie</span></a>
+					<a id="dropdown-ogloszenia-lista" href="#"><span class="disabled">Lista ogłoszeń</span></a>
+					<a id="dropdown-ogloszenia-utworz" href="#"><span class="disabled">Utwórz nowe ogłoszenie</span></a>
 				</div>
 			</div>
-			<div class="dropdown">
+			<div id="dropdown-uzytkownicy" class="dropdown">
 				<button class="dropbtn">
 					<span class="disabled">Zarządzanie użytkownikami</span> 
 					<i class="arrow down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a href="#"><span class="disabled">Przeglądanie użytkowników</span></a>
-					<a href="#"><span class="disabled">Tworzenie użytkowników</span></a>
-					<a href="#"><span class="disabled">Edycja użytkowników</span></a>
+					<a id="dropdown-uzytkownicy-lista" href="#"><span class="disabled">Lista użytkowników</span></a>
+					<a id="dropdown-uzytkownicy-utworz" href="#"><span class="disabled">Utwórz użytkownika</span></a>
 				</div>
 			</div>
-			<div class="dropdown">
+			<div id="dropdown-zapisy" class="dropdown">
 				<button class="dropbtn">
 					<span class="disabled">Zarządzanie zapisami</span>
 					<i class="arrow down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a href="#"><span class="disabled">Tworzenie zapisów</span></a>
-					<a href="#"><span class="disabled">Edycja zapisów</span></a>
+					<a id="dropdown-zapisy-utworz" href="#"><span class="disabled">Tworzenie zapisów</span></a>
+					<a id="dropdown-zapisy-edycja" href="#"><span class="disabled">Edycja zapisów</span></a>
 				</div>
 			</div>
-			<a href="/"><span class="disabled">Zapisy</span></a>
-			<div class="dropdown">
+			<a id="menu-zapisy" href="/"><span class="disabled">Zapisy</span></a>
+			<div id="dropdown-kursyz" class="dropdown">
 				<button class="dropbtn">
 					<span class="disabled">Zarządzanie kursami</span>
 					<i class="arrow down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a href="#"><span class="disabled">Lista kursów</span></a>
-					<a href="#"><span class="disabled">Tworzenie nowego kursu</span></a>
-					<a href="#"><span class="disabled">Edycja kursu</span></a>
+					<a id="dropdown-kursyz-lista" href="#"><span class="disabled">Lista kursów</span></a>
+					<a id="dropdown-kursyz-utworz" href="#"><span class="disabled">Utwórz nowy kurs</span></a>
 				</div>
 			</div>
-			<div class="dropdown">
+			<div id="dropdown-kursy" class="dropdown">
 				<button class="dropbtn">
 					<span class="disabled">Kursy</span>
 					<i class="arrow down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a href="#"><span class="disabled">Zajęcia</span></a>
-					<a href="#"><span class="disabled">Oceny</span></a>
+					<a id="dropdown-kursy-zajecia" href="#"><span class="disabled">Zajęcia</span></a>
+					<a id="dropdown-kursy-oceny" href="#"><span class="disabled">Oceny</span></a>
 				</div>
 			</div>
-			<div class="dropdown">
+			<a id="menu-indeks" href="/"><span class="disabled">Indeks</span></a>
+			<div id="dropdown-sprawy" class="dropdown">
 				<button class="dropbtn">
 					<span class="disabled">Sprawy</span>
 					<i class="arrow down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a href="#"><span class="disabled">Moje sprawy</span></a>
-					<a href="#"><span class="disabled">Załóż sprawę</span></a>
+					<a id="dropdown-sprawy-moje" href="#"><span class="disabled">Moje sprawy</span></a>
+					<a id="dropdown-sprawy-utworz" href="#"><span class="disabled">Załóż sprawę</span></a>
 				</div>
 			</div>
-			<div class="dropdown">
+			<div id="dropdown-sprawyz" class="dropdown">
 				<button class="dropbtn">
 					<span class="disabled">Zarządzaj sprawami</span>
 					<i class="arrow down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a href="#"><span class="disabled">Przeglądaj sprawy</span></a>
-					<a href="#"><span class="disabled">Definiuj sprawy</span></a>
+					<a id="dropdown-sprawyz-lista" href="#"><span class="disabled">Przeglądaj sprawy</span></a>
+					<a id="dropdown-sprawyz-utworz" href="#"><span class="disabled">Definiuj sprawy</span></a>
 				</div>
 			</div>
 			<div class="dropdown-right">
@@ -222,108 +119,18 @@
 					<i class="arrow down"></i>
 				</button>
 				<div class="dropdown-content">
+					<a href="#"><span class="disabled">Dane osobowe</span></a>
 					<a href="#"><span class="disabled">Ustawienia</span></a>
 					<a id="wyloguj_navbar" href="/wyloguj.html">Wyloguj</a>
 				</div>
 			</div>
-			
 		</div>
 		<div class="content">
 			<div class="header">
-				System Obsługi Studentów
+				<h2>System Obsługi Studentów</h2>
 			</div>
-			<div class="panel"></div>
-	
-			<button id='logout'>Wyloguj się</button>
-	
-			<p>Listowanie użytkowników:</p>
-			<div id="content-uzytkownicy"></div>
-			<button id="users">Użytkownicy!</button>
 		</div>
 		
-		<script>
-			let userdata = {
-				"id" : parseInt(getCookie("id")),
-				"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
-			}
-
-			function wyloguj(){
-				deleteAllCookies();
-				document.location.href = "/logowanie.html";
-			}
-
-			let uzytkownik_id = {
-				"id" : userdata.id
-			}
-
-			switch (userdata.id_uprawnien) {
-				case 5 :
-					document.getElementById("auth-ranga").innerHTML = "Administrator";
-					break;
-				case 4 :
-					document.getElementById("auth-ranga").innerHTML = "Pracownik";
-					break;
-				case 3 :
-					document.getElementById("auth-ranga").innerHTML = "Prowadzący";
-					break;
-				case 2 :
-					document.getElementById("auth-ranga").innerHTML = "Student";
-					break;
-				case 1 :
-					document.getElementById("auth-ranga").innerHTML = "Użytkownik";
-					break;
-				default:
-					document.getElementById("auth-ranga").innerHTML = "";
-			}
-
-			$.ajax({
-				url: '/api/uzytkownik',
-				type: "POST",
-				data: JSON.stringify(uzytkownik_id),
-				contentType: "application/json; charset=UTF-8",
-				success: function (data) {
-					console.log(data.status);
-					console.log(data.result);
-					
-					if (data.status != 200){
-						if (data.status == 401){
-							wyloguj();
-						}
-					} else if (data.status == 200){
-						document.getElementById("auth-imie").innerHTML = data.result['imie'];
-						document.getElementById("auth-nazwisko").innerHTML = data.result['nazwisko'];
-					}
-				}
-			});
-
-			$("#wyloguj_navbar").click(function() {
-				deleteAllCookies();
-				document.location.href = "/logowanie.html";
-			});
-
-			$("#users").click(function() {
-				$.ajax({
-					url: '/api/uzytkownicy',
-					type: "POST",
-					//data: JSON.stringify(0),
-					contentType: "application/json; charset=UTF-8",
-					success: function (data) {
-						console.log(data.status);
-						console.log(data.result);
-						
-						if (data.status != 200){
-							console.log("Wystąpił błąd!");
-						} else if (data.status == 200){
-							$("#content-uzytkownicy").empty();
-							for( let i = 0; i < data.result.length; i++){
-								$("#content-uzytkownicy").append(
-									"ID: "+data.result[i]['id']+", Imie: "+data.result[i]['imie']+", Nazwisko: "+data.result[i]['nazwisko']+"</br>"
-								);
-							}
-						}
-					}
-				});
-			});
-		</script>
+		<script src="/js/nav.js"></script>
 	</body>
 </html>

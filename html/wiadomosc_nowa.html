@@ -3,6 +3,7 @@
 	<head>
 		<script src="/js/jquery.min.js"></script>
 		<script src="/js/main.js"></script>
+        <script src="/js/select2.min.js"></script>
 		<script>
 			if (getCookie("token") == null) {
 				document.location.href = "/logowanie.html";
@@ -25,8 +26,28 @@
 		<title>System obsługi studentów</title>
 		<meta name="description" content="System Obsługi Studentów">
 		<link rel="stylesheet" href="/css/navbar.css">
-		<link rel="stylesheet" href="/css/modal.css">
+        <link rel="stylesheet" href="/css/select2.min.css">
 		<link rel="stylesheet" href="/css/main.css">
+        <style>
+            input {
+                width: 500px;
+                height: 30px;
+                margin: 10px 0px 5px 0px;
+            }
+            textarea {
+                width: 500px;
+                height: 300px;
+                margin: 5px 0px 5px 0px;
+            }
+            select {
+                width: 506px;
+                color: black;
+                margin: 5px 0px 5px 0px;
+            }
+            .select2-results * {
+                color: black;
+            }
+        </style>
 	</head>
 	<body>
 		<div class="navbar">
@@ -127,140 +148,28 @@
 		</div>
 		<div class="content">
 			<div class="header">
-				<h2>Skrzynka odbiorcza</h2>
-				<a href="/wiadomosc_nowa.html"><button>Nowa wiadomość</button></a></br></br>
+				<h2>Tworzenie nowej wiadomości</h2>
+                <p style="color:red">do oskryptowania</p>
 			</div>
-			<table id="odpowiedzAJAX">
-				<tr>
-					<td>ID</td>
-					<td>Nadawca</td>
-					<td>Data</td>
-					<td>Temat</td>
-				</tr>
-			</table>
-		</div>
+			<div>
+                <select id="select_odbiorca" name="id_odbiorca">
+                    <option value="-1" selected></option>
+                    <option value="1">Użytkownik Pierwszy</option>
+                    <option value="2">Użytkownik Drugi</option>
+                    <option value="3">Użytkownik Trzeci</option>
+                </select></br>
 
-		<div id="modalWiadomosc" class="modal">
-			<div class="modal-content">
-				<div class="modal-header">
-					<span id="modalZamknij" class="close">&times;</span>
-					<h2 id='modalWiadomoscTytul'>Modal Header</h2>
-				</div>
-				<div class="modal-body">
-					<p id='modalWiadomoscNadawca'></p>
-					<p id='modalWiadomoscData'></p>
-					<p id='modalWiadomoscTresc'></p>
-				</div>
-			</div>
+                <input placeholder="Temat"></input></br>
+                <textarea></textarea></br>
+                <button>Wyślij wiadomość</button>
+            </div>
 		</div>
 		
 		<script src="/js/nav.js"></script>
 		<script>
-			$.ajax({
-				url: '/api/wiadomosci/domnie',
-				type: "POST",
-				data: JSON.stringify(uzytkownik_id),
-				contentType: "application/json; charset=UTF-8",
-				success: function (data) {
-					if (data.status != 200){
-						if (data.status == 401){
-							wyloguj();
-						}
-					} else if (data.status == 200){
-                        var wiadomosci_id_set = new Set();
-                        for(let i = 0; i < data.result.length; i++){
-                            wiadomosci_id_set.add(data.result[i]['id_wiadomosc']);
-                        }
-                        for(let id_wiadomosc of wiadomosci_id_set){
-                            temp_JSON = {
-                                "id" : id_wiadomosc
-                            }
-                            listowanie_wiadomosci(temp_JSON);
-                        }
-					}
-				}
-			});
-
-            function listowanie_wiadomosci(temp_JSON){
-                $.ajax({
-                    url: '/api/wiadomosci/pokaz',
-                    type: "POST",
-                    data: JSON.stringify(temp_JSON),
-                    accept: "*/*",
-                    contentType: "application/json; charset=UTF-8",
-                    success: function (data) {
-                        if (data.status != 200){
-                            if (data.status == 401){
-                                wyloguj();
-                            }
-                        } else if (data.status == 200){
-
-							id_JSON = {
-                                "id" : data.result['id']
-                            }
-
-							jQuery.when(
-								dane_uzytkownika(id_JSON)
-							).done( function(json) {
-								
-								let date = new Date(data.result['data'] * 1000);
-								let datestring = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-
-								$("#odpowiedzAJAX").append(
-								"<tr>"+
-									"<td>"+data.result['id']+"</td>"+
-									"<td>"+json.result['imie']+" "+json.result['nazwisko']+"</td>"+
-									"<td>"+datestring+"</td>"+
-									"<td>"+data.result['temat']+"</td>"+
-									"<td><button onclick=\"szczegoly_wiadomosci(\'"+data.result['id']+"\',\'"+json.result['imie']+"\',\'"+json.result['nazwisko']+"\')\">Pokaż szczegóły</button></td>"+
-								"</tr>"
-                            	);
-							});
-                        }
-                    }
-                });
-            }
-
-			function dane_uzytkownika(id_JSON){
-				return $.ajax({
-                    url: '/api/uzytkownik/publiczne',
-                    type: "POST",
-                    data: JSON.stringify(id_JSON),
-                    accept: "*/*",
-                    contentType: "application/json; charset=UTF-8",
-                });
-			}
-
-			$("#modalZamknij").click(function() {
-				$("#modalWiadomosc").hide();
-			});
-
-			function szczegoly_wiadomosci(id,imie,nazwisko){
-				$("#modalWiadomosc").show();
-
-				id_JSON = {
-					"id" : parseInt(id)
-				}
-
-				jQuery.when(
-					$.ajax({
-						url: '/api/wiadomosci/pokaz',
-						type: "POST",
-						data: JSON.stringify(id_JSON),
-						accept: "*/*",
-						contentType: "application/json; charset=UTF-8",
-                	})
-				).done( function(data) {
-					
-					let date = new Date(data.result['data'] * 1000);
-					let datestring = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-
-					$("#modalWiadomoscTytul").text(data.result['temat']);
-					$("#modalWiadomoscNadawca").html("<b>Nadawca:</b> "+imie+" "+nazwisko);
-					$("#modalWiadomoscData").html("<b>Data:</b> "+datestring);
-					$("#modalWiadomoscTresc").html("<b>Treść:</b></br></br>"+data.result['dane']);
-				});
-			}
+            $(document).ready(function() {
+                $("#select_odbiorca").select2();
+            });
 		</script>
 	</body>
 </html>

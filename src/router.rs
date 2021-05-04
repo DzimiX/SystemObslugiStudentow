@@ -29,7 +29,10 @@ pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
 
         if (auth.token != "False" && now_timestamp < auth.data) && (
             auth.id_uprawnienie == ADMINISTRATOR ||
-            auth.id_uprawnienie == PRACOWNIK
+            auth.id_uprawnienie == PRACOWNIK ||
+            auth.id_uprawnienie == PROWADZACY ||
+            auth.id_uprawnienie == STUDENT ||
+            auth.id_uprawnienie == UZYTKOWNIK
         ) {
             let uzytkownicy = Uzytkownik::all(&conn);
 
