@@ -144,7 +144,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<span id="modalZamknij" class="close">&times;</span>
-					<h2 id='modalWiadomoscTytul'>Modal Header</h2>
+					<h2 id='modalWiadomoscTytul'></h2>
 				</div>
 				<div class="modal-body">
 					<p id='modalWiadomoscNadawca'></p>
@@ -205,8 +205,14 @@
 								let date = new Date(data.result['data'] * 1000);
 								let datestring = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
 
+								if ( data.result['id_uzytkownik'] == userdata.id ){
+									wlasna = " style='background-color:#29163d' ";
+								} else {
+									wlasna = "";
+								}
+
 								$("#odpowiedzAJAX").append(
-								"<tr>"+
+								"<tr"+wlasna+">"+
 									"<td>"+data.result['id']+"</td>"+
 									"<td>"+json.result['imie']+" "+json.result['nazwisko']+"</td>"+
 									"<td>"+datestring+"</td>"+
@@ -232,6 +238,10 @@
 
 			$("#modalZamknij").click(function() {
 				$("#modalWiadomosc").hide();
+				$("#modalWiadomoscTytul").html("");
+				$("#modalWiadomoscNadawca").html("");
+				$("#modalWiadomoscData").html("");
+				$("#modalWiadomoscTresc").html("");
 			});
 
 			function szczegoly_wiadomosci(id,imie,nazwisko){

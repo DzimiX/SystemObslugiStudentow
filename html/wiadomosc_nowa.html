@@ -149,19 +149,15 @@
 		<div class="content">
 			<div class="header">
 				<h2>Tworzenie nowej wiadomości</h2>
-                <p style="color:red">do oskryptowania</p>
 			</div>
 			<div>
                 <select id="select_odbiorca" name="id_odbiorca">
                     <option value="-1" selected></option>
-                    <option value="1">Użytkownik Pierwszy</option>
-                    <option value="2">Użytkownik Drugi</option>
-                    <option value="3">Użytkownik Trzeci</option>
                 </select></br>
 
-                <input placeholder="Temat"></input></br>
-                <textarea></textarea></br>
-                <button>Wyślij wiadomość</button>
+                <input id="temat" placeholder="Temat"></input></br>
+                <textarea id="dane"></textarea></br>
+                <button id="wyslij_wiadomosc">Wyślij wiadomość</button>
             </div>
 		</div>
 		
@@ -169,7 +165,105 @@
 		<script>
             $(document).ready(function() {
                 $("#select_odbiorca").select2();
+
+				$.ajax({
+					url: '/api/uzytkownicy',
+					type: "POST",
+					//data: JSON.stringify(uzytkownik_id),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						if (data.status != 200){
+							if (data.status == 401){
+								wyloguj();
+							}
+						} else if (data.status == 200){
+							for(let i = 0; i < data.result.length; i++){
+								if (userdata.id != data.result[i]["id"]){
+									$("#select_odbiorca").append(new Option(data.result[i]["imie"]+" "+data.result[i]["nazwisko"], data.result[i]["id"]));
+								}
+							}
+						}
+					}
+				});
             });
+
+			$("#wyslij_wiadomosc").click(function() {
+				wiadomosc_dane = {
+					"id_uzytkownik" : userdata.id,
+					"temat" : $("#temat").val(),
+					"dane" : $("#dane").val()
+				}
+
+				odbiorca = {
+					"id_wiadomosc" : -1,
+					"id_uczestnik" : parseInt($("#select_odbiorca").val())
+				}
+
+				if(wiadomosc_dane.temat != "" && wiadomosc_dane.dane != "" && odbiorca.id_uczestnik  != -1){
+					wyslij_wiadomosc(wiadomosc_dane,odbiorca);
+				} else {
+					alert("błędna treść");
+				}
+			});
+
+			function wyslij_wiadomosc(wiadomosc_dane,odbiorca){
+				jQuery.when(
+					$.ajax({
+						url: '/api/wiadomosci/nowa',
+						type: "POST",
+						data: JSON.stringify(wiadomosc_dane),
+						accept: "*/*",
+						contentType: "application/json; charset=UTF-8",
+                	})
+				).done( function(data) {
+					if (data.status != 200){
+						if (data.status == 401){
+							wyloguj();
+						}
+					} else if (data.status == 200){
+						odbiorca.id_wiadomosc = data.result;
+						$.ajax({
+							url: '/api/wiadomosci/dodajodbiorce',
+							type: "POST",
+							data: JSON.stringify(odbiorca),
+							contentType: "application/json; charset=UTF-8",
+							success: function (data) {
+								if (data.status != 200){
+									if (data.status == 401){
+										wyloguj();
+									}
+								} else if (data.status == 200){
+									dodaj_siebie(odbiorca.id_wiadomosc);
+									//document.location.href = "/wiadomosci.html";
+								}
+							}
+						});
+					}
+				});
+			}
+
+			function dodaj_siebie(id_wiadomosc){
+				odbiorca = {
+					"id_wiadomosc" : id_wiadomosc,
+					"id_uczestnik" : userdata.id
+				}
+
+				$.ajax({
+					url: '/api/wiadomosci/dodajodbiorce',
+					type: "POST",
+					data: JSON.stringify(odbiorca),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						if (data.status != 200){
+							if (data.status == 401){
+								wyloguj();
+							}
+						} else if (data.status == 200){
+							document.location.href = "/wiadomosci.html";
+						}
+					}
+				});
+			}
 		</script>
 	</body>
 </html>
