@@ -11,12 +11,11 @@ CREATE TABLE `miasta` (
 
 CREATE TABLE `ogloszenia` (
   `id` int(11) NOT NULL,
-  `id_nadawca` int(11) NOT NULL,
   `nadawca` varchar(255) NOT NULL,
   `temat` varchar(255) NOT NULL,
   `dane` mediumtext NOT NULL,
-  `widok_od` datetime NOT NULL,
-  `widok_do` datetime NOT NULL
+  `widok_od` bigint(8) NOT NULL,
+  `widok_do` bigint(8) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -140,8 +139,7 @@ ALTER TABLE `miasta`
 -- Indexes for table `ogloszenia`
 --
 ALTER TABLE `ogloszenia`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_nadawca` (`id_nadawca`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `tokeny`
@@ -270,12 +268,6 @@ ALTER TABLE `wiadomosci_uczestnicy`
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `ogloszenia`
---
-ALTER TABLE `ogloszenia`
-  ADD CONSTRAINT `ogloszenia_ibfk_1` FOREIGN KEY (`id_nadawca`) REFERENCES `uzytkownicy` (`id`);
 
 --
 -- Constraints for table `tokeny`

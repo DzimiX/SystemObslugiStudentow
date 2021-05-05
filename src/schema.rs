@@ -8,12 +8,11 @@ table! {
 table! {
     ogloszenia (id) {
         id -> Integer,
-        id_nadawca -> Integer,
         nadawca -> Varchar,
         temat -> Varchar,
+        widok_od -> Bigint,
+        widok_do -> Bigint,
         dane -> Mediumtext,
-        widok_od -> Datetime,
-        widok_do -> Datetime,
     }
 }
 
@@ -90,7 +89,6 @@ table! {
     }
 }
 
-joinable!(ogloszenia -> uzytkownicy (id_nadawca));
 joinable!(tokeny -> uprawnienia (id_uprawnienie));
 joinable!(tokeny -> uzytkownicy (id_uzytkownik));
 joinable!(uzytkownicy_dane -> miasta (id_miasto));
