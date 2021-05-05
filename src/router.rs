@@ -15,6 +15,7 @@ use super::UZYTKOWNIK;
 use crate::models::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
 use crate::models::{AuthLogin, Auth, AuthNowy};
 use crate::models::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscBezDaty, NowaWiadomoscUczestnik};
+use crate::models::{Ogloszenie, OgloszenieNowe, OgloszenieId};
 
 #[post("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
@@ -351,5 +352,62 @@ pub fn wiadomosci_domnie(conn: DbConn, id: Json<WiadomoscId>, mut cookies : Cook
     Json(json!({
         "status" : 200,
         "result" : Wiadomosc::get_messages(id_uczestnik, &conn),
+    }))
+}
+
+#[post("/ogloszenia", format = "application/json")]
+pub fn ogloszenia(conn: DbConn, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    Json(json!({
+        "status" : 200,
+        "result" : Ogloszenie::all(&conn),
+    }))
+}
+
+#[post("/ogloszenia/nowe", format = "application/json", data = "<ogloszenie>")]
+pub fn ogloszenia_nowe(conn: DbConn, ogloszenie: Json<OgloszenieNowe>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    let mut status = 400;
+    if Ogloszenie::add(ogloszenie.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/ogloszenia/aktualizuj", format = "application/json", data = "<ogloszenie>")]
+pub fn ogloszenia_aktualizuj(conn: DbConn, ogloszenie: Json<Ogloszenie>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let mut status = 400;
+    if Ogloszenie::update(ogloszenie.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/ogloszenia/usun", format = "application/json", data = "<id_ogloszenie>")]
+pub fn ogloszenia_usun(conn: DbConn, id_ogloszenie: Json<OgloszenieId>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let id : i32 = format!("{}",id_ogloszenie.id).parse::<i32>().unwrap();
+
+    let mut status = 400;
+    if Ogloszenie::delete(id, &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
     }))
 }

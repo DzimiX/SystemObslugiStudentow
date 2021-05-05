@@ -26,6 +26,21 @@
 		<meta name="description" content="System Obsługi Studentów">
 		<link rel="stylesheet" href="/css/navbar.css">
 		<link rel="stylesheet" href="/css/main.css">
+		<style>
+			.ogloszenie {
+				border-radius: 10px;
+				margin: 5px 0px 5px 0px;
+				padding: 15px 15px 15px 15px;
+				width: 500px;
+				background-color: red;
+			}
+
+			.ogloszenie h3 {
+				margin: 0px 0px 15px 0px;
+			}
+			.ogloszenie p {
+				margin: 8px 0px 8px 0px;
+			}
 		</style>
 	</head>
 	<body>
@@ -41,16 +56,7 @@
 					<a id="dropdown-wiadomosci-utworz" href="/wiadomosc_nowa.html"><span>Utwórz wiadomość</span></a>
 				</div>
 			</div>
-			<div id="dropdown-ogloszenia" class="dropdown">
-				<button class="dropbtn">
-					<span class="disabled">Zarządzanie ogłoszeniami</span> 
-					<i class="arrow down"></i>
-				</button>
-				<div class="dropdown-content">
-					<a id="dropdown-ogloszenia-lista" href="#"><span class="disabled">Lista ogłoszeń</span></a>
-					<a id="dropdown-ogloszenia-utworz" href="#"><span class="disabled">Utwórz nowe ogłoszenie</span></a>
-				</div>
-			</div>
+			<a id="menu-ogloszenia" href="/ogloszenia.html">Zarządzanie ogłoszeniami</a>
 			<div id="dropdown-uzytkownicy" class="dropdown">
 				<button class="dropbtn">
 					<span class="disabled">Zarządzanie użytkownikami</span> 
@@ -129,8 +135,44 @@
 			<div class="header">
 				<h2>System Obsługi Studentów</h2>
 			</div>
+			<div id="ogloszenia" class="ogloszenia"></div>
 		</div>
-		
+
+		<script>
+			$.ajax({
+					url: '/api/ogloszenia',
+					type: "POST",
+					//data: JSON.stringify(data_json),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							if (data.result.length > 0) {
+								$("#ogloszenia").append(
+									"<h3>Lista ogłoszeń:</h3>"
+								);
+							}
+							for(let i = 0; i < data.result.length; i++){
+
+								let date = new Date(data.result[i]['widok_od'] * 1000);
+								let datestring = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+
+								$("#ogloszenia").append(
+									"<div class='ogloszenie'>"+
+										"<p><i>"+data.result[i]['nadawca']+"</i>, "+datestring+"</p>"+
+										"<h3>"+data.result[i]['temat']+"</h3>"+
+										"<p class='text'>"+data.result[i]['dane']+"</p>"+
+									"</div>"
+								);
+                        	}
+						}
+					}
+				});
+		</script>
 		<script src="/js/nav.js"></script>
 	</body>
 </html>
