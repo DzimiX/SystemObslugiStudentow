@@ -196,9 +196,8 @@
                         } else if (data.status == 200){
 
 							id_JSON = {
-                                "id" : data.result['id']
+                                "id" : data.result['id_uzytkownik']
                             }
-
 							jQuery.when(
 								dane_uzytkownika(id_JSON)
 							).done( function(json) {
