@@ -1,10 +1,10 @@
-userdata.id_uprawnien = 6; // nadpisanie widoku
+//userdata.id_uprawnien = 6; // nadpisanie widoku
 widok(userdata.id_uprawnien)
 
 function widok(id_uprawnien){
     
     if(id_uprawnien == 1 || id_uprawnien == 2 || id_uprawnien == 3){
-        $("#dropdown-ogloszenia").hide();
+        $("#menu-ogloszenia").hide();
         $("#dropdown-uzytkownicy").hide();
         $("#dropdown-zapisy").hide();
         $("#dropdown-kursyz").hide();

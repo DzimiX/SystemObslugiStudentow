@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="pl">
+	<head>
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/main.js"></script>
+		<script>
+			if (getCookie("token") == null) {
+				document.location.href = "/logowanie.html";
+				document.body.innerHTML = "";
+				window.stop();
+			} else {
+				var userdata = {
+					"id" : parseInt(getCookie("id")),
+					"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
+				}
+
+				if (userdata.id_uprawnien < 1){ // minimalny poziom uprawnień (zabezpieczenie api osobno)
+					document.location.href = "/";
+					document.body.innerHTML = "";
+					window.stop();
+				}
+			}
+		</script>
+		<meta charset="utf-8">
+		<title>System obsługi studentów - Ogłoszenia</title>
+		<meta name="description" content="System Obsługi Studentów">
+		<link rel="stylesheet" href="/css/navbar.css">
+        <link rel="stylesheet" href="/css/modal.css">
+		<link rel="stylesheet" href="/css/main.css">
+		<style>
+			.ogloszenie {
+				border-radius: 10px;
+				margin: 5px 0px 5px 0px;
+				padding: 15px 15px 15px 15px;
+				width: 500px;
+				background-color: red;
+			}
+
+			.ogloszenie h3 {
+				margin: 0px 0px 15px 0px;
+			}
+			.ogloszenie p {
+				margin: 8px 0px 8px 0px;
+			}
+
+            .ogloszenie button{
+                width: 100px;
+            }
+
+            .modal-body input {
+                width: 760px;
+                height: 30px;
+                margin-bottom: 10px;
+            }
+
+            .modal-body textarea {
+                width: 760px;
+                height: 120px;
+                margin-bottom: 10px;
+            }
+
+            .modal-body {
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+		</style>
+	</head>
+	<body>
+		<div class="navbar">
+			<a id="menu-strona" href="/">Strona główna</a>
+			<div id="dropdown-wiadomosci" class="dropdown">
+				<button class="dropbtn">
+					<span>Wiadomości</span> 
+					<i class="arrow down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a id="dropdown-wiadomosci-skrzynka" href="/wiadomosci.html"><span>Skrzynka odbiorcza</span></a>
+					<a id="dropdown-wiadomosci-utworz" href="/wiadomosc_nowa.html"><span>Utwórz wiadomość</span></a>
+				</div>
+			</div>
+			<a id="menu-ogloszenia" href="/ogloszenia.html">Zarządzanie ogłoszeniami</a>
+			<div id="dropdown-uzytkownicy" class="dropdown">
+				<button class="dropbtn">
+					<span class="disabled">Zarządzanie użytkownikami</span> 
+					<i class="arrow down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a id="dropdown-uzytkownicy-lista" href="#"><span class="disabled">Lista użytkowników</span></a>
+					<a id="dropdown-uzytkownicy-utworz" href="#"><span class="disabled">Utwórz użytkownika</span></a>
+				</div>
+			</div>
+			<div id="dropdown-zapisy" class="dropdown">
+				<button class="dropbtn">
+					<span class="disabled">Zarządzanie zapisami</span>
+					<i class="arrow down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a id="dropdown-zapisy-utworz" href="#"><span class="disabled">Tworzenie zapisów</span></a>
+					<a id="dropdown-zapisy-edycja" href="#"><span class="disabled">Edycja zapisów</span></a>
+				</div>
+			</div>
+			<a id="menu-zapisy" href="/"><span class="disabled">Zapisy</span></a>
+			<div id="dropdown-kursyz" class="dropdown">
+				<button class="dropbtn">
+					<span class="disabled">Zarządzanie kursami</span>
+					<i class="arrow down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a id="dropdown-kursyz-lista" href="#"><span class="disabled">Lista kursów</span></a>
+					<a id="dropdown-kursyz-utworz" href="#"><span class="disabled">Utwórz nowy kurs</span></a>
+				</div>
+			</div>
+			<div id="dropdown-kursy" class="dropdown">
+				<button class="dropbtn">
+					<span class="disabled">Kursy</span>
+					<i class="arrow down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a id="dropdown-kursy-zajecia" href="#"><span class="disabled">Zajęcia</span></a>
+					<a id="dropdown-kursy-oceny" href="#"><span class="disabled">Oceny</span></a>
+				</div>
+			</div>
+			<a id="menu-indeks" href="/"><span class="disabled">Indeks</span></a>
+			<div id="dropdown-sprawy" class="dropdown">
+				<button class="dropbtn">
+					<span class="disabled">Sprawy</span>
+					<i class="arrow down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a id="dropdown-sprawy-moje" href="#"><span class="disabled">Moje sprawy</span></a>
+					<a id="dropdown-sprawy-utworz" href="#"><span class="disabled">Załóż sprawę</span></a>
+				</div>
+			</div>
+			<div id="dropdown-sprawyz" class="dropdown">
+				<button class="dropbtn">
+					<span class="disabled">Zarządzaj sprawami</span>
+					<i class="arrow down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a id="dropdown-sprawyz-lista" href="#"><span class="disabled">Przeglądaj sprawy</span></a>
+					<a id="dropdown-sprawyz-utworz" href="#"><span class="disabled">Definiuj sprawy</span></a>
+				</div>
+			</div>
+			<div class="dropdown-right">
+				<button class="dropbtn">
+					<span id="auth-imie">Imie</span> <span id="auth-nazwisko">Nazwisko</span> (<span id="auth-ranga">Ranga</span>)
+					<i class="arrow down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a href="#"><span class="disabled">Dane osobowe</span></a>
+					<a href="#"><span class="disabled">Ustawienia</span></a>
+					<a id="wyloguj_navbar" href="/wyloguj.html">Wyloguj</a>
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<div class="header">
+				<h2>Zarządzanie ogłoszeniami</h2>
+                <p style="color:red">Oskryptować</p>
+			</div>
+			<div id="ogloszenia" class="ogloszenia">
+                <button id="nowe">Dodaj nowe ogłoszenie</button>
+            </div>
+		</div>
+
+        <div id="modalOgloszenie" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<span id="modalZamknij" class="close">&times;</span>
+					<h2 disabled id='modalOgloszenieTytul'>Ogłoszenie <span><label for="modalOgloszenieId"> o ID = </label><span id="modalOgloszenieId"></span></span></h2>
+				</div>
+				<div class="modal-body">
+
+                    <label for="modalOgloszenieNadawca">Nadawca:</label></br>
+					<input id="modalOgloszenieNadawca"></input></br>
+                    
+                    <label for="modalOgloszenieTemat">Temat:</label></br>
+					<input id="modalOgloszenieTemat"></input></br>
+
+                    <label for="modalOgloszenieWidokOd">Widok od:</label></br>
+					<input id="modalOgloszenieWidokOd" type="date"></br>
+
+                    <label for="modalOgloszenieWidokDo">Widok do:</label></br>
+					<input id="modalOgloszenieWidokDo" type="date"></input></br>
+
+                    <label for="modalOgloszenieDane">Treść ogłoszenia:</label></br>
+					<textarea id="modalOgloszenieDane"></textarea></br>
+
+                    <button id="modalOgloszenieEdytuj">Edytuj</button>
+                    <button id="modalOgloszenieDodaj">Dodaj ogłoszenie</button>
+				</div>
+			</div>
+		</div>
+
+		<script>
+            $("#modalOgloszenieEdytuj").hide();
+            $("#modalOgloszenieDodaj").hide();
+
+            $("#modalZamknij").click(function() {
+				$("#modalOgloszenie").hide();
+                $("#modalOgloszenieId").html("");
+				$("#modalOgloszenieNadawca").val("");
+                $("#modalOgloszenieTemat").val("");
+                $("#modalOgloszenieWidokOd").val("");
+                $("#modalOgloszenieWidokDo").val("");
+                $("#modalOgloszenieDane").val("");
+                $("#modalOgloszenieEdytuj").hide();
+                $("#modalOgloszenieDodaj").hide();
+			});
+
+			$.ajax({
+                url: '/api/ogloszenia',
+                type: "POST",
+                //data: JSON.stringify(data_json),
+                contentType: "application/json; charset=UTF-8",
+                success: function (data) {
+                    console.log(data.status);
+                    console.log(data.result);
+                    
+                    if(data.status != 200){
+                        console.log("Wystąpił błąd!");
+                    } else if (data.status == 200){
+                        if (data.result.length > 0) {
+                            $("#ogloszenia").append(
+                                "<h3>Lista ogłoszeń:</h3>"
+                            );
+                        }
+                        for(let i = 0; i < data.result.length; i++){
+
+                            let date = new Date(data.result[i]['widok_od'] * 1000);
+                            let datestring = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+
+                            $("#ogloszenia").append(
+                                "<div class='ogloszenie'>"+
+                                    "<p><i>"+data.result[i]['nadawca']+"</i>, "+datestring+"</p>"+
+                                    "<h3>"+data.result[i]['temat']+"</h3>"+
+                                    "<p class='text'>"+data.result[i]['dane']+"</p>"+
+                                    "<button onclick=\"edytuj("+data.result[i]['id']+",\'"+data.result[i]['nadawca']+"\',\'"+data.result[i]['temat']+"\',"+data.result[i]['widok_od']+","+data.result[i]['widok_do']+",\'"+data.result[i]['dane']+"\')\" >Edytuj</button>"+
+                                    "<button onclick=\"usun(\'"+data.result[i]['id']+"\')\" style='color:red'>Usuń</button>"+
+                                "</div>"
+                            );
+                        }
+                    }
+                }
+            });
+
+            $("#nowe").click
+
+            $("#nowe").click(function() {
+				$("#modalOgloszenie").show();
+                $("#modalOgloszenieDodaj").show();
+                $("#modalOgloszenieId").hide();
+                $('label[for="modalOgloszenieId"]').hide();
+			});
+
+            function edytuj(id,nadawca,temat,widok_od,widok_do,dane){
+                //alert(nadawca);
+
+                $("#modalOgloszenieId").html(id);
+                $("#modalOgloszenieNadawca").val(nadawca);
+                $("#modalOgloszenieTemat").val(temat);
+                $("#modalOgloszenieWidokOd").val(widok_od);
+                $("#modalOgloszenieWidokDo").val(widok_do);
+                $("#modalOgloszenieDane").val(dane);
+
+
+                $("#modalOgloszenieId").show();
+                $('label[for="modalOgloszenieId"]').show();
+                $("#modalOgloszenie").show();
+                $("#modalOgloszenieEdytuj").show();
+            }
+
+            function usun(id){
+                conf = confirm("Czy napewno?")
+
+                if(conf){
+                    alert("tu będzie usuwanie");
+                }
+            }
+
+
+		</script>
+		<script src="/js/nav.js"></script>
+	</body>
+</html>
