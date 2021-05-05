@@ -14,7 +14,7 @@ use super::UZYTKOWNIK;
 
 use crate::models::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
 use crate::models::{AuthLogin, Auth, AuthNowy};
-use crate::models::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscUczestnik};
+use crate::models::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscBezDaty, NowaWiadomoscUczestnik};
 
 #[post("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
@@ -298,10 +298,25 @@ pub fn autoryzacja(conn: DbConn, mut cookies : Cookies) -> Json<Value> {
 }
 
 #[post("/wiadomosci/nowa", format = "application/json", data = "<nowa_wiadomosc>")]
-pub fn wiadomosci_nowa(conn: DbConn, nowa_wiadomosc: Json<NowaWiadomosc>) -> Json<Value> { 
+pub fn wiadomosci_nowa(conn: DbConn, nowa_wiadomosc: Json<NowaWiadomoscBezDaty>) -> Json<Value> { 
+    // niebezpieczne  
+    let wiadomosc = NowaWiadomosc {
+        id_uzytkownik : nowa_wiadomosc.id_uzytkownik,
+        temat : String::from(&nowa_wiadomosc.temat),
+        data : Local::now().timestamp(),
+        dane : String::from(&nowa_wiadomosc.dane),
+    };
+
+    Json(json!({
+        "status" : Wiadomosc::add(wiadomosc, &conn),
+        "result" : "OK",
+    }))
+}
+#[post("/wiadomosci/dodajodbiorce", format = "application/json", data = "<nowy_wiadomosc_uczestnik>")]
+pub fn wiadomosci_dodajodbiorce(conn: DbConn, nowy_wiadomosc_uczestnik: Json<NowaWiadomoscUczestnik>) -> Json<Value> { 
     // niebezpieczne
     Json(json!({
-        "status" : Wiadomosc::add(nowa_wiadomosc.into_inner(), &conn),
+        "status" : Wiadomosc::add_recipient(nowy_wiadomosc_uczestnik.into_inner(), &conn),
         "result" : "OK",
     }))
 }
@@ -314,15 +329,6 @@ pub fn wiadomosci_pokaz(conn: DbConn, id_wiadomosc: Json<WiadomoscId>) -> Json<V
     Json(json!({
         "status" : 200,
         "result" : Wiadomosc::get(id, &conn).first(),
-    }))
-}
-
-#[post("/wiadomosci/dodajodbiorce", format = "application/json", data = "<nowy_wiadomosc_uczestnik>")]
-pub fn wiadomosci_dodajodbiorce(conn: DbConn, nowy_wiadomosc_uczestnik: Json<NowaWiadomoscUczestnik>) -> Json<Value> { 
-    // niebezpieczne
-    Json(json!({
-        "status" : Wiadomosc::add_recipient(nowy_wiadomosc_uczestnik.into_inner(), &conn),
-        "result" : "OK",
     }))
 }
 

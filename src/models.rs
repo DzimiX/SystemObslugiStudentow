@@ -315,6 +315,14 @@ pub struct NowaWiadomosc {
     pub dane: String,
 }
 
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "wiadomosci"]
+pub struct NowaWiadomoscBezDaty {
+    pub id_uzytkownik: i32,
+    pub temat: String,
+    pub dane: String,
+}
+
 #[derive(Queryable, Serialize)]
 pub struct WiadomoscUczestnik {
     pub id : i32,
