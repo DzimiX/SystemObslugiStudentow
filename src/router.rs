@@ -321,8 +321,13 @@ pub fn wiadomosci_nowa(conn: DbConn, nowa_wiadomosc: Json<NowaWiadomoscBezDaty>)
 #[post("/wiadomosci/dodajodbiorce", format = "application/json", data = "<nowy_wiadomosc_uczestnik>")]
 pub fn wiadomosci_dodajodbiorce(conn: DbConn, nowy_wiadomosc_uczestnik: Json<NowaWiadomoscUczestnik>) -> Json<Value> { 
     // niebezpieczne
+    let mut status = 400;
+    if Wiadomosc::add_recipient(nowy_wiadomosc_uczestnik.into_inner(), &conn) == true {
+        status = 200;
+    }
+
     Json(json!({
-        "status" : Wiadomosc::add_recipient(nowy_wiadomosc_uczestnik.into_inner(), &conn),
+        "status" : status,
         "result" : "OK",
     }))
 }

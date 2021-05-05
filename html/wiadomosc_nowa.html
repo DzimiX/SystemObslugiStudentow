@@ -207,9 +207,6 @@
 			});
 
 			function wyslij_wiadomosc(wiadomosc_dane,odbiorca){
-				console.log(wiadomosc_dane);
-				console.log(odbiorca);
-
 				jQuery.when(
 					$.ajax({
 						url: '/api/wiadomosci/nowa',
@@ -225,7 +222,6 @@
 						}
 					} else if (data.status == 200){
 						odbiorca.id_wiadomosc = data.result;
-						console.log(odbiorca);
 						$.ajax({
 							url: '/api/wiadomosci/dodajodbiorce',
 							type: "POST",
@@ -237,11 +233,34 @@
 										wyloguj();
 									}
 								} else if (data.status == 200){
-									alert("Udało się wysłać wiadomość");
-									document.location.href = "/wiadomosci.html";
+									dodaj_siebie(odbiorca.id_wiadomosc);
+									//document.location.href = "/wiadomosci.html";
 								}
 							}
 						});
+					}
+				});
+			}
+
+			function dodaj_siebie(id_wiadomosc){
+				odbiorca = {
+					"id_wiadomosc" : id_wiadomosc,
+					"id_uczestnik" : userdata.id
+				}
+
+				$.ajax({
+					url: '/api/wiadomosci/dodajodbiorce',
+					type: "POST",
+					data: JSON.stringify(odbiorca),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						if (data.status != 200){
+							if (data.status == 401){
+								wyloguj();
+							}
+						} else if (data.status == 200){
+							document.location.href = "/wiadomosci.html";
+						}
 					}
 				});
 			}
