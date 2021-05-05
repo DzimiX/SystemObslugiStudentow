@@ -360,6 +360,23 @@ impl Wiadomosc {
             .expect("Problem z wczytaniem wiadomości.")
     }
 
+    pub fn get_last_id(conn: &MysqlConnection) -> i32 {
+        let data : Result<Wiadomosc,diesel::result::Error> = wiadomosci::table
+            .order(wiadomosci::id.desc())
+            .first(conn);
+        
+        match data {
+            Ok(data) => return data.id,
+            Err(_error) => return -1,
+        };
+    }
+
+    /*
+        let data : Result<Uzytkownik,diesel::result::Error> = uzytkownicy::table
+            .filter(uzytkownicy::login.eq(&login))
+            .first(conn);
+    */
+
     pub fn add_recipient(uczestnik: NowaWiadomoscUczestnik, conn: &MysqlConnection) -> bool {
         diesel::insert_into(wiadomosci_uczestnicy::table)
             .values(&uczestnik)
