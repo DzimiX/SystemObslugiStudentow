@@ -23,13 +23,13 @@
 			}
 		</script>
 		<meta charset="utf-8">
-		<title>System obsługi studentów - Ogłoszenia</title>
+		<title>System obsługi studentów - zarządzanie zapisami</title>
 		<meta name="description" content="System Obsługi Studentów">
 		<link rel="stylesheet" href="/css/navbar.css">
         <link rel="stylesheet" href="/css/modal.css">
 		<link rel="stylesheet" href="/css/main.css">
 		<style>
-			.ogloszenie {
+			.zapisy {
 				border-radius: 10px;
 				margin: 5px 0px 5px 0px;
 				padding: 15px 15px 15px 15px;
@@ -37,14 +37,14 @@
 				background-color: red;
 			}
 
-			.ogloszenie h3 {
+			.zapisy h3 {
 				margin: 0px 0px 15px 0px;
 			}
-			.ogloszenie p {
+			.zapisy p {
 				margin: 8px 0px 8px 0px;
 			}
 
-            .ogloszenie button{
+            .zapisy button{
                 width: 100px;
             }
 
@@ -149,45 +149,45 @@
 			<div class="header">
 				<h2>Zarządzanie zapisami</h2>
 			</div>
-			<div id="ogloszenia" class="ogloszenia">
+			<div id="divzapisy">
                 <button id="nowe">Dodaj nowe zapisy</button>
             </div>
 		</div>
 
-        <div id="modalOgloszenie" class="modal">
+        <div id="modalZapisy" class="modal">
 			<div class="modal-content">
 				<div class="modal-header">
 					<span id="modalZamknij" class="close">&times;</span>
-					<h2 disabled id='modalOgloszenieTytul'>Zapisy <span><label for="modalOgloszenieId"> o ID = </label><span id="modalOgloszenieId"></span></span></h2>
+					<h2 disabled id='modalZapisyTytul'>Zapisy <span><label for="modalZapisyId"> o ID = </label><span id="modalZapisyId"></span></span></h2>
 				</div>
 				<div class="modal-body">
 
-                    <label for="modalOgloszenieNadawca">Nazwa:</label></br>
-					<input id="modalOgloszenieNadawca"></input></br>
+                    <label for="modalZapisyNadawca">Nazwa:</label></br>
+					<input id="modalZapisyNadawca"></input></br>
                     
-                    <label for="modalOgloszenieTemat">Czy publiczne?:</label></br>
-					<select id="modalOgloszenieTemat">
+                    <label for="modalZapisyTemat">Czy publiczne?:</label></br>
+					<select id="modalZapisyTemat">
 						<option value="false" selected>Nie</option>
 						<option value="true">Tak</option>
 					</select></br></br>
 
-                    <button id="modalOgloszenieEdytuj" onclick="edytuj_zatwierdz()" >Edytuj</button>
-                    <button id="modalOgloszenieDodaj" onclick="nowe_zatwierdz()">Dodaj ogłoszenie</button>
+                    <button id="modalZapisyEdytuj" onclick="edytuj_zatwierdz()" >Edytuj</button>
+                    <button id="modalZapisyDodaj" onclick="nowe_zatwierdz()">Dodaj zapisy</button>
 				</div>
 			</div>
 		</div>
 
 		<script>
-            $("#modalOgloszenieEdytuj").hide();
-            $("#modalOgloszenieDodaj").hide();
+            $("#modalZapisyEdytuj").hide();
+            $("#modalZapisyDodaj").hide();
 
             $("#modalZamknij").click(function() {
-				$("#modalOgloszenie").hide();
-                $("#modalOgloszenieId").html("");
-				$("#modalOgloszenieNadawca").val("");
-                $("#modalOgloszenieTemat").val("");
-                $("#modalOgloszenieEdytuj").hide();
-                $("#modalOgloszenieDodaj").hide();
+				$("#modalZapisy").hide();
+                $("#modalZapisyId").html("");
+				$("#modalZapisyNadawca").val("");
+                $("#modalZapisyTemat").val("");
+                $("#modalZapisyEdytuj").hide();
+                $("#modalZapisyDodaj").hide();
 			});
 
 			$.ajax({
@@ -202,15 +202,21 @@
                         console.log("Wystąpił błąd!");
                     } else if (data.status == 200){
                         if (data.result.length > 0) {
-                            $("#ogloszenia").append(
+                            $("#divzapisy").append(
                                 "<h3>Lista zapisów:</h3>"
                             );
                         }
-                        for(let i = 0; i < data.result.length; i++){                           
-							$("#ogloszenia").append(
-                                "<div class='ogloszenie'>"+
+                        for(let i = 0; i < data.result.length; i++){                
+							
+							let czy_pub = "Nie";
+							if ( data.result[i]['czy_publiczne'] === true ){
+								czy_pub = "Tak";
+							}
+
+							$("#divzapisy").append(
+                                "<div class='zapisy'>"+
                                     "<p><i>"+data.result[i]['nazwa']+"</i></p>"+
-                                    "<h3>"+data.result[i]['czy_publiczne']+"</h3>"+
+                                    "<h3> Czy publiczne: "+czy_pub+"</h3>"+
                                     "<button onclick=\"edytuj("+data.result[i]['id']+",\'"+data.result[i]['nazwa']+"\',\'"+data.result[i]['czy_publiczne']+"\')\" >Edytuj</button>"+
                                     "<button onclick=\"usun(\'"+data.result[i]['id']+"\')\" style='color:red'>Usuń</button>"+
                                 "</div>"
@@ -221,27 +227,27 @@
             });
 
             $("#nowe").click(function() {
-				$("#modalOgloszenie").show();
-                $("#modalOgloszenieDodaj").show();
-                $("#modalOgloszenieId").hide();
-                $('label[for="modalOgloszenieId"]').hide();
+				$("#modalZapisy").show();
+                $("#modalZapisyDodaj").show();
+                $("#modalZapisyId").hide();
+                $('label[for="modalZapisyId"]').hide();
 			});
 
             function edytuj(id,nazwa,czy_publiczne){
-                $("#modalOgloszenieId").html(id);
-                $("#modalOgloszenieNadawca").val(nazwa);
-                $("#modalOgloszenieTemat").val(czy_publiczne);
+                $("#modalZapisyId").html(id);
+                $("#modalZapisyNadawca").val(nazwa);
+                $("#modalZapisyTemat").val(czy_publiczne);
 
-                $("#modalOgloszenieId").show();
-                $('label[for="modalOgloszenieId"]').show();
-                $("#modalOgloszenie").show();
-                $("#modalOgloszenieEdytuj").show();
+                $("#modalZapisyId").show();
+                $('label[for="modalZapisyId"]').show();
+                $("#modalZapisy").show();
+                $("#modalZapisyEdytuj").show();
             }
 
 			function edytuj_zatwierdz(){
-				id = $("#modalOgloszenieId").html();
-				nazwa = $("#modalOgloszenieNadawca").val();
-				czy_publiczne = $("#modalOgloszenieTemat").val();
+				id = $("#modalZapisyId").html();
+				nazwa = $("#modalZapisyNadawca").val();
+				czy_publiczne = $("#modalZapisyTemat").val();
 
 				data_json = {
 					"id" : parseInt(id),
@@ -268,8 +274,8 @@
 			}
 
 			function nowe_zatwierdz(){
-				nazwa = $("#modalOgloszenieNadawca").val();
-				czy_publiczne = $("#modalOgloszenieTemat").val();
+				nazwa = $("#modalZapisyNadawca").val();
+				czy_publiczne = $("#modalZapisyTemat").val();
 
 				data_json = {
 					"nazwa" : nazwa,
@@ -295,7 +301,7 @@
 			}
 
             function usun(id){
-                conf = confirm("Czy napewno chcesz usunąć zapisy?")
+                conf = confirm("Czy napewno chcesz usunąć wybrane zapisy?")
 
                 if(conf){
 
