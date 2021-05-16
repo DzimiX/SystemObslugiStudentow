@@ -1,11 +1,4 @@
 table! {
-    miasta (id) {
-        id -> Integer,
-        nazwa -> Varchar,
-    }
-}
-
-table! {
     ogloszenia (id) {
         id -> Integer,
         nadawca -> Varchar,
@@ -46,7 +39,6 @@ table! {
     uzytkownicy_dane (id) {
         id -> Integer,
         id_uzytkownik -> Integer,
-        id_miasto -> Integer,
         ulica -> Varchar,
         nr_domu -> Varchar,
         kod_pocztowy -> Varchar,
@@ -99,7 +91,6 @@ table! {
 
 joinable!(tokeny -> uprawnienia (id_uprawnienie));
 joinable!(tokeny -> uzytkownicy (id_uzytkownik));
-joinable!(uzytkownicy_dane -> miasta (id_miasto));
 joinable!(uzytkownicy_dane -> uzytkownicy (id_uzytkownik));
 joinable!(uzytkownicy_hasla -> uzytkownicy (id_uzytkownik));
 joinable!(uzytkownicy_uprawnienia -> uprawnienia (id_uprawnienie));
@@ -109,7 +100,6 @@ joinable!(wiadomosci_uczestnicy -> uzytkownicy (id_uczestnik));
 joinable!(wiadomosci_uczestnicy -> wiadomosci (id_wiadomosc));
 
 allow_tables_to_appear_in_same_query!(
-    miasta,
     ogloszenia,
     tokeny,
     uprawnienia,

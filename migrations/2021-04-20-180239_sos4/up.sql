@@ -1,10 +1,3 @@
-CREATE TABLE `miasta` (
-  `id` int(11) NOT NULL,
-  `nazwa` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
 --
 -- Table structure for table `ogloszenia`
 --
@@ -65,7 +58,6 @@ CREATE TABLE `uzytkownicy` (
 CREATE TABLE `uzytkownicy_dane` (
   `id` int(11) NOT NULL,
   `id_uzytkownik` int(11) NOT NULL,
-  `id_miasto` int(11) NOT NULL,
   `ulica` varchar(255) NOT NULL,
   `nr_domu` varchar(255) NOT NULL,
   `kod_pocztowy` varchar(255) NOT NULL,
@@ -141,12 +133,6 @@ CREATE TABLE `zapisy` (
 --
 
 --
--- Indexes for table `miasta`
---
-ALTER TABLE `miasta`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `ogloszenia`
 --
 ALTER TABLE `ogloszenia`
@@ -178,8 +164,7 @@ ALTER TABLE `uzytkownicy`
 --
 ALTER TABLE `uzytkownicy_dane`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_uzytkownik` (`id_uzytkownik`),
-  ADD KEY `id_miasto` (`id_miasto`);
+  ADD KEY `id_uzytkownik` (`id_uzytkownik`);
 
 --
 -- Indexes for table `uzytkownicy_hasla`
@@ -219,12 +204,6 @@ ALTER TABLE `zapisy`
 --
 -- AUTO_INCREMENT for dumped tables
 --
-
---
--- AUTO_INCREMENT for table `miasta`
---
-ALTER TABLE `miasta`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `ogloszenia`
@@ -298,8 +277,7 @@ ALTER TABLE `tokeny`
 -- Constraints for table `uzytkownicy_dane`
 --
 ALTER TABLE `uzytkownicy_dane`
-  ADD CONSTRAINT `uzytkownicy_dane_ibfk_1` FOREIGN KEY (`id_uzytkownik`) REFERENCES `uzytkownicy` (`id`),
-  ADD CONSTRAINT `uzytkownicy_dane_ibfk_2` FOREIGN KEY (`id_miasto`) REFERENCES `miasta` (`id`);
+  ADD CONSTRAINT `uzytkownicy_dane_ibfk_1` FOREIGN KEY (`id_uzytkownik`) REFERENCES `uzytkownicy` (`id`);
 
 --
 -- Constraints for table `uzytkownicy_hasla`
@@ -370,3 +348,7 @@ INSERT INTO `wiadomosci_uczestnicy` (`id`, `id_wiadomosc`, `id_uczestnik`) VALUE
   (1, 1, 1),
   (2, 2, 2),
   (3, 2, 1);
+
+INSERT INTO `zapisy` (`id`, `nazwa`, `czy_publiczne`) VALUES
+  (1, 'Semestr letni 2020/2021', 1),
+  (2, 'Semestr zimowy 2021/2022', 0);
