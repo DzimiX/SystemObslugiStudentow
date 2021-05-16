@@ -10,3 +10,4 @@ DROP TABLE `ogloszenia`;
 DROP TABLE `tokeny`;
 DROP TABLE `uprawnienia`;
 DROP TABLE `uzytkownicy`;
+DROP TABLE `zapisy`;

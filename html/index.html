@@ -150,7 +150,7 @@
 							for(let i = 0; i < data.result.length; i++){
 
 								let date = new Date(data.result[i]['widok_od'] * 1000);
-								if(date.getMonth() < 10){ month_append = 0; } else { month_append = ""; }
+								if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
 								if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
 								if(date.getHours() < 10){ hours_append = 0; } else { hours_append = ""; }
 								if(date.getMinutes() < 10){ minutes_append = 0; } else { minutes_append = ""; }
