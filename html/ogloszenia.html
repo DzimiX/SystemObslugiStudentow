@@ -148,7 +148,6 @@
 		<div class="content">
 			<div class="header">
 				<h2>Zarządzanie ogłoszeniami</h2>
-                <p style="color:red">Oskryptować</p>
 			</div>
 			<div id="ogloszenia" class="ogloszenia">
                 <button id="nowe">Dodaj nowe ogłoszenie</button>
@@ -222,14 +221,16 @@
                             let date = new Date(data.result[i]['widok_od'] * 1000);
 							if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
 							if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
-							if(date.getHours() < 10){ hours_append = 0; } else { hours_append = ""; }
-							if(date.getMinutes() < 10){ minutes_append = 0; } else { minutes_append = ""; }
-							if(date.getSeconds() < 10){ seconds_append = 0; } else { seconds_append = ""; }
-                    		let datestring = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate()+" "+hours_append+date.getHours()+":"+minutes_append+date.getMinutes()+":"+seconds_append+date.getSeconds();
+                    		let datestring_od = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate();
+
+							date = new Date(data.result[i]['widok_do'] * 1000);
+							if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
+							if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
+                    		let datestring_do = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate();
                            
 							$("#ogloszenia").append(
                                 "<div class='ogloszenie'>"+
-                                    "<p><i>"+data.result[i]['nadawca']+"</i>, "+datestring+"</p>"+
+                                    "<p><i>"+data.result[i]['nadawca']+"</i>, trwa od <b>"+datestring_od+"</b> do <b>"+datestring_do+"</b></p>"+
                                     "<h3>"+data.result[i]['temat']+"</h3>"+
                                     "<p class='text'>"+data.result[i]['dane']+"</p>"+
                                     "<button onclick=\"edytuj("+data.result[i]['id']+",\'"+data.result[i]['nadawca']+"\',\'"+data.result[i]['temat']+"\',"+data.result[i]['widok_od']+","+data.result[i]['widok_do']+",\'"+data.result[i]['dane']+"\')\" >Edytuj</button>"+
@@ -344,10 +345,30 @@
 			}
 
             function usun(id){
-                conf = confirm("Czy napewno?")
+                conf = confirm("Czy napewno chcesz usunąć ogłoszenie?")
 
                 if(conf){
-                    alert("tu będzie usuwanie");
+
+					data_json = {
+						"id" : parseInt(id)
+					}
+
+                    $.ajax({
+						url: '/api/ogloszenia/usun',
+						type: "POST",
+						data: JSON.stringify(data_json),
+						contentType: "application/json; charset=UTF-8",
+						success: function (data) {
+							console.log(data.status);
+							console.log(data.result);
+							
+							if(data.status != 200){
+								console.log("Wystąpił błąd!");
+							} else if (data.status == 200){
+								window.location.reload(true);
+							}
+						}
+					});
                 }
             }
 
