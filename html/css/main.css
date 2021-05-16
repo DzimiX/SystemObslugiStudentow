@@ -8,10 +8,10 @@ body {
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-    background-color: #2a2a2e;
+    background-color: rgb(42, 42, 46);
     color: white;
 }
 
 table tr:not(:first-child):hover {
-    background-color: #004aa9;
+    background-color: rgb(41, 133, 255);
 }

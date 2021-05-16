@@ -23,23 +23,25 @@
 			}
 		</script>
 		<meta charset="utf-8">
-		<title>System obsługi studentów</title>
+		<title>System obsługi studentów - dane osobowe</title>
 		<meta name="description" content="System Obsługi Studentów">
 		<link rel="stylesheet" href="/css/navbar.css">
 		<link rel="stylesheet" href="/css/main.css">
 		<style>
-			.ogloszenie {
-				border-radius: 10px;
-				margin: 5px 0px 5px 0px;
-				padding: 15px 15px 15px 15px;
-				width: 500px;
+			#dane_osobowe {
+				padding: 20px;
 				background-color: rgb(0, 73, 168, 0.6);
+				border-radius: 10px;
 			}
-			.ogloszenie h3 {
-				margin: 0px 0px 15px 0px;
+
+			#dane_osobowe input {
+				width: 200px;
+				height: 20px;
 			}
-			.ogloszenie p {
-				margin: 8px 0px 8px 0px;
+
+			#dane_osobowe button {
+				width: 100px;
+				height: 30px;
 			}
 		</style>
 	</head>
@@ -124,47 +126,139 @@
 		</div>
 		<div class="content">
 			<div class="header">
-				<h2>System Obsługi Studentów</h2>
+				<h2>System Obsługi Studentów - dane osobowe</h2>
 			</div>
-			<div id="ogloszenia" class="ogloszenia"></div>
+			<div id="dane_osobowe" class="dane_osobowe">
+				<label for="miasto">Miasto:</label></br>
+				<input id="miasto"></input></br></br>
+
+				<label for="ulica">Ulica:</label></br>
+				<input id="ulica"></input></br></br>
+
+				<label for="nr_domu">Nr domu:</label></br>
+				<input id="nr_domu"></input></br></br>
+
+				<label for="kod_pocztowy">Kod pocztowy:</label></br>
+				<input id="kod_pocztowy"></input></br></br>
+
+				<label for="pesel">Pesel:</label></br>
+				<input id="pesel"></input></br></br>
+
+				<label for="nr_dowodu">Numer dowodu:</label></br>
+				<input id="nr_dowodu"></input></br></br>
+
+				<button id="edytuj_dane">Edytuj dane</button></br></br></br>
+
+				<label for="haslo1">Hasło:</label></br>
+				<input type="password" id="haslo1"></input></br></br>
+
+				<label for="haslo2">Powtórz hasło:</label></br>
+				<input type="password" id="haslo2"></input></br></br>
+
+				<button onclick="zmien_haslo()">Zmień hasło</button>
+			</div>
 		</div>
 
 		<script>
+
+			data_json = {
+				"id_uzytkownik" : parseInt(userdata.id)
+			}
+
 			$.ajax({
-					url: '/api/ogloszenia',
+				url: '/api/dane_osobowe/pokaz',
+				type: "POST",
+				data: JSON.stringify(data_json),
+				contentType: "application/json; charset=UTF-8",
+				success: function (data) {
+					//console.log(data.status);
+					//console.log(data.result);
+					
+					if(data.status != 200){
+						console.log("Wystąpił błąd!");
+					} else if (data.status == 200){
+						if (data.result != null){
+							$('#miasto').val(data.result['miasto']);
+							$('#ulica').val(data.result['ulica']);
+							$('#nr_domu').val(data.result['nr_domu']);
+							$('#kod_pocztowy').val(data.result['kod_pocztowy']);
+							$('#pesel').val(data.result['pesel']);
+							$('#nr_dowodu').val(data.result['nr_dowodu']);
+						}
+					}
+				}
+			});
+
+			$("#edytuj_dane").click(function() {
+				edytuj_dane(userdata.id);
+			});
+
+			function edytuj_dane(id){
+				let miasto = $('#miasto').val();
+				let ulica = $('#ulica').val();
+				let nr_domu = $('#nr_domu').val();
+				let kod_pocztowy = $('#kod_pocztowy').val();
+				let pesel = $('#pesel').val();
+				let nr_dowodu = $('#nr_dowodu').val();
+
+				data_json = {
+					"id_uzytkownik" : parseInt(userdata.id),
+					"miasto" : miasto,
+					"ulica" : ulica,
+					"nr_domu" : nr_domu,
+					"kod_pocztowy" : kod_pocztowy,
+					"pesel" : pesel,
+					"nr_dowodu" : nr_dowodu
+				}
+
+				$.ajax({
+					url: '/api/dane_osobowe/aktualizuj',
 					type: "POST",
-					//data: JSON.stringify(data_json),
+					data: JSON.stringify(data_json),
 					contentType: "application/json; charset=UTF-8",
-					success: function (data) {
-						console.log(data.status);
-						console.log(data.result);
-						
+					success: function (data) {				
 						if(data.status != 200){
 							console.log("Wystąpił błąd!");
 						} else if (data.status == 200){
-							if (data.result.length > 0) {
-								$("#ogloszenia").append(
-									"<h3>Lista ogłoszeń:</h3>"
-								);
+							if (data.result == "OK"){
+								window.location.reload(true);
 							}
-							for(let i = 0; i < data.result.length; i++){
-
-								let date = new Date(data.result[i]['widok_od'] * 1000);
-								if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
-								if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
-								let datestring = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate();
-
-								$("#ogloszenia").append(
-									"<div class='ogloszenie'>"+
-										"<p>Nadawca: <i>"+data.result[i]['nadawca']+"</i></p>"+
-										"<h3>"+data.result[i]['temat']+"</h3>"+
-										"<p class='text'>"+data.result[i]['dane']+"</p>"+
-									"</div>"
-								);
-                        	}
 						}
 					}
 				});
+			}
+
+			function zmien_haslo(id){
+				let haslo1 = $('#haslo1').val();
+				let haslo2 = $('#haslo2').val();
+
+				if (haslo1 != haslo2 || haslo1 == ""){
+					alert("Niepoprawne nowe hasło!");
+				} else {
+
+					data_json = {
+						"id_uzytkownik" : parseInt(userdata.id),
+    					"haslo" : haslo1
+					}
+
+					$.ajax({
+						url: '/api/uzytkownik/nowehaslo',
+						type: "POST",
+						data: JSON.stringify(data_json),
+						contentType: "application/json; charset=UTF-8",
+						success: function (data) {				
+							if(data.status != 200){
+								console.log("Wystąpił błąd!");
+							} else if (data.status == 200){
+								if (data.result == "OK"){
+									wyloguj();
+								}
+							}
+						}
+					});
+				}
+			}
+
 		</script>
 		<script src="/js/nav.js"></script>
 	</body>

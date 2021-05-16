@@ -36,9 +36,9 @@ table! {
 }
 
 table! {
-    uzytkownicy_dane (id) {
-        id -> Integer,
+    uzytkownicy_dane (id_uzytkownik) {
         id_uzytkownik -> Integer,
+        miasto -> Varchar,
         ulica -> Varchar,
         nr_domu -> Varchar,
         kod_pocztowy -> Varchar,
