@@ -56,8 +56,8 @@ CREATE TABLE `uzytkownicy` (
 --
 
 CREATE TABLE `uzytkownicy_dane` (
-  `id` int(11) NOT NULL,
   `id_uzytkownik` int(11) NOT NULL,
+  `miasto` varchar(255) NOT NULL,
   `ulica` varchar(255) NOT NULL,
   `nr_domu` varchar(255) NOT NULL,
   `kod_pocztowy` varchar(255) NOT NULL,
@@ -163,8 +163,7 @@ ALTER TABLE `uzytkownicy`
 -- Indexes for table `uzytkownicy_dane`
 --
 ALTER TABLE `uzytkownicy_dane`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_uzytkownik` (`id_uzytkownik`);
+  ADD PRIMARY KEY (`id_uzytkownik`);
 
 --
 -- Indexes for table `uzytkownicy_hasla`
@@ -227,12 +226,6 @@ ALTER TABLE `uprawnienia`
 -- AUTO_INCREMENT for table `uzytkownicy`
 --
 ALTER TABLE `uzytkownicy`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `uzytkownicy_dane`
---
-ALTER TABLE `uzytkownicy_dane`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

@@ -17,6 +17,7 @@ use crate::models::{AuthLogin, Auth, AuthNowy};
 use crate::models::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscBezDaty, NowaWiadomoscUczestnik};
 use crate::models::{Ogloszenie, OgloszenieNowe, OgloszenieId};
 use crate::models::{Zapisy, ZapisyNowe, ZapisyId};
+use crate::models::{DaneOsobowe, DaneOsoboweId};
 
 #[post("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
@@ -461,6 +462,65 @@ pub fn zapisy_usun(conn: DbConn, id_zapisy: Json<ZapisyId>, mut cookies : Cookie
 
     let mut status = 400;
     if Zapisy::delete(id, &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/dane_osobowe/pokaz", format = "application/json", data = "<id_uzytkownik>")]
+pub fn dane_osobowe_pokaz(conn: DbConn, id_uzytkownik: Json<DaneOsoboweId>) -> Json<Value> { 
+    // niebezpieczne
+    
+    let id : i32 = format!("{}",id_uzytkownik.id_uzytkownik).parse::<i32>().unwrap();
+
+    Json(json!({
+        "status" : 200,
+        "result" : DaneOsobowe::get(id, &conn).first(),
+    }))
+}
+
+#[post("/dane_osobowe/nowe", format = "application/json", data = "<dane_osobowe>")]
+pub fn dane_osobowe_nowe(conn: DbConn, dane_osobowe: Json<DaneOsobowe>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    let mut status = 400;
+    if DaneOsobowe::add(dane_osobowe.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/dane_osobowe/aktualizuj", format = "application/json", data = "<dane_osobowe>")]
+pub fn dane_osobowe_aktualizuj(conn: DbConn, dane_osobowe: Json<DaneOsobowe>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let mut status = 400;
+    if DaneOsobowe::update(dane_osobowe.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/dane_osobowe/usun", format = "application/json", data = "<id_dane_osobowe>")]
+pub fn dane_osobowe_usun(conn: DbConn, id_dane_osobowe: Json<DaneOsoboweId>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let id : i32 = format!("{}",id_dane_osobowe.id_uzytkownik).parse::<i32>().unwrap();
+
+    let mut status = 400;
+    if DaneOsobowe::delete(id, &conn) == true {
         status = 200;
     }
 

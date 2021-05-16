@@ -13,12 +13,12 @@ use crate::schema::tokeny;
 use crate::schema::uzytkownicy_hasla;
 use crate::schema::uzytkownicy_uprawnienia;
 use crate::schema::uprawnienia;
-use crate::schema::miasta;
 use crate::schema::wiadomosci;
 use crate::schema::wiadomosci_uczestnicy;
 use crate::schema::uzytkownicy;
 use crate::schema::ogloszenia;
 use crate::schema::zapisy;
+use crate::schema::uzytkownicy_dane;
 
 #[derive(Queryable, Serialize)]
 pub struct Uzytkownik {
@@ -92,34 +92,6 @@ impl Uzytkownik {
             .values(&data)
             .execute(conn)
             .is_ok()
-    }
-}
-
-#[derive(Queryable, Serialize)]
-pub struct Miasto {
-    pub id: i32,
-    pub nazwa: String,
-}
-
-#[derive(Insertable, Serialize, Deserialize)]
-#[table_name = "miasta"]
-pub struct NoweMiasto {
-    pub nazwa: String,
-}
-
-impl Miasto {
-    pub fn add(miasto: NoweMiasto, conn: &MysqlConnection) -> bool {
-        diesel::insert_into(miasta::table)
-            .values(&miasto)
-            .execute(conn)
-            .is_ok()
-    }
-
-    pub fn all(conn: &MysqlConnection) -> Vec<Miasto> {
-        miasta::table
-            .order(miasta::id.desc())
-            .load::<Miasto>(conn)
-            .expect("Problem z wczytaniem miast.")
     }
 }
 
@@ -528,7 +500,7 @@ impl Zapisy {
             .is_ok()
     }
 
-    pub fn get(id: i32,conn: &MysqlConnection) -> Vec<Zapisy> {
+    pub fn get(id: i32, conn: &MysqlConnection) -> Vec<Zapisy> {
         zapisy::table
             .find(id)
             .load::<Zapisy>(conn)
@@ -562,6 +534,81 @@ impl Zapisy {
             .set((
                 zapisy::nazwa.eq(nazwa),
                 zapisy::czy_publiczne.eq(czy_publiczne),
+            ))
+            .execute(conn)
+            .is_ok();
+
+        if updated_row == false {
+            return false
+        }
+
+        return true
+    }
+
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "uzytkownicy_dane"]
+pub struct DaneOsobowe {
+    pub id_uzytkownik: i32,
+    pub miasto : String,
+    pub ulica : String,
+    pub nr_domu : String,
+    pub kod_pocztowy : String,
+    pub pesel : String,
+    pub nr_dowodu : String
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "uzytkownicy_dane"]
+pub struct DaneOsoboweId {
+    pub id_uzytkownik: i32
+}
+
+impl DaneOsobowe {
+
+    pub fn add(dane_osobowe: DaneOsobowe, conn: &MysqlConnection) -> bool {
+        diesel::insert_into(uzytkownicy_dane::table)
+            .values(&dane_osobowe)
+            .execute(conn)
+            .is_ok()
+    }
+
+    pub fn get(id_uzytkownik: i32, conn: &MysqlConnection) -> Vec<DaneOsobowe> {
+        uzytkownicy_dane::table
+            .find(id_uzytkownik)
+            .load::<DaneOsobowe>(conn)
+            .expect("Problem z wczytaniem danych użytkownika.")
+    }
+
+    pub fn delete(id_uzytkownik: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(uzytkownicy_dane::table
+            .filter(uzytkownicy_dane::id_uzytkownik.eq(id_uzytkownik))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+    
+        return true
+    }
+
+    pub fn update(dane_osobowe: DaneOsobowe, conn: &MysqlConnection) -> bool {
+        
+        let id_uzytkownik = dane_osobowe.id_uzytkownik;
+        let miasto = dane_osobowe.miasto;
+        let ulica = dane_osobowe.ulica;
+        let nr_domu = dane_osobowe.nr_domu;
+        let kod_pocztowy = dane_osobowe.kod_pocztowy;
+        let pesel = dane_osobowe.pesel;
+        let nr_dowodu =  dane_osobowe.nr_dowodu;
+
+        let updated_row = diesel::update(uzytkownicy_dane::table.filter(uzytkownicy_dane::id_uzytkownik.eq(&id_uzytkownik)))
+            .set((
+                uzytkownicy_dane::miasto.eq(miasto),
+                uzytkownicy_dane::ulica.eq(ulica),
+                uzytkownicy_dane::nr_domu.eq(nr_domu),
+                uzytkownicy_dane::kod_pocztowy.eq(kod_pocztowy),
+                uzytkownicy_dane::pesel.eq(pesel),
+                uzytkownicy_dane::nr_dowodu.eq(nr_dowodu)
             ))
             .execute(conn)
             .is_ok();
