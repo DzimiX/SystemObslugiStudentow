@@ -89,6 +89,14 @@ table! {
     }
 }
 
+table! {
+    zapisy (id) {
+        id -> Integer,
+        nazwa -> Varchar,
+        czy_publiczne -> Bool,
+    }
+}
+
 joinable!(tokeny -> uprawnienia (id_uprawnienie));
 joinable!(tokeny -> uzytkownicy (id_uzytkownik));
 joinable!(uzytkownicy_dane -> miasta (id_miasto));
@@ -111,4 +119,5 @@ allow_tables_to_appear_in_same_query!(
     uzytkownicy_uprawnienia,
     wiadomosci,
     wiadomosci_uczestnicy,
+    zapisy,
 );

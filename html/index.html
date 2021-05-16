@@ -4,6 +4,7 @@
 		<script src="/js/jquery.min.js"></script>
 		<script src="/js/main.js"></script>
 		<script>
+			setTimeout(function(){$('body').animate({opacity:'1'},500)},400);
 			if (getCookie("token") == null) {
 				document.location.href = "/logowanie.html";
 				document.body.innerHTML = "";
@@ -34,7 +35,6 @@
 				width: 500px;
 				background-color: red;
 			}
-
 			.ogloszenie h3 {
 				margin: 0px 0px 15px 0px;
 			}
@@ -67,16 +67,7 @@
 					<a id="dropdown-uzytkownicy-utworz" href="#"><span class="disabled">Utwórz użytkownika</span></a>
 				</div>
 			</div>
-			<div id="dropdown-zapisy" class="dropdown">
-				<button class="dropbtn">
-					<span class="disabled">Zarządzanie zapisami</span>
-					<i class="arrow down"></i>
-				</button>
-				<div class="dropdown-content">
-					<a id="dropdown-zapisy-utworz" href="#"><span class="disabled">Tworzenie zapisów</span></a>
-					<a id="dropdown-zapisy-edycja" href="#"><span class="disabled">Edycja zapisów</span></a>
-				</div>
-			</div>
+			<a id="menu-zarzadzanie-zapisy" href="/zarzadzanie_zapisy.html">Zarządzanie zapisami</a>
 			<a id="menu-zapisy" href="/"><span class="disabled">Zapisy</span></a>
 			<div id="dropdown-kursyz" class="dropdown">
 				<button class="dropbtn">
@@ -159,11 +150,13 @@
 							for(let i = 0; i < data.result.length; i++){
 
 								let date = new Date(data.result[i]['widok_od'] * 1000);
-								let datestring = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+								if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
+								if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
+								let datestring = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate();
 
 								$("#ogloszenia").append(
 									"<div class='ogloszenie'>"+
-										"<p><i>"+data.result[i]['nadawca']+"</i>, "+datestring+"</p>"+
+										"<p>Nadawca: <i>"+data.result[i]['nadawca']+"</i></p>"+
 										"<h3>"+data.result[i]['temat']+"</h3>"+
 										"<p class='text'>"+data.result[i]['dane']+"</p>"+
 									"</div>"

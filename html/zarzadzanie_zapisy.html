@@ -23,13 +23,13 @@
 			}
 		</script>
 		<meta charset="utf-8">
-		<title>System obsługi studentów - Ogłoszenia</title>
+		<title>System obsługi studentów - zarządzanie zapisami</title>
 		<meta name="description" content="System Obsługi Studentów">
 		<link rel="stylesheet" href="/css/navbar.css">
         <link rel="stylesheet" href="/css/modal.css">
 		<link rel="stylesheet" href="/css/main.css">
 		<style>
-			.ogloszenie {
+			.zapisy {
 				border-radius: 10px;
 				margin: 5px 0px 5px 0px;
 				padding: 15px 15px 15px 15px;
@@ -37,14 +37,14 @@
 				background-color: red;
 			}
 
-			.ogloszenie h3 {
+			.zapisy h3 {
 				margin: 0px 0px 15px 0px;
 			}
-			.ogloszenie p {
+			.zapisy p {
 				margin: 8px 0px 8px 0px;
 			}
 
-            .ogloszenie button{
+            .zapisy button{
                 width: 100px;
             }
 
@@ -147,62 +147,52 @@
 		</div>
 		<div class="content">
 			<div class="header">
-				<h2>Zarządzanie ogłoszeniami</h2>
+				<h2>Zarządzanie zapisami</h2>
 			</div>
-			<div id="ogloszenia">
-                <button id="nowe">Dodaj nowe ogłoszenie</button>
+			<div id="divzapisy">
+                <button id="nowe">Dodaj nowe zapisy</button>
             </div>
 		</div>
 
-        <div id="modalOgloszenie" class="modal">
+        <div id="modalZapisy" class="modal">
 			<div class="modal-content">
 				<div class="modal-header">
 					<span id="modalZamknij" class="close">&times;</span>
-					<h2 disabled id='modalOgloszenieTytul'>Ogłoszenie <span><label for="modalOgloszenieId"> o ID = </label><span id="modalOgloszenieId"></span></span></h2>
+					<h2 disabled id='modalZapisyTytul'>Zapisy <span><label for="modalZapisyId"> o ID = </label><span id="modalZapisyId"></span></span></h2>
 				</div>
 				<div class="modal-body">
 
-                    <label for="modalOgloszenieNadawca">Nadawca:</label></br>
-					<input id="modalOgloszenieNadawca"></input></br>
+                    <label for="modalZapisyNadawca">Nazwa:</label></br>
+					<input id="modalZapisyNadawca"></input></br>
                     
-                    <label for="modalOgloszenieTemat">Temat:</label></br>
-					<input id="modalOgloszenieTemat"></input></br>
+                    <label for="modalZapisyTemat">Czy publiczne?:</label></br>
+					<select id="modalZapisyTemat">
+						<option value="false" selected>Nie</option>
+						<option value="true">Tak</option>
+					</select></br></br>
 
-                    <label for="modalOgloszenieWidokOd">Widok od:</label></br>
-					<input id="modalOgloszenieWidokOd" type="date"></br>
-
-                    <label for="modalOgloszenieWidokDo">Widok do:</label></br>
-					<input id="modalOgloszenieWidokDo" type="date"></input></br>
-
-                    <label for="modalOgloszenieDane">Treść ogłoszenia:</label></br>
-					<textarea id="modalOgloszenieDane"></textarea></br>
-
-                    <button id="modalOgloszenieEdytuj" onclick="edytuj_zatwierdz()" >Edytuj</button>
-                    <button id="modalOgloszenieDodaj" onclick="nowe_zatwierdz()">Dodaj ogłoszenie</button>
+                    <button id="modalZapisyEdytuj" onclick="edytuj_zatwierdz()" >Edytuj</button>
+                    <button id="modalZapisyDodaj" onclick="nowe_zatwierdz()">Dodaj zapisy</button>
 				</div>
 			</div>
 		</div>
 
 		<script>
-            $("#modalOgloszenieEdytuj").hide();
-            $("#modalOgloszenieDodaj").hide();
+            $("#modalZapisyEdytuj").hide();
+            $("#modalZapisyDodaj").hide();
 
             $("#modalZamknij").click(function() {
-				$("#modalOgloszenie").hide();
-                $("#modalOgloszenieId").html("");
-				$("#modalOgloszenieNadawca").val("");
-                $("#modalOgloszenieTemat").val("");
-                $("#modalOgloszenieWidokOd").val("");
-                $("#modalOgloszenieWidokDo").val("");
-                $("#modalOgloszenieDane").val("");
-                $("#modalOgloszenieEdytuj").hide();
-                $("#modalOgloszenieDodaj").hide();
+				$("#modalZapisy").hide();
+                $("#modalZapisyId").html("");
+				$("#modalZapisyNadawca").val("");
+                $("#modalZapisyTemat").val("");
+                $("#modalZapisyEdytuj").hide();
+                $("#modalZapisyDodaj").hide();
 			});
 
 			$.ajax({
-                url: '/api/ogloszenia',
+                url: '/api/zapisy',
                 type: "POST",
-                //data: JSON.stringify(data_json),
                 contentType: "application/json; charset=UTF-8",
                 success: function (data) {
                     console.log(data.status);
@@ -212,28 +202,22 @@
                         console.log("Wystąpił błąd!");
                     } else if (data.status == 200){
                         if (data.result.length > 0) {
-                            $("#ogloszenia").append(
-                                "<h3>Lista ogłoszeń:</h3>"
+                            $("#divzapisy").append(
+                                "<h3>Lista zapisów:</h3>"
                             );
                         }
-                        for(let i = 0; i < data.result.length; i++){
+                        for(let i = 0; i < data.result.length; i++){                
+							
+							let czy_pub = "Nie";
+							if ( data.result[i]['czy_publiczne'] === true ){
+								czy_pub = "Tak";
+							}
 
-                            let date = new Date(data.result[i]['widok_od'] * 1000);
-							if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
-							if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
-                    		let datestring_od = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate();
-
-							date = new Date(data.result[i]['widok_do'] * 1000);
-							if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
-							if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
-                    		let datestring_do = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate();
-                           
-							$("#ogloszenia").append(
-                                "<div class='ogloszenie'>"+
-                                    "<p><i>"+data.result[i]['nadawca']+"</i>, trwa od <b>"+datestring_od+"</b> do <b>"+datestring_do+"</b></p>"+
-                                    "<h3>"+data.result[i]['temat']+"</h3>"+
-                                    "<p class='text'>"+data.result[i]['dane']+"</p>"+
-                                    "<button onclick=\"edytuj("+data.result[i]['id']+",\'"+data.result[i]['nadawca']+"\',\'"+data.result[i]['temat']+"\',"+data.result[i]['widok_od']+","+data.result[i]['widok_do']+",\'"+data.result[i]['dane']+"\')\" >Edytuj</button>"+
+							$("#divzapisy").append(
+                                "<div class='zapisy'>"+
+                                    "<p><i>"+data.result[i]['nazwa']+"</i></p>"+
+                                    "<h3> Czy publiczne: "+czy_pub+"</h3>"+
+                                    "<button onclick=\"edytuj("+data.result[i]['id']+",\'"+data.result[i]['nazwa']+"\',\'"+data.result[i]['czy_publiczne']+"\')\" >Edytuj</button>"+
                                     "<button onclick=\"usun(\'"+data.result[i]['id']+"\')\" style='color:red'>Usuń</button>"+
                                 "</div>"
                             );
@@ -242,110 +226,82 @@
                 }
             });
 
-            $("#nowe").click
-
             $("#nowe").click(function() {
-				$("#modalOgloszenie").show();
-                $("#modalOgloszenieDodaj").show();
-                $("#modalOgloszenieId").hide();
-                $('label[for="modalOgloszenieId"]').hide();
+				$("#modalZapisy").show();
+                $("#modalZapisyDodaj").show();
+                $("#modalZapisyId").hide();
+                $('label[for="modalZapisyId"]').hide();
 			});
 
-            function edytuj(id,nadawca,temat,widok_od,widok_do,dane){
-				widok_od_date = new Date(widok_od*1000).toISOString().slice(0, 10);
-				widok_do_date = new Date(widok_do*1000).toISOString().slice(0, 10);
+            function edytuj(id,nazwa,czy_publiczne){
+                $("#modalZapisyId").html(id);
+                $("#modalZapisyNadawca").val(nazwa);
+                $("#modalZapisyTemat").val(czy_publiczne);
 
-                $("#modalOgloszenieId").html(id);
-                $("#modalOgloszenieNadawca").val(nadawca);
-                $("#modalOgloszenieTemat").val(temat);
-                $("#modalOgloszenieWidokOd").val(widok_od_date);
-                $("#modalOgloszenieWidokDo").val(widok_do_date);
-                $("#modalOgloszenieDane").val(dane);
-
-                $("#modalOgloszenieId").show();
-                $('label[for="modalOgloszenieId"]').show();
-                $("#modalOgloszenie").show();
-                $("#modalOgloszenieEdytuj").show();
+                $("#modalZapisyId").show();
+                $('label[for="modalZapisyId"]').show();
+                $("#modalZapisy").show();
+                $("#modalZapisyEdytuj").show();
             }
 
 			function edytuj_zatwierdz(){
-				id = $("#modalOgloszenieId").html();
-				nadawca = $("#modalOgloszenieNadawca").val();
-				temat = $("#modalOgloszenieTemat").val();
-				widok_od = Math.round(Date.parse($("#modalOgloszenieWidokOd").val()) / 1000);
-				widok_do = Math.round(Date.parse($("#modalOgloszenieWidokDo").val()) / 1000);
-				dane = $("#modalOgloszenieDane").val();
+				id = $("#modalZapisyId").html();
+				nazwa = $("#modalZapisyNadawca").val();
+				czy_publiczne = $("#modalZapisyTemat").val();
 
-				if (widok_do <= widok_od){
-					alert("niepoprawnie ustawione daty");
-				} else {
-					data_json = {
-						"id" : parseInt(id),
-						"nadawca" : nadawca,
-						"temat" : temat,
-						"widok_od" : parseInt(widok_od),
-						"widok_do" : parseInt(widok_do),
-						"dane" : dane
-					}
-
-					$.ajax({
-						url: '/api/ogloszenia/aktualizuj',
-						type: "POST",
-						data: JSON.stringify(data_json),
-						contentType: "application/json; charset=UTF-8",
-						success: function (data) {
-							console.log(data.status);
-							console.log(data.result);
-							
-							if(data.status != 200){
-								console.log("Wystąpił błąd!");
-							} else if (data.status == 200){
-								window.location.reload(true);
-							}
-						}
-					});
+				data_json = {
+					"id" : parseInt(id),
+					"nazwa" : nazwa,
+					"czy_publiczne" : (czy_publiczne === 'true')
 				}
+
+				$.ajax({
+					url: '/api/zapisy/aktualizuj',
+					type: "POST",
+					data: JSON.stringify(data_json),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							window.location.reload(true);
+						}
+					}
+				});
 			}
 
 			function nowe_zatwierdz(){
-				nadawca = $("#modalOgloszenieNadawca").val();
-				temat = $("#modalOgloszenieTemat").val();
-				widok_od = Math.round(Date.parse($("#modalOgloszenieWidokOd").val()) / 1000);
-				widok_do = Math.round(Date.parse($("#modalOgloszenieWidokDo").val()) / 1000);
-				dane = $("#modalOgloszenieDane").val();
+				nazwa = $("#modalZapisyNadawca").val();
+				czy_publiczne = $("#modalZapisyTemat").val();
 
-				if (widok_do <= widok_od){
-					alert("niepoprawnie ustawione daty");
-				} else {
-					data_json = {
-						"nadawca" : nadawca,
-						"temat" : temat,
-						"widok_od" : parseInt(widok_od),
-						"widok_do" : parseInt(widok_do),
-						"dane" : dane
-					}
-
-					$.ajax({
-						url: '/api/ogloszenia/nowe',
-						type: "POST",
-						data: JSON.stringify(data_json),
-						contentType: "application/json; charset=UTF-8",
-						success: function (data) {
-							console.log(data.status);
-							console.log(data.result);
-							
-							if(data.status != 200){
-								console.log("Wystąpił błąd!");
-							} else if (data.status == 200){
-								window.location.reload(true);
-							}
-						}
-					});
+				data_json = {
+					"nazwa" : nazwa,
+					"czy_publiczne" : (czy_publiczne === 'true')
 				}
+
+				$.ajax({
+					url: '/api/zapisy/nowe',
+					type: "POST",
+					data: JSON.stringify(data_json),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							window.location.reload(true);
+						}
+					}
+				});
 			}
 
             function usun(id){
-                conf = confirm("Czy napewno chcesz usunąć wybrane ogłoszenie?")
+                conf = confirm("Czy napewno chcesz usunąć wybrane zapisy?")
 
                 if(conf){
 
@@ -354,7 +310,7 @@
 					}
 
                     $.ajax({
-						url: '/api/ogloszenia/usun',
+						url: '/api/zapisy/usun',
 						type: "POST",
 						data: JSON.stringify(data_json),
 						contentType: "application/json; charset=UTF-8",
@@ -371,7 +327,6 @@
 					});
                 }
             }
-
 
 		</script>
 		<script src="/js/nav.js"></script>

@@ -4,6 +4,7 @@
 		<script src="/js/jquery.min.js"></script>
 		<script src="/js/main.js"></script>
 		<script>
+			setTimeout(function(){$('body').animate({opacity:'1'},500)},400);
 			if (getCookie("token") == null) {
 				document.location.href = "/logowanie.html";
 				document.body.innerHTML = "";
@@ -52,16 +53,7 @@
 					<a id="dropdown-uzytkownicy-utworz" href="#"><span class="disabled">Utwórz użytkownika</span></a>
 				</div>
 			</div>
-			<div id="dropdown-zapisy" class="dropdown">
-				<button class="dropbtn">
-					<span class="disabled">Zarządzanie zapisami</span>
-					<i class="arrow down"></i>
-				</button>
-				<div class="dropdown-content">
-					<a id="dropdown-zapisy-utworz" href="#"><span class="disabled">Tworzenie zapisów</span></a>
-					<a id="dropdown-zapisy-edycja" href="#"><span class="disabled">Edycja zapisów</span></a>
-				</div>
-			</div>
+			<a id="menu-zarzadzanie-zapisy" href="/zarzadzanie_zapisy.html">Zarządzanie zapisami</a>
 			<a id="menu-zapisy" href="/"><span class="disabled">Zapisy</span></a>
 			<div id="dropdown-kursyz" class="dropdown">
 				<button class="dropbtn">
@@ -194,7 +186,12 @@
 							).done( function(json) {
 								
 								let date = new Date(data.result['data'] * 1000);
-								let datestring = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+								if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
+								if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
+								if(date.getHours() < 10){ hours_append = 0; } else { hours_append = ""; }
+								if(date.getMinutes() < 10){ minutes_append = 0; } else { minutes_append = ""; }
+								if(date.getSeconds() < 10){ seconds_append = 0; } else { seconds_append = ""; }
+                   				let datestring = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate()+" "+hours_append+date.getHours()+":"+minutes_append+date.getMinutes()+":"+seconds_append+date.getSeconds();
 
 								if ( data.result['id_uzytkownik'] == userdata.id ){
 									wlasna = " style='background-color:#29163d' ";
@@ -253,7 +250,12 @@
 				).done( function(data) {
 					
 					let date = new Date(data.result['data'] * 1000);
-					let datestring = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+					if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
+					if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
+					if(date.getHours() < 10){ hours_append = 0; } else { hours_append = ""; }
+					if(date.getMinutes() < 10){ minutes_append = 0; } else { minutes_append = ""; }
+					if(date.getSeconds() < 10){ seconds_append = 0; } else { seconds_append = ""; }
+                    let datestring = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate()+" "+hours_append+date.getHours()+":"+minutes_append+date.getMinutes()+":"+seconds_append+date.getSeconds();
 
 					$("#modalWiadomoscTytul").text(data.result['temat']);
 					$("#modalWiadomoscNadawca").html("<b>Nadawca:</b> "+imie+" "+nazwisko);

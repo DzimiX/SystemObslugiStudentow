@@ -16,6 +16,7 @@ use crate::models::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
 use crate::models::{AuthLogin, Auth, AuthNowy};
 use crate::models::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscBezDaty, NowaWiadomoscUczestnik};
 use crate::models::{Ogloszenie, OgloszenieNowe, OgloszenieId};
+use crate::models::{Zapisy, ZapisyNowe, ZapisyId};
 
 #[post("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
@@ -403,6 +404,63 @@ pub fn ogloszenia_usun(conn: DbConn, id_ogloszenie: Json<OgloszenieId>, mut cook
 
     let mut status = 400;
     if Ogloszenie::delete(id, &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/zapisy", format = "application/json")]
+pub fn zapisy(conn: DbConn, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    Json(json!({
+        "status" : 200,
+        "result" : Zapisy::all(&conn),
+    }))
+}
+
+#[post("/zapisy/nowe", format = "application/json", data = "<zapisy>")]
+pub fn zapisy_nowe(conn: DbConn, zapisy: Json<ZapisyNowe>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    let mut status = 400;
+    if Zapisy::add(zapisy.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/zapisy/aktualizuj", format = "application/json", data = "<zapisy>")]
+pub fn zapisy_aktualizuj(conn: DbConn, zapisy: Json<Zapisy>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let mut status = 400;
+    if Zapisy::update(zapisy.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/zapisy/usun", format = "application/json", data = "<id_zapisy>")]
+pub fn zapisy_usun(conn: DbConn, id_zapisy: Json<ZapisyId>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let id : i32 = format!("{}",id_zapisy.id).parse::<i32>().unwrap();
+
+    let mut status = 400;
+    if Zapisy::delete(id, &conn) == true {
         status = 200;
     }
 

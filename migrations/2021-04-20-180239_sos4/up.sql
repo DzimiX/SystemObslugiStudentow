@@ -126,6 +126,17 @@ CREATE TABLE `wiadomosci_uczestnicy` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `zapisy`
+--
+
+CREATE TABLE `zapisy` (
+  `id` int(11) NOT NULL,
+  `nazwa` varchar(255) NOT NULL,
+  `czy_publiczne` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+--
 -- Indexes for dumped tables
 --
 
@@ -201,6 +212,10 @@ ALTER TABLE `wiadomosci_uczestnicy`
   ADD KEY `id_wiadomosc` (`id_wiadomosc`),
   ADD KEY `wiadomosci_uczestnicy_ibfk_1` (`id_uczestnik`);
 
+
+ALTER TABLE `zapisy`
+  ADD PRIMARY KEY (`id`);
+
 --
 -- AUTO_INCREMENT for dumped tables
 --
@@ -263,6 +278,9 @@ ALTER TABLE `wiadomosci`
 -- AUTO_INCREMENT for table `wiadomosci_uczestnicy`
 --
 ALTER TABLE `wiadomosci_uczestnicy`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `zapisy`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
