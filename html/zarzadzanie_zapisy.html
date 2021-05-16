@@ -90,16 +90,7 @@
 					<a id="dropdown-uzytkownicy-utworz" href="#"><span class="disabled">Utwórz użytkownika</span></a>
 				</div>
 			</div>
-			<div id="dropdown-zapisy" class="dropdown">
-				<button class="dropbtn">
-					<span class="disabled">Zarządzanie zapisami</span>
-					<i class="arrow down"></i>
-				</button>
-				<div class="dropdown-content">
-					<a id="dropdown-zapisy-utworz" href="#"><span class="disabled">Tworzenie zapisów</span></a>
-					<a id="dropdown-zapisy-edycja" href="#"><span class="disabled">Edycja zapisów</span></a>
-				</div>
-			</div>
+			<a id="menu-zarzadzanie-zapisy" href="/zarzadzanie_zapisy.html">Zarządzanie zapisami</a>
 			<a id="menu-zapisy" href="/"><span class="disabled">Zapisy</span></a>
 			<div id="dropdown-kursyz" class="dropdown">
 				<button class="dropbtn">
@@ -156,11 +147,11 @@
 		</div>
 		<div class="content">
 			<div class="header">
-				<h2>Zarządzanie ogłoszeniami</h2>
+				<h2>Zarządzanie zapisami</h2>
                 <p style="color:red">Oskryptować</p>
 			</div>
 			<div id="ogloszenia" class="ogloszenia">
-                <button id="nowe">Dodaj nowe ogłoszenie</button>
+                <button id="nowe">Dodaj nowe zapisy</button>
             </div>
 		</div>
 
@@ -187,8 +178,8 @@
                     <label for="modalOgloszenieDane">Treść ogłoszenia:</label></br>
 					<textarea id="modalOgloszenieDane"></textarea></br>
 
-                    <button id="modalOgloszenieEdytuj" onclick="edytuj_zatwierdz()" >Edytuj</button>
-                    <button id="modalOgloszenieDodaj" onclick="nowe_zatwierdz()">Dodaj ogłoszenie</button>
+                    <button id="modalOgloszenieEdytuj">Edytuj</button>
+                    <button id="modalOgloszenieDodaj">Dodaj ogłoszenie</button>
 				</div>
 			</div>
 		</div>
@@ -229,14 +220,9 @@
                         for(let i = 0; i < data.result.length; i++){
 
                             let date = new Date(data.result[i]['widok_od'] * 1000);
-							if(date.getMonth() < 10){ month_append = 0; } else { month_append = ""; }
-							if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
-							if(date.getHours() < 10){ hours_append = 0; } else { hours_append = ""; }
-							if(date.getMinutes() < 10){ minutes_append = 0; } else { minutes_append = ""; }
-							if(date.getSeconds() < 10){ seconds_append = 0; } else { seconds_append = ""; }
-                    		let datestring = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate()+" "+hours_append+date.getHours()+":"+minutes_append+date.getMinutes()+":"+seconds_append+date.getSeconds();
-                           
-							$("#ogloszenia").append(
+                            let datestring = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+
+                            $("#ogloszenia").append(
                                 "<div class='ogloszenie'>"+
                                     "<p><i>"+data.result[i]['nadawca']+"</i>, "+datestring+"</p>"+
                                     "<h3>"+data.result[i]['temat']+"</h3>"+
@@ -260,97 +246,21 @@
 			});
 
             function edytuj(id,nadawca,temat,widok_od,widok_do,dane){
-				widok_od_date = new Date(widok_od*1000).toISOString().slice(0, 10);
-				widok_do_date = new Date(widok_do*1000).toISOString().slice(0, 10);
+                //alert(nadawca);
 
                 $("#modalOgloszenieId").html(id);
                 $("#modalOgloszenieNadawca").val(nadawca);
                 $("#modalOgloszenieTemat").val(temat);
-                $("#modalOgloszenieWidokOd").val(widok_od_date);
-                $("#modalOgloszenieWidokDo").val(widok_do_date);
+                $("#modalOgloszenieWidokOd").val(widok_od);
+                $("#modalOgloszenieWidokDo").val(widok_do);
                 $("#modalOgloszenieDane").val(dane);
+
 
                 $("#modalOgloszenieId").show();
                 $('label[for="modalOgloszenieId"]').show();
                 $("#modalOgloszenie").show();
                 $("#modalOgloszenieEdytuj").show();
             }
-
-			function edytuj_zatwierdz(){
-				id = $("#modalOgloszenieId").html();
-				nadawca = $("#modalOgloszenieNadawca").val();
-				temat = $("#modalOgloszenieTemat").val();
-				widok_od = Math.round(Date.parse($("#modalOgloszenieWidokOd").val()) / 1000);
-				widok_do = Math.round(Date.parse($("#modalOgloszenieWidokDo").val()) / 1000);
-				dane = $("#modalOgloszenieDane").val();
-
-				if (widok_do <= widok_od){
-					alert("niepoprawnie ustawione daty");
-				} else {
-					data_json = {
-						"id" : parseInt(id),
-						"nadawca" : nadawca,
-						"temat" : temat,
-						"widok_od" : parseInt(widok_od),
-						"widok_do" : parseInt(widok_do),
-						"dane" : dane
-					}
-
-					$.ajax({
-						url: '/api/ogloszenia/aktualizuj',
-						type: "POST",
-						data: JSON.stringify(data_json),
-						contentType: "application/json; charset=UTF-8",
-						success: function (data) {
-							console.log(data.status);
-							console.log(data.result);
-							
-							if(data.status != 200){
-								console.log("Wystąpił błąd!");
-							} else if (data.status == 200){
-								window.location.reload(true);
-							}
-						}
-					});
-				}
-			}
-
-			function nowe_zatwierdz(){
-				nadawca = $("#modalOgloszenieNadawca").val();
-				temat = $("#modalOgloszenieTemat").val();
-				widok_od = Math.round(Date.parse($("#modalOgloszenieWidokOd").val()) / 1000);
-				widok_do = Math.round(Date.parse($("#modalOgloszenieWidokDo").val()) / 1000);
-				dane = $("#modalOgloszenieDane").val();
-
-				if (widok_do <= widok_od){
-					alert("niepoprawnie ustawione daty");
-				} else {
-					data_json = {
-						"nadawca" : nadawca,
-						"temat" : temat,
-						"widok_od" : parseInt(widok_od),
-						"widok_do" : parseInt(widok_do),
-						"dane" : dane
-					}
-
-					$.ajax({
-						url: '/api/ogloszenia/nowe',
-						type: "POST",
-						data: JSON.stringify(data_json),
-						contentType: "application/json; charset=UTF-8",
-						success: function (data) {
-							console.log(data.status);
-							console.log(data.result);
-							
-							if(data.status != 200){
-								console.log("Wystąpił błąd!");
-							} else if (data.status == 200){
-								window.location.reload(true);
-							}
-						}
-					});
-				}
-			}
 
             function usun(id){
                 conf = confirm("Czy napewno?")

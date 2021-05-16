@@ -1,7 +1,13 @@
 body {
+    opacity: 0;
     padding: 0px;
     margin: 0px;
     font-family: Arial, Helvetica, sans-serif;
+    background: url('/img/background.jpg') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
     background-color: #2a2a2e;
     color: white;
 }

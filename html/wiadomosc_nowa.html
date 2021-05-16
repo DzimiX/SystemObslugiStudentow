@@ -5,6 +5,7 @@
 		<script src="/js/main.js"></script>
         <script src="/js/select2.min.js"></script>
 		<script>
+			setTimeout(function(){$('body').animate({opacity:'1'},500)},400);
 			if (getCookie("token") == null) {
 				document.location.href = "/logowanie.html";
 				document.body.innerHTML = "";
