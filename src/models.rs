@@ -19,6 +19,11 @@ use crate::schema::uzytkownicy;
 use crate::schema::ogloszenia;
 use crate::schema::zapisy;
 use crate::schema::uzytkownicy_dane;
+use crate::schema::kursy;
+use crate::schema::kursy_grupy;
+use crate::schema::kursy_grupy_oceny;
+use crate::schema::kursy_grupy_uczestnicy;
+
 
 #[derive(Queryable, Serialize)]
 pub struct Uzytkownik {
@@ -619,5 +624,107 @@ impl DaneOsobowe {
 
         return true
     }
+
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy"]
+pub struct Kurs {
+    pub id: i32,
+    pub kod : String,
+    pub nazwa : String,
+    pub ects : i32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy"]
+pub struct KursNowy {
+    pub kod : String,
+    pub nazwa : String,
+    pub ects : i32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy"]
+pub struct KursId {
+    pub id: i32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy"]
+pub struct Grupa {
+    pub id: i32,
+    pub id_kursu : i32,
+    pub id_zapisy : i32,
+    pub kod_grupy : String,
+    pub termin : String,
+    pub sala : String
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy"]
+pub struct GrupaNowa {
+    pub id_kursu : i32,
+    pub id_zapisy : i32,
+    pub kod_grupy : String,
+    pub termin : String,
+    pub sala : String
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy"]
+pub struct GrupaId {
+    pub id: i32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_oceny"]
+pub struct Ocena {
+    pub id: i32,
+    pub id_grupa : i32,
+    pub id_uczestnik : i32,
+    pub ocena : f32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_oceny"]
+pub struct OcenaNowa {
+    pub id_grupa : i32,
+    pub id_uczestnik : i32,
+    pub ocena : f32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_oceny"]
+pub struct OcenaId {
+    pub id: i32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_uczestnicy"]
+pub struct Uczestnik {
+    pub id: i32,
+    pub id_grupa : i32,
+    pub id_uczestnik : i32,
+    pub czy_prowadzacy : bool
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_uczestnicy"]
+pub struct UczestnikNowy {
+    pub id_grupa : i32,
+    pub id_uczestnik : i32,
+    pub czy_prowadzacy : bool
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_uczestnicy"]
+pub struct UczestnikId {
+    pub id: i32,
+}
+
+impl Kurs {
+
+    
 
 }
