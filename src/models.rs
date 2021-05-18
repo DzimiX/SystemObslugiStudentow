@@ -19,6 +19,8 @@ use crate::schema::uzytkownicy;
 use crate::schema::ogloszenia;
 use crate::schema::zapisy;
 use crate::schema::uzytkownicy_dane;
+use crate::schema::sprawy;
+
 
 #[derive(Queryable, Serialize)]
 pub struct Uzytkownik {
@@ -619,5 +621,31 @@ impl DaneOsobowe {
 
         return true
     }
+
+}
+
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "sprawy"]
+pub struct Sprawy {
+    pub id: i32,
+    pub temat: String,
+    pub data: i64,
+    pub status: String,
+    pub decyzja: String
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "sprawy"]
+pub struct SprawyNowe {
+    pub temat: String,
+}
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "sprawy"]
+pub struct SprawyId {
+    pub id: i32,
+}
+
+impl Sprawy {
 
 }
