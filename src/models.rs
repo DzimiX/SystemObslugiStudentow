@@ -650,6 +650,64 @@ pub struct KursId {
     pub id: i32
 }
 
+impl Kurs {
+
+    pub fn add(kurs: KursNowy, conn: &MysqlConnection) -> bool {
+        diesel::insert_into(kursy::table)
+            .values(&kurs)
+            .execute(conn)
+            .is_ok()
+    }
+
+    pub fn get(id: i32, conn: &MysqlConnection) -> Vec<Kurs> {
+        kursy::table
+            .find(id)
+            .load::<Kurs>(conn)
+            .expect("Problem z wczytaniem kursów.")
+    }
+
+    pub fn all(conn: &MysqlConnection) -> Vec<Kurs> {
+        kursy::table
+            .order(kursy::id.desc())
+            .load::<Kurs>(conn)
+            .expect("Problem z wczytaniem kursów.")
+    }
+
+    pub fn delete(id: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(kursy::table
+            .filter(kursy::id.eq(id))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+    
+        return true
+    }
+
+    pub fn update(kurs: Kurs, conn: &MysqlConnection) -> bool {
+        
+        let id = kurs.id;
+        let kod = kurs.kod;
+        let nazwa = kurs.nazwa;
+        let ects = kurs.ects;
+
+        let updated_row = diesel::update(kursy::table.filter(kursy::id.eq(&id)))
+            .set((
+                kursy::kod.eq(kod),
+                kursy::nazwa.eq(nazwa),
+                kursy::ects.eq(ects)
+            ))
+            .execute(conn)
+            .is_ok();
+
+        if updated_row == false {
+            return false
+        }
+
+        return true
+    }
+
+}
+
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
 #[table_name = "kursy_grupy"]
 pub struct Grupa {
@@ -675,6 +733,41 @@ pub struct GrupaNowa {
 #[table_name = "kursy_grupy"]
 pub struct GrupaId {
     pub id: i32
+}
+
+impl Grupa {
+
+    pub fn add(kurs: GrupaNowa, conn: &MysqlConnection) -> bool {
+        diesel::insert_into(kursy_grupy::table)
+            .values(&kurs)
+            .execute(conn)
+            .is_ok()
+    }
+
+    pub fn get(id: i32, conn: &MysqlConnection) -> Vec<Grupa> {
+        kursy_grupy::table
+            .find(id)
+            .load::<Grupa>(conn)
+            .expect("Problem z wczytaniem kursów.")
+    }
+
+    pub fn all(conn: &MysqlConnection) -> Vec<Grupa> {
+        kursy_grupy::table
+            .order(kursy_grupy::id.desc())
+            .load::<Grupa>(conn)
+            .expect("Problem z wczytaniem kursów.")
+    }
+
+    pub fn delete(id: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(kursy_grupy::table
+            .filter(kursy_grupy::id.eq(id))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+    
+        return true
+    }
+
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
@@ -721,10 +814,4 @@ pub struct UczestnikNowy {
 #[table_name = "kursy_grupy_uczestnicy"]
 pub struct UczestnikId {
     pub id: i32,
-}
-
-impl Kurs {
-
-    
-
 }

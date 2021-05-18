@@ -77,6 +77,11 @@ fn rocket() {
             router::dane_osobowe_nowe,
             router::dane_osobowe_aktualizuj,
             router::dane_osobowe_usun,
+
+            router::kursy,
+            router::kursy_usun,
+            router::kursy_aktualizuj,
+            router::kursy_nowe,
             
             router::logowanie,
             router::autoryzacja,
