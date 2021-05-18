@@ -648,4 +648,57 @@ pub struct SprawyId {
 
 impl Sprawy {
 
+    pub fn add(sprawy: SprawyNowe, conn: &MysqlConnection) -> bool {
+        diesel::insert_into(sprawy::table)
+            .values(&sprawy)
+            .execute(conn)
+            .is_ok()
+    }
+    pub fn get(id: i32, conn: &MysqlConnection) -> Vec<Sprawy> {
+        sprawy::table
+            .find(id)
+            .load::<Sprawy>(conn)
+            .expect("Problem z wczytaniem spraw.")
+    }
+
+
+    pub fn all(conn: &MysqlConnection) -> Vec<Sprawy> {
+        sprawy::table
+            .order(sprawy::id.desc())
+            .load::<Sprawy>(conn)
+            .expect("Problem z wczytaniem spraw.")
+    }
+    pub fn delete(id: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(sprawy::table
+            .filter(sprawy::id.eq(id))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+    
+        return true
+    }
+    pub fn update(sprawy: Sprawy, conn: &MysqlConnection) -> bool {
+        
+        let id = sprawy.id;
+        let temat = sprawy.temat;
+        let status = sprawy.status;
+        let decyzja = sprawy.decyzja;
+
+        let updated_row = diesel::update(sprawy::table.filter(sprawy::id.eq(&id)))
+            .set((
+                sprawy::temat.eq(temat),
+                sprawy::status.eq(status),
+                sprawy::decyzja.eq(decyzja),
+            ))
+            .execute(conn)
+            .is_ok();
+
+        if updated_row == false {
+            return false
+        }
+
+        return true
+    }
+
+
 }
