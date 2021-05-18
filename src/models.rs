@@ -751,12 +751,29 @@ impl Grupa {
             .expect("Problem z wczytaniem kursów.")
     }
 
+    pub fn get_kurs(id_kurs: i32, conn: &MysqlConnection) -> Vec<Grupa> {
+        kursy_grupy::table
+            .filter(kursy_grupy::id_kursu.eq(id_kurs))
+            .load::<Grupa>(conn)
+            .expect("Problem z wczytaniem kursów.")
+    }
+
+    pub fn get_kurs_zapisy(id_zapisy: i32, id_kurs: i32, conn: &MysqlConnection) -> Vec<Grupa> {
+        kursy_grupy::table
+            .filter(kursy_grupy::id_zapisy.eq(id_zapisy))
+            .filter(kursy_grupy::id_kursu.eq(id_kurs))
+            .load::<Grupa>(conn)
+            .expect("Problem z wczytaniem kursów.")
+    }
+
+    /*
     pub fn all(conn: &MysqlConnection) -> Vec<Grupa> {
         kursy_grupy::table
             .order(kursy_grupy::id.desc())
             .load::<Grupa>(conn)
             .expect("Problem z wczytaniem kursów.")
     }
+    */
 
     pub fn delete(id: i32, conn: &MysqlConnection) -> bool {
         diesel::delete(kursy_grupy::table
@@ -765,6 +782,33 @@ impl Grupa {
         .execute(conn)
         .expect("Błąd.");
     
+        return true
+    }
+
+    pub fn update(grupa: Grupa, conn: &MysqlConnection) -> bool {
+        
+        let id = grupa.id;
+        let id_kursu = grupa.id_kursu;
+        let id_zapisy = grupa.id_zapisy;
+        let kod_grupy = grupa.kod_grupy;
+        let termin = grupa.termin;
+        let sala = grupa.sala;
+
+        let updated_row = diesel::update(kursy_grupy::table.filter(kursy_grupy::id.eq(&id)))
+            .set((
+                kursy_grupy::id_kursu.eq(id_kursu),
+                kursy_grupy::id_zapisy.eq(id_zapisy),
+                kursy_grupy::kod_grupy.eq(kod_grupy),
+                kursy_grupy::termin.eq(termin),
+                kursy_grupy::sala.eq(sala)
+            ))
+            .execute(conn)
+            .is_ok();
+
+        if updated_row == false {
+            return false
+        }
+
         return true
     }
 

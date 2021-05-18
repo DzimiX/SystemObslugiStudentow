@@ -19,6 +19,7 @@ use crate::models::{Ogloszenie, OgloszenieNowe, OgloszenieId};
 use crate::models::{Zapisy, ZapisyNowe, ZapisyId};
 use crate::models::{DaneOsobowe, DaneOsoboweId};
 use crate::models::{Kurs, KursNowy, KursId};
+use crate::models::{Grupa, GrupaNowa, GrupaId};
 
 #[post("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
@@ -596,3 +597,69 @@ pub fn kursy_usun(conn: DbConn, id_kurs: Json<KursId>, mut cookies : Cookies) ->
 
 // Grupy (do zapisów i realizacji zajęć) dla kursów
 
+#[post("/grupy/<id_kurs>", format = "application/json")]
+pub fn grupy(conn: DbConn, id_kurs: i32, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    Json(json!({
+        "status" : 200,
+        "result" : Grupa::get_kurs(id_kurs,&conn),
+    }))
+}
+
+#[post("/grupy_zapisy/<id_zapisy>/<id_kurs>", format = "application/json")]
+pub fn grupy_zapisy(conn: DbConn, id_zapisy : i32, id_kurs : i32, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    Json(json!({
+        "status" : 200,
+        "result" : Grupa::get_kurs_zapisy(id_zapisy,id_kurs,&conn),
+    }))
+}
+
+#[post("/grupa/nowe", format = "application/json", data = "<grupa_nowa>")]
+pub fn grupy_nowe(conn: DbConn, grupa_nowa: Json<GrupaNowa>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    let mut status = 400;
+    if Grupa::add(grupa_nowa.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/grupa/aktualizuj", format = "application/json", data = "<grupa>")]
+pub fn grupy_aktualizuj(conn: DbConn, grupa: Json<Grupa>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let mut status = 400;
+    if Grupa::update(grupa.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/grupa/usun", format = "application/json", data = "<id_grupa>")]
+pub fn grupy_usun(conn: DbConn, id_grupa: Json<GrupaId>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let id : i32 = format!("{}",id_grupa.id).parse::<i32>().unwrap();
+
+    let mut status = 400;
+    if Grupa::delete(id, &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
