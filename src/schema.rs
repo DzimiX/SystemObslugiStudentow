@@ -10,6 +10,16 @@ table! {
 }
 
 table! {
+    sprawy (id) {
+        id -> Integer,
+        temat -> Varchar,
+        data -> Bigint,
+        status -> Varchar,
+        decyzja -> Varchar,
+    }
+}
+
+table! {
     tokeny (id) {
         id -> Integer,
         id_uzytkownik -> Integer,
@@ -101,6 +111,7 @@ joinable!(wiadomosci_uczestnicy -> wiadomosci (id_wiadomosc));
 
 allow_tables_to_appear_in_same_query!(
     ogloszenia,
+    sprawy,
     tokeny,
     uprawnienia,
     uzytkownicy,

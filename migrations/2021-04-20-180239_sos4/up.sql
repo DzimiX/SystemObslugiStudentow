@@ -127,6 +127,14 @@ CREATE TABLE `zapisy` (
   `czy_publiczne` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+CREATE TABLE `sprawy` (
+  `id` int(11) NOT NULL,
+  `temat` varchar(255) NOT NULL,
+  `data` bigint(8) NOT NULL,
+  `status` varchar(255) NOT NULL,
+  `decyzja` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 -- --------------------------------------------------------
 --
 -- Indexes for dumped tables
@@ -200,6 +208,8 @@ ALTER TABLE `wiadomosci_uczestnicy`
 ALTER TABLE `zapisy`
   ADD PRIMARY KEY (`id`);
 
+ALTER TABLE `sprawy`
+  ADD PRIMARY KEY (`id`);
 --
 -- AUTO_INCREMENT for dumped tables
 --
@@ -255,7 +265,8 @@ ALTER TABLE `wiadomosci_uczestnicy`
 ALTER TABLE `zapisy`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
+ALTER TABLE `sprawy`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 -- Constraints for dumped tables
 --
 
@@ -345,3 +356,6 @@ INSERT INTO `wiadomosci_uczestnicy` (`id`, `id_wiadomosc`, `id_uczestnik`) VALUE
 INSERT INTO `zapisy` (`id`, `nazwa`, `czy_publiczne`) VALUES
   (1, 'Semestr letni 2020/2021', 1),
   (2, 'Semestr zimowy 2021/2022', 0);
+
+INSERT INTO `sprawy` (`id`, `temat`, `data`, `status`, `decyzja`) VALUES
+  (1, 'Stypendium Rektora', 1621357963, 'Rozpatrzona', 'Zgoda');
