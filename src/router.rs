@@ -20,6 +20,8 @@ use crate::models::{Zapisy, ZapisyNowe, ZapisyId};
 use crate::models::{DaneOsobowe, DaneOsoboweId};
 use crate::models::{Kurs, KursNowy, KursId};
 use crate::models::{Grupa, GrupaNowa, GrupaId};
+use crate::models::{Uczestnik, UczestnikNowy, UczestnikId};
+use crate::models::{Ocena, OcenaNowa, OcenaId};
 
 #[post("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
@@ -617,12 +619,12 @@ pub fn grupy_zapisy(conn: DbConn, id_zapisy : i32, id_kurs : i32, mut cookies : 
     }))
 }
 
-#[post("/grupa/nowe", format = "application/json", data = "<grupa_nowa>")]
-pub fn grupy_nowe(conn: DbConn, grupa_nowa: Json<GrupaNowa>, mut cookies : Cookies) -> Json<Value> { 
+#[post("/grupa/nowe", format = "application/json", data = "<grupa>")]
+pub fn grupy_nowe(conn: DbConn, grupa: Json<GrupaNowa>, mut cookies : Cookies) -> Json<Value> { 
     // niebezpieczne
 
     let mut status = 400;
-    if Grupa::add(grupa_nowa.into_inner(), &conn) == true {
+    if Grupa::add(grupa.into_inner(), &conn) == true {
         status = 200;
     }
 
@@ -663,3 +665,80 @@ pub fn grupy_usun(conn: DbConn, id_grupa: Json<GrupaId>, mut cookies : Cookies) 
         "result" : "OK",
     }))
 }
+
+// Uczestnicy grup
+
+#[post("/uczestnicy/<id_grupa>", format = "application/json")]
+pub fn uczestnicy_grupa(conn: DbConn, id_grupa: i32, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    Json(json!({
+        "status" : 200,
+        "result" : Uczestnik::get_grupa_uczestnicy(id_grupa,&conn),
+    }))
+}
+
+#[post("/uczestnicy/nowe", format = "application/json", data = "<uczestnik>")]
+pub fn uczestnicy_nowe(conn: DbConn, uczestnik: Json<UczestnikNowy>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    let mut status = 400;
+    if Uczestnik::add(uczestnik.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/uczestnicy/aktualizuj", format = "application/json", data = "<uczestnik>")]
+pub fn uczestnicy_aktualizuj(conn: DbConn, uczestnik: Json<Uczestnik>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let mut status = 400;
+    if Uczestnik::update(uczestnik.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/uczestnik/usun", format = "application/json", data = "<id_uczestnik>")]
+pub fn uczestnik_usun(conn: DbConn, id_uczestnik: Json<UczestnikId>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let id : i32 = format!("{}",id_uczestnik.id).parse::<i32>().unwrap();
+
+    let mut status = 400;
+    if Uczestnik::delete(id, &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/uczestnik_usun/<id_grupy>/<id_uczestnik>", format = "application/json")]
+pub fn uczestnik_grupa_usun(conn: DbConn, id_grupy: i32, id_uczestnik: i32, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+    
+    Ocena::delete_grupa_uczestnik(id_grupy, id_uczestnik, &conn);
+
+    let mut status = 400;
+    if Uczestnik::delete_grupa_uczestnik(id_grupy, id_uczestnik, &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : "status",
+        "result" : "OK",
+    }))
+}
+

@@ -119,6 +119,7 @@ ALTER TABLE `kursy_grupy_oceny`
 
 ALTER TABLE `kursy_grupy_uczestnicy`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id_grupa_2` (`id_grupa`,`id_uczestnik`),
   ADD KEY `id_grupa` (`id_grupa`),
   ADD KEY `id_uczestnik` (`id_uczestnik`);
 
@@ -270,6 +271,9 @@ INSERT INTO `uzytkownicy_uprawnienia` (`id`, `id_uzytkownik`, `id_uprawnienie`) 
   (3, 3, 3),
   (4, 4, 2),
   (5, 5, 1);
+
+INSERT INTO `uzytkownicy_dane` (`id_uzytkownik`, `miasto`, `ulica`, `nr_domu`, `kod_pocztowy`, `pesel`, `nr_dowodu`) VALUES
+  (1, 'Wrocław', 'Wrocławska', '77', '50-120', '11223344556', 'XXX123456');
 
 INSERT INTO `ogloszenia` (`id`, `nadawca`, `temat`, `dane`, `widok_od`, `widok_do`) VALUES
   (1, 'Administracja Systemu', 'Konserwacja', 'Trwa konserwacja...', 1620242061, 1731242061);

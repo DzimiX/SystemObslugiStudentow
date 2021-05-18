@@ -737,9 +737,9 @@ pub struct GrupaId {
 
 impl Grupa {
 
-    pub fn add(kurs: GrupaNowa, conn: &MysqlConnection) -> bool {
+    pub fn add(grupa: GrupaNowa, conn: &MysqlConnection) -> bool {
         diesel::insert_into(kursy_grupy::table)
-            .values(&kurs)
+            .values(&grupa)
             .execute(conn)
             .is_ok()
     }
@@ -815,6 +815,99 @@ impl Grupa {
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_uczestnicy"]
+pub struct Uczestnik {
+    pub id: i32,
+    pub id_grupa : i32,
+    pub id_uczestnik : i32,
+    pub czy_prowadzacy : bool
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_uczestnicy"]
+pub struct UczestnikNowy {
+    pub id_grupa : i32,
+    pub id_uczestnik : i32,
+    pub czy_prowadzacy : bool
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_uczestnicy"]
+pub struct UczestnikId {
+    pub id: i32,
+}
+
+impl Uczestnik {
+
+    pub fn add(uczestnik: UczestnikNowy, conn: &MysqlConnection) -> bool {
+        diesel::insert_into(kursy_grupy_uczestnicy::table)
+            .values(&uczestnik)
+            .execute(conn)
+            .is_ok()
+    }
+
+    pub fn get(id: i32, conn: &MysqlConnection) -> Vec<Uczestnik> {
+        kursy_grupy_uczestnicy::table
+            .find(id)
+            .load::<Uczestnik>(conn)
+            .expect("Problem z wczytaniem uczestników.")
+    }
+
+    pub fn get_grupa_uczestnicy(id_grupa: i32, conn: &MysqlConnection) -> Vec<Uczestnik> {
+        kursy_grupy_uczestnicy::table
+            .filter(kursy_grupy_uczestnicy::id_grupa.eq(id_grupa))
+            .order(kursy_grupy_uczestnicy::czy_prowadzacy.desc())
+            .load::<Uczestnik>(conn)
+            .expect("Problem z wczytaniem uczestników.")
+    }
+
+    pub fn delete(id: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(kursy_grupy_uczestnicy::table
+            .filter(kursy_grupy_uczestnicy::id.eq(id))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+    
+        return true
+    }
+
+    pub fn delete_grupa_uczestnik(id_grupa: i32, id_uczestnik: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(kursy_grupy_uczestnicy::table
+            .filter(kursy_grupy_uczestnicy::id_grupa.eq(id_grupa))
+            .filter(kursy_grupy_uczestnicy::id_uczestnik.eq(id_uczestnik))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+    
+        return true
+    }
+
+    pub fn update(uczestnik: Uczestnik, conn: &MysqlConnection) -> bool {
+        
+        let id = uczestnik.id;
+        let id_grupa = uczestnik.id_grupa;
+        let id_uczestnik = uczestnik.id_uczestnik;
+        let czy_prowadzacy = uczestnik.czy_prowadzacy;
+
+        let updated_row = diesel::update(kursy_grupy_uczestnicy::table.filter(kursy_grupy_uczestnicy::id.eq(&id)))
+            .set((
+                kursy_grupy_uczestnicy::id_grupa.eq(id_grupa),
+                kursy_grupy_uczestnicy::id_uczestnik.eq(id_uczestnik),
+                kursy_grupy_uczestnicy::czy_prowadzacy.eq(czy_prowadzacy)
+            ))
+            .execute(conn)
+            .is_ok();
+
+        if updated_row == false {
+            return false
+        }
+
+        return true
+    }
+
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
 #[table_name = "kursy_grupy_oceny"]
 pub struct Ocena {
     pub id: i32,
@@ -837,25 +930,78 @@ pub struct OcenaId {
     pub id: i32
 }
 
-#[derive(Insertable, Queryable, Serialize, Deserialize)]
-#[table_name = "kursy_grupy_uczestnicy"]
-pub struct Uczestnik {
-    pub id: i32,
-    pub id_grupa : i32,
-    pub id_uczestnik : i32,
-    pub czy_prowadzacy : bool
-}
+impl Ocena {
 
-#[derive(Insertable, Queryable, Serialize, Deserialize)]
-#[table_name = "kursy_grupy_uczestnicy"]
-pub struct UczestnikNowy {
-    pub id_grupa : i32,
-    pub id_uczestnik : i32,
-    pub czy_prowadzacy : bool
-}
+    pub fn add(ocena: OcenaNowa, conn: &MysqlConnection) -> bool {
+        diesel::insert_into(kursy_grupy_oceny::table)
+            .values(&ocena)
+            .execute(conn)
+            .is_ok()
+    }
 
-#[derive(Insertable, Queryable, Serialize, Deserialize)]
-#[table_name = "kursy_grupy_uczestnicy"]
-pub struct UczestnikId {
-    pub id: i32,
+    pub fn get(id: i32, conn: &MysqlConnection) -> Vec<Ocena> {
+        kursy_grupy_oceny::table
+            .find(id)
+            .load::<Ocena>(conn)
+            .expect("Problem z wczytaniem ocen.")
+    }
+
+    pub fn get_grupa_student(id_grupa: i32, id_student: i32, conn: &MysqlConnection) -> Vec<Ocena> {
+        kursy_grupy_oceny::table
+            .filter(kursy_grupy_oceny::id_grupa.eq(id_grupa))
+            .filter(kursy_grupy_oceny::id_uczestnik.eq(id_student))
+            .load::<Ocena>(conn)
+            .expect("Problem z wczytaniem ocen.")
+    }
+
+    pub fn all(conn: &MysqlConnection) -> Vec<Ocena> {
+        kursy_grupy_oceny::table
+            .order(kursy_grupy_oceny::id.desc())
+            .load::<Ocena>(conn)
+            .expect("Problem z wczytaniem ocen.")
+    }
+
+    pub fn delete(id: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(kursy_grupy_oceny::table
+            .filter(kursy_grupy_oceny::id.eq(id))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+    
+        return true
+    }
+
+    pub fn delete_grupa_uczestnik(id_grupa: i32, id_uczestnik: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(kursy_grupy_oceny::table
+            .filter(kursy_grupy_oceny::id_grupa.eq(id_grupa))
+            .filter(kursy_grupy_oceny::id_uczestnik.eq(id_uczestnik))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+    
+        return true
+    }
+
+    pub fn update(ocena: Ocena, conn: &MysqlConnection) -> bool {
+        
+        let id = ocena.id;
+        let id_grupa = ocena.id_grupa;
+        let id_uczestnik = ocena.id_uczestnik;
+        let ocena = ocena.ocena;
+
+        let updated_row = diesel::update(kursy_grupy_oceny::table.filter(kursy_grupy_oceny::id.eq(&id)))
+            .set((
+                kursy_grupy_oceny::id_grupa.eq(id_grupa),
+                kursy_grupy_oceny::id_uczestnik.eq(id_uczestnik),
+                kursy_grupy_oceny::ocena.eq(ocena)
+            ))
+            .execute(conn)
+            .is_ok();
+
+        if updated_row == false {
+            return false
+        }
+
+        return true
+    }
 }

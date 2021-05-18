@@ -89,6 +89,11 @@ fn rocket() {
             router::grupy_aktualizuj,
             router::grupy_nowe,
 
+            router::uczestnicy_grupa,
+            router::uczestnicy_nowe,
+            router::uczestnicy_aktualizuj,
+            router::uczestnik_usun,
+            router::uczestnik_grupa_usun,
             
             router::logowanie,
             router::autoryzacja,

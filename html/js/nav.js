@@ -1,4 +1,4 @@
-userdata.id_uprawnien = 6; // nadpisanie widoku
+//userdata.id_uprawnien = 6; // nadpisanie widoku
 widok(userdata.id_uprawnien)
 
 function widok(id_uprawnien){
