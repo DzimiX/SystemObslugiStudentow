@@ -64,6 +64,19 @@
                 padding-top: 20px;
                 padding-bottom: 20px;
             }
+
+			#odpowiedzAJAX td {
+                padding: 5px;
+                border-bottom: 1px solid rgb(0, 110, 255);
+            }
+			#odpowiedzAJAX td:not(:nth-last-child(1)) {
+				border-right: 1px solid rgb(0, 110, 255);
+			}
+            #odpowiedzAJAX {
+				padding: 20px;
+				border-radius: 10px;
+				background-color: rgb(0, 73, 168, 0.6);
+			}
 		</style>
 	</head>
 	<body>
@@ -92,16 +105,7 @@
 			</div>
 			<a id="menu-zarzadzanie-zapisy" href="/zarzadzanie_zapisy.html">Zarządzanie zapisami</a>
 			<a id="menu-zapisy" href="/"><span class="disabled">Zapisy</span></a>
-			<div id="dropdown-kursyz" class="dropdown">
-				<button class="dropbtn">
-					<span class="disabled">Zarządzanie kursami</span>
-					<i class="arrow down"></i>
-				</button>
-				<div class="dropdown-content">
-					<a id="dropdown-kursyz-lista" href="#"><span class="disabled">Lista kursów</span></a>
-					<a id="dropdown-kursyz-utworz" href="#"><span class="disabled">Utwórz nowy kurs</span></a>
-				</div>
-			</div>
+			<a id="menu-zarzadzanie-kursy" href="/zarzadzanie_kursy.html">Zarządzanie kursami</a>
 			<div id="dropdown-kursy" class="dropdown">
 				<button class="dropbtn">
 					<span class="disabled">Kursy</span>
@@ -125,12 +129,12 @@
 			</div>
 			<div id="dropdown-sprawyz" class="dropdown">
 				<button class="dropbtn">
-					<span>Zarządzaj sprawami</span>
+					<span>Zarządzanie sprawami</span>
 					<i class="arrow down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a id="dropdown-sprawyz-lista" href="zarzadzanie_sprawy.html"><span>Przeglądaj sprawy</span></a>
-					<a id="dropdown-sprawyz-utworz" href="#"><span class="disabled">Definiuj sprawy</span></a>
+					<a id="dropdown-sprawy-moje" href="/zarzadzanie_sprawy.html"><span>Zarządzaj sprawami</span></a>
+					<a id="dropdown-sprawy-utworz" href="/zarzadzanie_sprawy_definicje.html"><span>Definiuj sprawy</span></a>
 				</div>
 			</div>
 			<div class="dropdown-right">
@@ -147,16 +151,17 @@
 		</div>
 		<div class="content">
 			<div class="header">
-				<h2>Przegladaj Sprawy</h2>
+				<h2>Przegladaj założone sprawy</h2>
 			</div>
+			<a href="/zarzadzanie_sprawy_definicje.html"><button>Definiuj nowe sprawy</button></a></br></br>
             <table id="odpowiedzAJAX">
 				<tr>
-					<td>ID</td>
-					<td>Nadawca</td>
-					<td>Data</td>
-					<td>Temat</td>
-                    <td>Status</td>
-                    <td>Decyzja</td>
+					<td><b>ID</b></td>
+					<td><b>Nadawca</b></td>
+					<td><b>Data</b></td>
+					<td><b>Temat</b></td>
+                    <td><b>Status</b></td>
+                    <td><b>Decyzja</b></td>
 				</tr>
 			</table>
 		</div>

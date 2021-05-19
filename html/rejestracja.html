@@ -49,6 +49,7 @@
         .login-box input {
             width: 100%;
             height: 30px;
+            margin-bottom: 10px;
         }
         .login-box button {
             width: 130px;
@@ -59,23 +60,23 @@
         <div class="center-container">
             <div class="header">
                 <p style="color:red">BETA tylko na: <a style="color:yellow" href="http://localhost.:9090/">http://localhost.:9090/</a></p>
-                <p> <span style="color:yellow"><b>Tymczasowe dane:</b></span></br>
-                    ADMINISTRATOR: anowak : abc </br>
-                    PRACOWNIK: jkowalski : abc </br>
-                    PROWADZĄCY: amalysz : abc </br>
-                    STUDENT: terminator : abc </br>
-                    UŻYTKOWNIK: jpawel : abc </br>
-                </p>
                 <h1>System Obsługi Studentów</h1>
-                <h2>Zaloguj się:</h5>
+                <h2>Zarejestruj się:</h5>
+                <h1 style="color:red">REJESTRACJA WYŁĄCZONA</h1>
             </div>
             <div class="login-box">
+                <label for="form-imie">Imię:</label>
+                <input id="form-imie" name="imie"></input></br>
+                <label for="form-nazwisko">Nazwisko:</label>
+                <input id="form-nazwisko" name="nazwisko"></input></br></br>
                 <label for="form-login">Login:</label>
-                <input id="form-login" name="login"></input></br></br>
+                <input id="form-login" name="login"></input></br>
                 <label for="form-haslo">Hasło:</label>
-                <input type="password" id="form-haslo" name="haslo"></input></br></br>
-                <button id="login-button">Zaloguj się</button> lub
-                <a href="/rejestracja.html">Utwórz nowe konto</a>
+                <input type="password" id="form-haslo" name="haslo"></input></br>
+                <label for="form-haslo2">Powtórz hasło:</label>
+                <input type="password" id="form-haslo2" name="haslo2"></input></br></br>
+                <button id="register-button">Utwórz konto</button> lub
+                <a href="/logowanie.html">Zaloguj się</a>
             </div>
         </div>
 
@@ -104,7 +105,7 @@
 						console.log(data.result);
 						
 						if(data.status != 200){
-							alert("Niepoprawne dane logowania")
+							console.log("Wystąpił błąd!");
 						} else if (data.status == 200){
 							document.location.href = "/";
 						}
