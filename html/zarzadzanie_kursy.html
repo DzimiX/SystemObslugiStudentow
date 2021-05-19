@@ -26,6 +26,7 @@
 		<title>System obsługi studentów - zarządzanie kursami</title>
 		<meta name="description" content="System Obsługi Studentów">
 		<link rel="stylesheet" href="/css/navbar.css">
+		<link rel="stylesheet" href="/css/modal.css">
 		<link rel="stylesheet" href="/css/main.css">
 		<style>
             #kursy * {
@@ -117,9 +118,7 @@
 				<h2>Zarządzanie kursami</h2>
 			</div>
 
-            <p style="color:red"><b>OSKRYPTOWAĆ</b></p>
-
-            <button>Dodaj nowy kurs</button></br></br>
+            <button id="nowe">Dodaj nowy kurs</button></br></br>
 
             <table id="kursy">
                 <tr>
@@ -132,7 +131,51 @@
             </table>
 		</div>
 
+		<div id="modalKurs" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<span id="modalZamknij" class="close">&times;</span>
+					<h2 disabled id='modalOgloszenieTytul'>Kurs <span><label for="modalKursId"> o ID = </label><span id="modalKursId"></span></span></h2>
+				</div>
+				<div class="modal-body">
+
+                    <label for="modalKursKod">Kod kursu:</label></br>
+					<input id="modalKursKod"></input></br>
+                    
+                    <label for="modalKursNazwa">Nazwa:</label></br>
+					<input id="modalKursNazwa"></input></br>
+
+                    <label for="modalKursECTS">ECTS:</label></br>
+					<input id="modalKursECTS"></br>
+
+                    <button id="modalKursEdytuj" onclick="edytuj_zatwierdz()" >Edytuj</button>
+                    <button id="modalKursDodaj" onclick="nowe_zatwierdz()">Dodaj kurs</button>
+					<button style="color:red" id="modalKursUsun" onclick="usun()">Usuń kurs</button>
+				</div>
+			</div>
+		</div>
+
         <script>
+			$("#modalKursEdytuj").hide();
+            $("#modalKursDodaj").hide();
+			$("#modalKursUsun").hide();
+
+			$("#modalZamknij").click(function() {
+				$("#modalKurs").hide();
+				$("#modalKursKod").val("");
+                $("#modalKursNazwa").val("");
+                $("#modalKursECTS").val("");
+                $("#modalKursEdytuj").hide();
+                $("#modalKursDodaj").hide();
+			});
+
+			$("#nowe").click(function() {
+				$("#modalKurs").show();
+                $("#modalKursDodaj").show();
+				$("#modalKursId").hide();
+                $('label[for="modalKursId"]').hide();
+			});
+
 			$.ajax({
 					url: '/api/kursy',
 					type: "POST",
@@ -152,7 +195,7 @@
 										"<td>"+data.result[i]['kod']+"</td>"+
 										"<td>"+data.result[i]['nazwa']+"</td>"+
                                         "<td>"+data.result[i]['ects']+"</td>"+
-                                        "<td><button onclick='pokaz_szczegoly("+data.result[i]['id']+")'>SZCZEGÓŁY</button></td>"+
+                                        "<td><button onclick=\"pokaz_szczegoly("+data.result[i]['id']+",\'"+data.result[i]['kod']+"\',\'"+data.result[i]['nazwa']+"\',\'"+data.result[i]['ects']+"\')\">SZCZEGÓŁY</button></td>"+
                                         "<td><button onclick='otworz_grupe("+data.result[i]['id']+")'>GRUPY</button></td>"+
 									"</tr>"
 								);
@@ -161,13 +204,115 @@
 					}
 			});
 
-            function pokaz_szczegoly(id){
-                alert(id)
-            }    
+            function pokaz_szczegoly(id, kod, nazwa, ects){
+				$("#modalKursId").html(id);
+                $("#modalKursKod").val(kod);
+                $("#modalKursNazwa").val(nazwa);
+                $("#modalKursECTS").val(ects);
+
+                $("#modalKursId").show();
+                $('label[for="modalKursId"]').show();
+                $("#modalKurs").show();
+                $("#modalKursEdytuj").show();
+				$("#modalKursUsun").show();
+            }
 
             function otworz_grupe(id){
                 window.location.href = "/zarzadzanie_grupy.html?id="+id;
             }    
+
+			function nowe_zatwierdz(){
+				kod = $("#modalKursKod").val();
+				nazwa = $("#modalKursNazwa").val();
+				ects = $("#modalKursECTS").val();
+
+				data_json = {
+					"kod" : kod,
+					"nazwa" : nazwa,
+					"ects" : parseInt(ects)
+				}
+
+				$.ajax({
+					url: '/api/kursy/nowe',
+					type: "POST",
+					data: JSON.stringify(data_json),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							window.location.reload(true);
+						}
+					}
+				});
+			}
+
+			function edytuj_zatwierdz(){
+				id = $("#modalKursId").html();
+				kod = $("#modalKursKod").val();
+				nazwa = $("#modalKursNazwa").val();
+				ects = $("#modalKursECTS").val();
+
+				data_json = {
+					"id" : parseInt(id),
+					"kod" : kod,
+					"nazwa" : nazwa,
+					"ects" : parseInt(ects)
+				}
+
+				$.ajax({
+					url: '/api/kursy/aktualizuj',
+					type: "POST",
+					data: JSON.stringify(data_json),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							window.location.reload(true);
+						}
+					}
+				});
+			}
+
+			function usun(){
+                conf = confirm("Czy napewno chcesz usunąć wybrany kurs?")
+
+                if(conf){
+
+					id = $("#modalKursId").html();
+					if (id < 1){
+						alert("Błąd");
+					} else {
+						data_json = {
+							"id" : parseInt(id)
+						}
+
+						$.ajax({
+							url: 'api/kursy/usun',
+							type: "POST",
+							data: JSON.stringify(data_json),
+							contentType: "application/json; charset=UTF-8",
+							success: function (data) {
+								console.log(data.status);
+								console.log(data.result);
+								
+								if(data.status != 200){
+									console.log("Wystąpił błąd!");
+								} else if (data.status == 200){
+									window.location.reload(true);
+								}
+							}
+						});
+					}
+                }
+            }
 		</script>
 		<script src="/js/nav.js"></script>
 	</body>

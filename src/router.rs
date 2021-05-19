@@ -540,6 +540,18 @@ pub fn dane_osobowe_usun(conn: DbConn, id_dane_osobowe: Json<DaneOsoboweId>, mut
 
 /// KURSY
 
+#[post("/kurs", format = "application/json", data = "<kurs>")]
+pub fn kurs(conn: DbConn, kurs : Json<KursId>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    let id : i32 = format!("{}",kurs.id).parse::<i32>().unwrap();
+
+    Json(json!({
+        "status" : 200,
+        "result" : Kurs::get(id, &conn),
+    }))
+}
+
 #[post("/kursy", format = "application/json")]
 pub fn kursy(conn: DbConn, mut cookies : Cookies) -> Json<Value> { 
     // niebezpieczne

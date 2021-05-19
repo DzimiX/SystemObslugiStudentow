@@ -27,6 +27,7 @@
 		<meta name="description" content="System Obsługi Studentów">
 		<link rel="stylesheet" href="/css/navbar.css">
 		<link rel="stylesheet" href="/css/main.css">
+		<link rel="stylesheet" href="/css/modal.css">
 		<style>
             #kursy * {
                 padding: 5px;
@@ -118,39 +119,112 @@
 		</div>
 		<div class="content">
 			<div class="header">
-				<h2>Zarządzanie grupami dla kursu <span style="color:red" id="nazwakursu">[NAZWA KURSU PLACEHOLDER]</span></h2>
+				<h2>Zarządzanie grupami dla kursu: <span id="nazwakursu"></span></h2>
 			</div>
 
-            <p style="color:red"><b>OSKRYPTOWAĆ</b></p>
-
             <button onclick="window.history.back();">Wróć</button>
-            <button>Dodaj nową grupę</button></br></br>
+            <button id="nowe">Dodaj nową grupę</button></br></br>
 
             <p>Filtruj grupy dostępnością w zapisach:
                 <select id="select-zapisy">
                     <option value="-1" selected>Nie filtruj</option>
                 </select>
             </p>
-            
 
             <table id="kursy">
                 <tr>
                     <th>Kod grupy</th>
                     <th>Termin zajęć</th>
                     <th>Sala</th>
-                    <th>Szczegóły kursu</th>
-                    <th>Grupy dla kursu</th>
+                    <th>Szczegóły</th>
+                    <th>Uczestnicy</th>
                 </tr>
             </table>
 		</div>
 
+		<div id="modalGrupy" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<span id="modalZamknij" class="close">&times;</span>
+					<h2 disabled id='modalOgloszenieTytul'>Grupa <span><label for="modalGrupyId"> o ID = </label><span id="modalGrupyId"></span></span></h2>
+				</div>
+				<div class="modal-body">
+
+					<label for="modalGrupyIdZapisy">Dostępna w zapisach:</label>
+					<select id="modalGrupyIdZapisy">
+						
+					</select></br></br>
+
+                    <label for="modalGrupyKod">Kod grupy:</label></br>
+					<input id="modalGrupyKod"></input></br>
+                    
+                    <label for="modalGrupyTermin">Termin:</label></br>
+					<input id="modalGrupyTermin"></input></br>
+
+                    <label for="modalGrupySala">Sala:</label></br>
+					<input id="modalGrupySala"></br>
+
+                    <button id="modalGrupyEdytuj" onclick="edytuj_zatwierdz()" >Edytuj</button>
+                    <button id="modalGrupyDodaj" onclick="nowe_zatwierdz()">Dodaj grupę</button>
+					<button style="color:red" id="modalGrupyUsun" onclick="usun()">Usuń grupę</button>
+				</div>
+			</div>
+		</div>
+
         <script>
+			$("#modalGrupyEdytuj").hide();
+            $("#modalGrupyDodaj").hide();
+			$("#modalGrupyUsun").hide();
+
+			$("#modalZamknij").click(function() {
+				$("#modalGrupy").hide();
+				$("#modalGrupyKod").val("");
+                $("#modalGrupyTermin").val("");
+                $("#modalGrupySala").val("");
+                $("#modalGrupyEdytuj").hide();
+                $("#modalGrupyDodaj").hide();
+				$("#modalGrupyUsun").hide();
+			});
+
+			$("#nowe").click(function() {
+				$("#modalGrupy").show();
+                $("#modalGrupyDodaj").show();
+				$("#modalGrupyId").hide();
+                $('label[for="modalGrupyId"]').hide();
+			});
 
             var id = getUrlParameter('id');
 
             if(id < 1){
                 window.location.replace("/zarzadzanie_kursy.html");
             } else {
+
+				data_json_kurs = {
+					"id" : parseInt(id)
+				}
+
+				$.ajax({
+					url: '/api/kurs',
+					type: "POST",
+					data: JSON.stringify(data_json_kurs),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							if (data.result.length > 0) {
+							}
+							for(let i = 0; i < data.result.length; i++){
+								$("#nazwakursu").append(
+									""+data.result[i]['nazwa']+" <i>["+data.result[i]['kod']+"]</i>"
+								);
+                        	}
+						}
+					}
+			    });
 
                 $.ajax({
 					url: '/api/zapisy',
@@ -169,19 +243,22 @@
 								$("#select-zapisy").append(
 									"<option value='"+data.result[i]['id']+"'>"+data.result[i]['nazwa']+"</option>"
 								);
+								$("#modalGrupyIdZapisy").append(
+									"<option value='"+data.result[i]['id']+"'>"+data.result[i]['nazwa']+"</option>"
+								);
                         	}
 						}
 					}
 			    });
 
-                data_json = {
+                data_json_grupy = {
                     "id_kursu" : parseInt(id)
                 }
 
                 $.ajax({
 					url: '/api/grupy',
 					type: "POST",
-                    data: JSON.stringify(data_json),
+                    data: JSON.stringify(data_json_grupy),
 					contentType: "application/json; charset=UTF-8",
 					success: function (data) {
 						console.log(data.status);
@@ -199,7 +276,7 @@
 										"<td>"+data.result[i]['kod_grupy']+"</td>"+
 										"<td>"+data.result[i]['termin']+"</td>"+
                                         "<td>"+data.result[i]['sala']+"</td>"+
-                                        "<td><button onclick='pokaz_szczegoly("+data.result[i]['id']+")'>SZCZEGÓŁY</button></td>"+
+                                        "<td><button onclick=\"pokaz_szczegoly("+data.result[i]['id']+",\'"+data.result[i]['id_zapisy']+"\',\'"+data.result[i]['kod_grupy']+"\',\'"+data.result[i]['termin']+"\',\'"+data.result[i]['sala']+"\')\">SZCZEGÓŁY</button></td>"+
                                         "<td><button onclick='pokaz_uczestnikow("+data.result[i]['id']+")'>UCZESTNICY</button></td>"+
 									"</tr>"
 								);
@@ -209,13 +286,122 @@
 			    });
             }
 
-            function pokaz_szczegoly(id){
-                alert(id);
+			function nowe_zatwierdz(){
+				id_zapisy = $("#modalGrupyIdZapisy").val();
+				kod = $("#modalGrupyKod").val();
+				termin = $("#modalGrupyTermin").val();
+				sala = $("#modalGrupySala").val();
+
+				data_json = {
+					"id_kursu" : parseInt(id),
+					"id_zapisy" : parseInt(id_zapisy),
+					"kod_grupy" : kod,
+					"termin" : termin,
+					"sala" : sala
+				}
+
+				$.ajax({
+					url: '/api/grupa/nowe',
+					type: "POST",
+					data: JSON.stringify(data_json),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							window.location.reload(true);
+						}
+					}
+				});
+			}
+
+            function pokaz_szczegoly(id, id_zapisy, kod, termin, sala){
+				$("#modalGrupyIdZapisy").val(id_zapisy);
+				$("#modalGrupyId").html(id);
+                $("#modalGrupyKod").val(kod);
+                $("#modalGrupyTermin").val(termin);
+                $("#modalGrupySala").val(sala);
+
+                $("#modalGrupyId").show();
+                $('label[for="modalGrupyId"]').show();
+                $("#modalGrupy").show();
+                $("#modalGrupyEdytuj").show();
+				$("#modalGrupyUsun").show();
             }
+
+			function edytuj_zatwierdz(){
+				id_zapisy = $("#modalGrupyIdZapisy").val();
+				id_grupy = $("#modalGrupyId").html();
+				kod_grupy = $("#modalGrupyKod").val();
+				termin = $("#modalGrupyTermin").val();
+				sala = $("#modalGrupySala").val();
+
+				data_json = {
+					"id" : parseInt(id_grupy),
+					"id_kursu" : parseInt(id),
+					"id_zapisy" : parseInt(id_zapisy),
+					"kod_grupy" : kod_grupy,
+					"termin" : termin,
+					"sala" : sala
+				}
+
+				$.ajax({
+					url: '/api/grupa/aktualizuj',
+					type: "POST",
+					data: JSON.stringify(data_json),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							window.location.reload(true);
+						}
+					}
+				});
+			}
 
             function pokaz_uczestnikow(id){
                 window.location.href = "/zarzadzanie_grupy_uczestnicy.html?id="+id;
             }    
+
+			function usun(){
+                conf = confirm("Czy napewno chcesz usunąć wybraną grupę?")
+
+                if(conf){
+
+					id = $("#modalGrupyId").html();
+					if (id < 1){
+						alert("Błąd");
+					} else {
+						data_json = {
+							"id" : parseInt(id)
+						}
+
+						$.ajax({
+							url: 'api/grupa/usun',
+							type: "POST",
+							data: JSON.stringify(data_json),
+							contentType: "application/json; charset=UTF-8",
+							success: function (data) {
+								console.log(data.status);
+								console.log(data.result);
+								
+								if(data.status != 200){
+									console.log("Wystąpił błąd!");
+								} else if (data.status == 200){
+									window.location.reload(true);
+								}
+							}
+						});
+					}
+                }
+            }
 		</script>
 		<script src="/js/nav.js"></script>
 	</body>

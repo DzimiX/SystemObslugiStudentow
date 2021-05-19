@@ -79,6 +79,7 @@ fn rocket() {
             router::dane_osobowe_aktualizuj,
             router::dane_osobowe_usun,
 
+            router::kurs,
             router::kursy,
             router::kursy_usun,
             router::kursy_aktualizuj,
