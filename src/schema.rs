@@ -1,4 +1,42 @@
 table! {
+    kursy (id) {
+        id -> Integer,
+        kod -> Varchar,
+        nazwa -> Varchar,
+        ects -> Integer,
+    }
+}
+
+table! {
+    kursy_grupy (id) {
+        id -> Integer,
+        id_kursu -> Integer,
+        id_zapisy -> Integer,
+        kod_grupy -> Varchar,
+        termin -> Varchar,
+        sala -> Varchar,
+    }
+}
+
+table! {
+    kursy_grupy_oceny (id) {
+        id -> Integer,
+        id_grupa -> Integer,
+        id_uczestnik -> Integer,
+        ocena -> Float,
+    }
+}
+
+table! {
+    kursy_grupy_uczestnicy (id) {
+        id -> Integer,
+        id_grupa -> Integer,
+        id_uczestnik -> Integer,
+        czy_prowadzacy -> Bool,
+    }
+}
+
+table! {
     ogloszenia (id) {
         id -> Integer,
         nadawca -> Varchar,
@@ -101,6 +139,12 @@ table! {
 }
 
 joinable!(sprawy -> uzytkownicy (id_uzytkownik));
+joinable!(kursy_grupy -> kursy (id_kursu));
+joinable!(kursy_grupy -> zapisy (id_zapisy));
+joinable!(kursy_grupy_oceny -> kursy_grupy (id_grupa));
+joinable!(kursy_grupy_oceny -> kursy_grupy_uczestnicy (id_uczestnik));
+joinable!(kursy_grupy_uczestnicy -> kursy_grupy (id_grupa));
+joinable!(kursy_grupy_uczestnicy -> uzytkownicy (id_uczestnik));
 joinable!(tokeny -> uprawnienia (id_uprawnienie));
 joinable!(tokeny -> uzytkownicy (id_uzytkownik));
 joinable!(uzytkownicy_dane -> uzytkownicy (id_uzytkownik));
@@ -112,6 +156,10 @@ joinable!(wiadomosci_uczestnicy -> uzytkownicy (id_uczestnik));
 joinable!(wiadomosci_uczestnicy -> wiadomosci (id_wiadomosc));
 
 allow_tables_to_appear_in_same_query!(
+    kursy,
+    kursy_grupy,
+    kursy_grupy_oceny,
+    kursy_grupy_uczestnicy,
     ogloszenia,
     sprawy,
     tokeny,
