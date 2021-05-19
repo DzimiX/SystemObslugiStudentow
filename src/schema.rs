@@ -48,17 +48,6 @@ table! {
 }
 
 table! {
-    sprawy (id) {
-        id -> Integer,
-        id_uzytkownik -> Integer,
-        temat -> Varchar,
-        data -> Bigint,
-        status -> Varchar,
-        decyzja -> Varchar,
-    }
-}
-
-table! {
     tokeny (id) {
         id -> Integer,
         id_uzytkownik -> Integer,
@@ -138,7 +127,6 @@ table! {
     }
 }
 
-joinable!(sprawy -> uzytkownicy (id_uzytkownik));
 joinable!(kursy_grupy -> kursy (id_kursu));
 joinable!(kursy_grupy -> zapisy (id_zapisy));
 joinable!(kursy_grupy_oceny -> kursy_grupy (id_grupa));
@@ -161,7 +149,6 @@ allow_tables_to_appear_in_same_query!(
     kursy_grupy_oceny,
     kursy_grupy_uczestnicy,
     ogloszenia,
-    sprawy,
     tokeny,
     uprawnienia,
     uzytkownicy,
