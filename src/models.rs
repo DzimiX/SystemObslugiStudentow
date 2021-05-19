@@ -899,6 +899,20 @@ impl Uczestnik {
         return true
     }
 
+    pub fn get_id_from_grupa_uczestnik(uczestnik: UczestnikGrupaUczestnikId, conn: &MysqlConnection) -> i32 {
+        let data : Result<Uczestnik,diesel::result::Error> = kursy_grupy_uczestnicy::table
+            .filter(kursy_grupy_uczestnicy::id_grupa.eq(uczestnik.id_grupa))
+            .filter(kursy_grupy_uczestnicy::id_uczestnik.eq(uczestnik.id_uczestnik))
+            .first(conn);
+
+        match data {
+            Ok(data) => {
+                return data.id;
+            },
+            Err(_error) => return -1,
+        };
+    }
+
     pub fn update(uczestnik: Uczestnik, conn: &MysqlConnection) -> bool {
         
         let id = uczestnik.id;
@@ -1001,10 +1015,10 @@ impl Ocena {
         return true
     }
 
-    pub fn delete_grupa_uczestnik(uczestnik: UczestnikGrupaUczestnikId, conn: &MysqlConnection) -> bool {
+    pub fn delete_grupa_uczestnik(ocena: OcenaGrupaUczestnikId, conn: &MysqlConnection) -> bool {
         diesel::delete(kursy_grupy_oceny::table
-            .filter(kursy_grupy_oceny::id_grupa.eq(uczestnik.id_grupa))
-            .filter(kursy_grupy_oceny::id_uczestnik.eq(uczestnik.id_uczestnik))
+            .filter(kursy_grupy_oceny::id_grupa.eq(ocena.id_grupa))
+            .filter(kursy_grupy_oceny::id_uczestnik.eq(ocena.id_uczestnik))
         )
         .execute(conn)
         .expect("Błąd.");

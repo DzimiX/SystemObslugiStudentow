@@ -7,7 +7,7 @@ function widok(id_uprawnien){
         $("#menu-ogloszenia").hide();
         $("#dropdown-uzytkownicy").hide();
         $("#menu-zarzadzanie-zapisy").hide();
-        $("#dropdown-kursyz").hide();
+        $("#menu-zarzadzanie-kursy").hide();
         $("#dropdown-sprawyz").hide();
     }
 

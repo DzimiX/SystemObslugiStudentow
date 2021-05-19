@@ -729,32 +729,32 @@ pub fn uczestnik_usun(conn: DbConn, id_uczestnik: Json<UczestnikId>, mut cookies
 pub fn uczestnik_grupa_usun(conn: DbConn, uczestnik: Json<UczestnikGrupaUczestnikId>, mut cookies : Cookies) -> Json<Value> { 
     //niebezpiecznie
     
-    /*
-    //let klon = uczestnik.clone();
-    let id : i32 = format!("{}",uczestnik.id_uczestnik).parse::<i32>().unwrap();
-    /*
-        Najpierw trzeba usunąć wszystkie oceny dla danego użytkownika
-        Później można usunać użytkownika
-        Poznać id tego co domyślnie usuwamy -> Uczestnik::delete_grupa_uczestnik
-        Usunąć oceny które zawierają to id
-        Usunąć to co pierwotnie miało być usunięte
-    */
+    // najprostsze obejście braku implementacji klonowania
+    let kopia_wejscia = UczestnikGrupaUczestnikId { 
+        id_grupa: uczestnik.id_grupa,
+        id_uczestnik: uczestnik.id_uczestnik
+    };
 
-    println!("{}",id);
-    Ocena::delete(id, &conn);
-
-    println!("OK");
+    let id = Uczestnik::get_id_from_grupa_uczestnik(kopia_wejscia, &conn);
+    //println!("{}",id);
     
+    if id != -1 {
+        let usun = OcenaGrupaUczestnikId { 
+            id_grupa: uczestnik.id_grupa,
+            id_uczestnik: id
+        };
 
+        Ocena::delete_grupa_uczestnik(usun, &conn);
+    }
+    
     let mut status = 400;
     if Uczestnik::delete_grupa_uczestnik(uczestnik.into_inner(), &conn) == true {
         status = 200;
     }
-    */
 
     Json(json!({
-        "status" : 400,
-        "result" : "Funkcja wyłączona",
+        "status" : status,
+        "result" : "OK",
     }))
 }
 
@@ -817,12 +817,12 @@ pub fn ocena_usun(conn: DbConn, ocena: Json<OcenaId>, mut cookies : Cookies) -> 
     }))
 }
 
-#[post("/ocena_usun", format = "application/json", data = "<uczestnik>")]
-pub fn ocena_uczestnik_usun(conn: DbConn, uczestnik : Json<UczestnikGrupaUczestnikId>, mut cookies : Cookies) -> Json<Value> { 
+#[post("/ocena_usun", format = "application/json", data = "<ocena>")]
+pub fn ocena_uczestnik_usun(conn: DbConn, ocena : Json<OcenaGrupaUczestnikId>, mut cookies : Cookies) -> Json<Value> { 
     //niebezpiecznie
 
     let mut status = 400;
-    if Ocena::delete_grupa_uczestnik(uczestnik.into_inner(), &conn) == true {
+    if Ocena::delete_grupa_uczestnik(ocena.into_inner(), &conn) == true {
         status = 200;
     }
 
