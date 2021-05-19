@@ -85,6 +85,7 @@ fn rocket() {
             router::kursy_aktualizuj,
             router::kursy_nowe,
 
+            router::grupa,
             router::grupy,
             router::grupy_zapisy,
             router::grupy_usun,
