@@ -23,23 +23,22 @@
 			}
 		</script>
 		<meta charset="utf-8">
-		<title>System obsługi studentów</title>
+		<title>System obsługi studentów - zarządzanie grupami</title>
 		<meta name="description" content="System Obsługi Studentów">
 		<link rel="stylesheet" href="/css/navbar.css">
 		<link rel="stylesheet" href="/css/main.css">
 		<style>
-			.ogloszenie {
+            #kursy * {
+                padding: 5px;
+                border-right: 1px solid red;
+                border-bottom: 1px solid red;
+                border-left: 1px solid red;
+            }
+
+            #kursy {
+				padding: 20px;
 				border-radius: 10px;
-				margin: 5px 0px 5px 0px;
-				padding: 15px 15px 15px 15px;
-				width: 500px;
 				background-color: rgb(0, 73, 168, 0.6);
-			}
-			.ogloszenie h3 {
-				margin: 0px 0px 15px 0px;
-			}
-			.ogloszenie p {
-				margin: 8px 0px 8px 0px;
 			}
 		</style>
 	</head>
@@ -115,16 +114,39 @@
 		</div>
 		<div class="content">
 			<div class="header">
-				<h2>System Obsługi Studentów</h2>
+				<h2>Zarządzanie uczestnikami w grupie</h2>
 			</div>
-			<div id="ogloszenia" class="ogloszenia"></div>
+
+            <p style="color:red"><b>OSKRYPTOWAĆ</b></p>
+
+            <button onclick="window.history.back();">Wróć</button>
+            <button>Dodaj nowego uczestnika</button></br></br>
+
+            <table id="kursy">
+                <tr>
+                    <th>id_uczestnik</th>
+                    <th>czy_prowadzacy</th>
+                    <th>Modyfikacja</th>
+                </tr>
+            </table>
 		</div>
 
-		<script>
-			$.ajax({
-					url: '/api/ogloszenia',
+        <script>
+
+            var id = getUrlParameter('id');
+
+            if(id < 1){
+                window.location.replace("/zarzadzanie_kursy.html");
+            } else {
+
+                data_json = {
+                    "id_grupa" : parseInt(id)
+                }
+
+                $.ajax({
+					url: '/api/uczestnicy',
 					type: "POST",
-					//data: JSON.stringify(data_json),
+                    data: JSON.stringify(data_json),
 					contentType: "application/json; charset=UTF-8",
 					success: function (data) {
 						console.log(data.status);
@@ -134,28 +156,24 @@
 							console.log("Wystąpił błąd!");
 						} else if (data.status == 200){
 							if (data.result.length > 0) {
-								$("#ogloszenia").append(
-									"<h3>Lista ogłoszeń:</h3>"
-								);
 							}
 							for(let i = 0; i < data.result.length; i++){
-
-								let date = new Date(data.result[i]['widok_od'] * 1000);
-								if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
-								if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
-								let datestring = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate();
-
-								$("#ogloszenia").append(
-									"<div class='ogloszenie'>"+
-										"<p>Nadawca: <i>"+data.result[i]['nadawca']+"</i></p>"+
-										"<h3>"+data.result[i]['temat']+"</h3>"+
-										"<p class='text'>"+data.result[i]['dane']+"</p>"+
-									"</div>"
+								$("#kursy").append(
+									"<tr>"+
+										"<td>"+data.result[i]['id_uczestnik']+"</td>"+
+										"<td>"+data.result[i]['czy_prowadzacy']+"</td>"+
+                                        "<td><button onclick='modyfikuj("+data.result[i]['id']+")'>Modyfikuj</button></td>"+
+									"</tr>"
 								);
                         	}
 						}
 					}
-				});
+			    });
+            }
+
+            function modyfikuj(id){
+                alert(id);
+            }
 		</script>
 		<script src="/js/nav.js"></script>
 	</body>
