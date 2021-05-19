@@ -130,6 +130,7 @@ CREATE TABLE `zapisy` (
 
 CREATE TABLE `sprawy` (
   `id` int(11) NOT NULL,
+  `id_uzytkownik` int(11) NOT NULL,
   `temat` varchar(255) NOT NULL,
   `data` bigint(8) NOT NULL,
   `status` varchar(255) NOT NULL,
@@ -209,8 +210,8 @@ ALTER TABLE `zapisy`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `sprawy`
-  ADD PRIMARY KEY (`id`);
---
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sprawy_ibfk_1` (`id_uzytkownik`);
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -309,6 +310,9 @@ ALTER TABLE `wiadomosci_uczestnicy`
   ADD CONSTRAINT `wiadomosci_uczestnicy_ibfk_2` FOREIGN KEY (`id_wiadomosc`) REFERENCES `wiadomosci` (`id`);
 
 
+ALTER TABLE `sprawy`
+  ADD CONSTRAINT `sprawy_ibfk_1` FOREIGN KEY (`id_uzytkownik`) REFERENCES `uzytkownicy` (`id`);
+
 INSERT INTO `uprawnienia` (`id`, `nazwa`) VALUES
   (1, 'Użytkownik'),
   (2, 'Student'),
@@ -357,5 +361,6 @@ INSERT INTO `zapisy` (`id`, `nazwa`, `czy_publiczne`) VALUES
   (1, 'Semestr letni 2020/2021', 1),
   (2, 'Semestr zimowy 2021/2022', 0);
 
-INSERT INTO `sprawy` (`id`, `temat`, `data`, `status`, `decyzja`) VALUES
-  (1, 'Stypendium Rektora', 1621357963, 'Rozpatrzona', 'Zgoda');
+INSERT INTO `sprawy` (`id`, `id_uzytkownik`, `temat`, `data`, `status`, `decyzja`) VALUES
+(1, 4, 'Stypendium Rektora', 1621357963, 'Rozpatrzona', 'Zgoda'),
+(2, 5, 'Stypendium socjalne', 1606357963, 'Rozpatrzona', 'Zgoda');

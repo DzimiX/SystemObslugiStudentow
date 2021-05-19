@@ -12,6 +12,7 @@ table! {
 table! {
     sprawy (id) {
         id -> Integer,
+        id_uzytkownik -> Integer,
         temat -> Varchar,
         data -> Bigint,
         status -> Varchar,
@@ -99,6 +100,7 @@ table! {
     }
 }
 
+joinable!(sprawy -> uzytkownicy (id_uzytkownik));
 joinable!(tokeny -> uprawnienia (id_uprawnienie));
 joinable!(tokeny -> uzytkownicy (id_uzytkownik));
 joinable!(uzytkownicy_dane -> uzytkownicy (id_uzytkownik));
