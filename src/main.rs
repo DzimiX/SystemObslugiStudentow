@@ -103,6 +103,12 @@ fn rocket() {
             router::ocena_aktualizuj,
             router::ocena_usun,
             router::ocena_uczestnik_usun,
+
+            router::sprawy,
+            router::sprawy_nowe,
+            router::sprawy_aktualizuj,
+            router::sprawy_usun,
+            router::sprawy_pokaz,
             
             router::logowanie,
             router::autoryzacja,
