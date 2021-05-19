@@ -12,5 +12,6 @@ DROP TABLE `wiadomosci`;
 DROP TABLE `ogloszenia`;
 DROP TABLE `tokeny`;
 DROP TABLE `uprawnienia`;
+DROP TABLE `sprawy`;
 DROP TABLE `uzytkownicy`;
 DROP TABLE `zapisy`;

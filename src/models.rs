@@ -19,11 +19,11 @@ use crate::schema::uzytkownicy;
 use crate::schema::ogloszenia;
 use crate::schema::zapisy;
 use crate::schema::uzytkownicy_dane;
+use crate::schema::sprawy;
 use crate::schema::kursy;
 use crate::schema::kursy_grupy;
 use crate::schema::kursy_grupy_oceny;
 use crate::schema::kursy_grupy_uczestnicy;
-
 
 #[derive(Queryable, Serialize)]
 pub struct Uzytkownik {
@@ -628,6 +628,56 @@ impl DaneOsobowe {
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "sprawy"]
+pub struct Sprawy {
+    pub id: i32,
+    pub id_uzytkownik: i32, 
+    pub temat: String,
+    pub data: i64,
+    pub status: String,
+    pub decyzja: String
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "sprawy"]
+pub struct SprawyNowe {
+    pub id_uzytkownik: i32,
+    pub temat: String,
+}
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "sprawy"]
+pub struct SprawyId {
+    pub id: i32,
+
+}
+
+impl Sprawy {
+
+    pub fn add(sprawy: SprawyNowe, conn: &MysqlConnection) -> bool {
+        diesel::insert_into(sprawy::table)
+            .values(&sprawy)
+            .execute(conn)
+            .is_ok()
+    }
+    pub fn get(id_uzytkownik: i32, conn: &MysqlConnection) -> Vec<Sprawy> {
+        sprawy::table
+            .find(id_uzytkownik)
+            .load::<Sprawy>(conn)
+            .expect("Problem z wczytaniem spraw.")
+    }
+
+
+    pub fn all(conn: &MysqlConnection) -> Vec<Sprawy> {
+        sprawy::table
+            .order(sprawy::id.desc())
+            .load::<Sprawy>(conn)
+            .expect("Problem z wczytaniem spraw.")
+    }
+    pub fn delete(id_uzytkownik: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(sprawy::table
+            .filter(sprawy::id_uzytkownik.eq(id_uzytkownik))
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
 #[table_name = "kursy"]
 pub struct Kurs {
     pub id: i32,
@@ -899,6 +949,20 @@ impl Uczestnik {
         return true
     }
 
+    pub fn update(sprawy: Sprawy, conn: &MysqlConnection) -> bool {
+        
+        let id = sprawy.id;
+        let id_uzytkownik = sprawy.id_uzytkownik;
+        let temat = sprawy.temat;
+        let status = sprawy.status;
+        let decyzja = sprawy.decyzja;
+
+        let updated_row = diesel::update(sprawy::table.filter(sprawy::id_uzytkownik.eq(&id_uzytkownik)))
+            .set((
+                sprawy::temat.eq(temat),
+                sprawy::status.eq(status),
+                sprawy::decyzja.eq(decyzja),
+
     pub fn get_id_from_grupa_uczestnik(uczestnik: UczestnikGrupaUczestnikId, conn: &MysqlConnection) -> i32 {
         let data : Result<Uczestnik,diesel::result::Error> = kursy_grupy_uczestnicy::table
             .filter(kursy_grupy_uczestnicy::id_grupa.eq(uczestnik.id_grupa))
@@ -935,7 +999,6 @@ impl Uczestnik {
 
         return true
     }
-
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
