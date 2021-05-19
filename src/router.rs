@@ -18,6 +18,8 @@ use crate::models::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscBezDaty,
 use crate::models::{Ogloszenie, OgloszenieNowe, OgloszenieId};
 use crate::models::{Zapisy, ZapisyNowe, ZapisyId};
 use crate::models::{DaneOsobowe, DaneOsoboweId};
+use crate::models::{Sprawy, SprawyId, SprawyNowe};
+
 
 #[post("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
@@ -521,6 +523,73 @@ pub fn dane_osobowe_usun(conn: DbConn, id_dane_osobowe: Json<DaneOsoboweId>, mut
 
     let mut status = 400;
     if DaneOsobowe::delete(id, &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+
+#[post("/sprawy", format = "application/json")]
+pub fn sprawy(conn: DbConn, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    Json(json!({
+        "status" : 200,
+        "result" : Sprawy::all(&conn),
+    }))
+}
+
+#[post("/sprawy/nowe", format = "application/json", data = "<sprawy>")]
+pub fn sprawy_nowe(conn: DbConn, sprawy: Json<SprawyNowe>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    let mut status = 400;
+    if Sprawy::add(sprawy.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/sprawy/aktualizuj", format = "application/json", data = "<sprawy>")]
+pub fn sprawy_aktualizuj(conn: DbConn, sprawy: Json<Sprawy>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let mut status = 400;
+    if Sprawy::update(sprawy.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+#[post("/sprawy/pokaz", format = "application/json", data = "<id_sprawy>")]
+pub fn sprawy_pokaz(conn: DbConn, id_sprawy: Json<SprawyId>) -> Json<Value> { 
+    // niebezpieczne
+    let id : i32 = format!("{}",id_sprawy.id).parse::<i32>().unwrap();
+
+    Json(json!({
+        "status" : 200,
+        "result" : Sprawy::get(id, &conn).first(),
+    }))
+}
+#[post("/sprawy/usun", format = "application/json", data = "<id_sprawy>")]
+pub fn sprawy_usun(conn: DbConn, id_sprawy: Json<SprawyId>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let id : i32 = format!("{}",id_sprawy.id).parse::<i32>().unwrap();
+
+    let mut status = 400;
+    if Sprawy::delete(id, &conn) == true {
         status = 200;
     }
 

@@ -629,6 +629,7 @@ impl DaneOsobowe {
 #[table_name = "sprawy"]
 pub struct Sprawy {
     pub id: i32,
+    //pub id_uzytkownik: i32, 
     pub temat: String,
     pub data: i64,
     pub status: String,
