@@ -540,6 +540,18 @@ pub fn dane_osobowe_usun(conn: DbConn, id_dane_osobowe: Json<DaneOsoboweId>, mut
 
 /// KURSY
 
+#[post("/kurs", format = "application/json", data = "<kurs>")]
+pub fn kurs(conn: DbConn, kurs : Json<KursId>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    let id : i32 = format!("{}",kurs.id).parse::<i32>().unwrap();
+
+    Json(json!({
+        "status" : 200,
+        "result" : Kurs::get(id, &conn),
+    }))
+}
+
 #[post("/kursy", format = "application/json")]
 pub fn kursy(conn: DbConn, mut cookies : Cookies) -> Json<Value> { 
     // niebezpieczne
@@ -598,6 +610,18 @@ pub fn kursy_usun(conn: DbConn, id_kurs: Json<KursId>, mut cookies : Cookies) ->
 }
 
 // Grupy (do zapisów i realizacji zajęć) dla kursów
+
+#[post("/grupa", format = "application/json", data = "<grupa>")]
+pub fn grupa(conn: DbConn, grupa : Json<GrupaId>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    let id : i32 = format!("{}",grupa.id).parse::<i32>().unwrap();
+
+    Json(json!({
+        "status" : 200,
+        "result" : Grupa::get(id, &conn),
+    }))
+}
 
 #[post("/grupy", format = "application/json", data = "<grupa>")]
 pub fn grupy(conn: DbConn, grupa: Json<GrupaKursId>, mut cookies : Cookies) -> Json<Value> { 
