@@ -40,6 +40,10 @@
 				border-radius: 10px;
 				background-color: rgb(0, 73, 168, 0.6);
 			}
+
+            table#kursy td:nth-child(1) { /* id_zapisy */
+                display: none;
+            }
 		</style>
 	</head>
 	<body>
@@ -114,7 +118,7 @@
 		</div>
 		<div class="content">
 			<div class="header">
-				<h2>Zarządzanie grupami dla kursu</h2>
+				<h2>Zarządzanie grupami dla kursu <span style="color:red" id="nazwakursu">[NAZWA KURSU PLACEHOLDER]</span></h2>
 			</div>
 
             <p style="color:red"><b>OSKRYPTOWAĆ</b></p>
@@ -122,9 +126,15 @@
             <button onclick="window.history.back();">Wróć</button>
             <button>Dodaj nową grupę</button></br></br>
 
+            <p>Filtruj grupy dostępnością w zapisach:
+                <select id="select-zapisy">
+                    <option value="-1" selected>Nie filtruj</option>
+                </select>
+            </p>
+            
+
             <table id="kursy">
                 <tr>
-                    <th>id_zapisy</th>
                     <th>Kod grupy</th>
                     <th>Termin zajęć</th>
                     <th>Sala</th>
@@ -141,6 +151,28 @@
             if(id < 1){
                 window.location.replace("/zarzadzanie_kursy.html");
             } else {
+
+                $.ajax({
+					url: '/api/zapisy',
+					type: "POST",
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							if (data.result.length > 0) {
+							}
+							for(let i = 0; i < data.result.length; i++){
+								$("#select-zapisy").append(
+									"<option value='"+data.result[i]['id']+"'>"+data.result[i]['nazwa']+"</option>"
+								);
+                        	}
+						}
+					}
+			    });
 
                 data_json = {
                     "id_kursu" : parseInt(id)
