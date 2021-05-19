@@ -31,13 +31,13 @@
 		<link rel="stylesheet" href="/css/modal.css">
 		<link rel="stylesheet" href="/css/select2.min.css">
 		<style>
-            #kursy * {
+            #kursy td {
                 padding: 5px;
-                border-right: 1px solid red;
-                border-bottom: 1px solid red;
-                border-left: 1px solid red;
+                border-bottom: 1px solid rgb(0, 110, 255);
             }
-
+			#kursy td:not(:nth-last-child(1)) {
+				border-right: 1px solid rgb(0, 110, 255);
+			}
             #kursy {
 				padding: 20px;
 				border-radius: 10px;
@@ -104,12 +104,12 @@
 			</div>
 			<div id="dropdown-sprawyz" class="dropdown">
 				<button class="dropbtn">
-					<span class="disabled">Zarządzaj sprawami</span>
+					<span>Zarządzanie sprawami</span>
 					<i class="arrow down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a id="dropdown-sprawyz-lista" href="#"><span class="disabled">Przeglądaj sprawy</span></a>
-					<a id="dropdown-sprawyz-utworz" href="#"><span class="disabled">Definiuj sprawy</span></a>
+					<a id="dropdown-sprawy-moje" href="/zarzadzanie_sprawy.html"><span>Zarządzaj sprawami</span></a>
+					<a id="dropdown-sprawy-utworz" href="/zarzadzanie_sprawy_definicje.html"><span>Definiuj sprawy</span></a>
 				</div>
 			</div>
 			<div class="dropdown-right">
@@ -129,16 +129,14 @@
 				<h2>Zarządzanie uczestnikami w grupie: <span id="kodgrupy"></span></h2>
 			</div>
 
-            <p style="color:red"><b>OSKRYPTOWAĆ</b></p>
-
             <button onclick="window.history.back();">Wróć</button>
             <button id="nowe">Dodaj nowego uczestnika</button></br></br>
 
             <table id="kursy">
                 <tr>
-                    <th>Uczestnik</th>
-                    <th>Czy prowadzący?</th>
-                    <th>Modyfikacja</th>
+                    <td><b>Uczestnik</b></td>
+                    <td><b>Czy prowadzący?</b></td>
+                    <td><b>Modyfikacja</b></td>
                 </tr>
             </table>
 		</div>
@@ -163,13 +161,57 @@
 					</select></br></br>
 
                     <button id="modalUczestnikEdytuj" onclick="edytuj_zatwierdz()" >Edytuj</button>
-                    <button id="modalUczestnikDodaj" onclick="nowe_zatwierdz()">Dodaj grupę</button>
-					<button style="color:red" id="modalUczestnikUsun" onclick="usun()">Usuń grupę</button>
+                    <button id="modalUczestnikDodaj" onclick="nowe_zatwierdz()">Dodaj uczestnika</button>
+					<button style="color:red" id="modalUczestnikUsun" onclick="usun()">Usuń uczestnika</button>
+				</div>
+			</div>
+		</div>
+
+		<div id="modalOcena" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<span id="modalOcenaZamknij" class="close">&times;</span>
+					<h2 disabled id='modalOcenaTytul'>Ocena końcowa uczestnika</h2>
+				</div>
+				<div class="modal-body">
+
+                    <label for="modalOcenaUczestnik">Uczestnik:</label></br>
+					<select id="modalOcenaUczestnik">
+						<option value="-1" selected></option>
+					</select></br></br>
+                    
+                    <label for="modalOcenaOcena">Ocena:</label>
+					<input id="modalOcenaOcena"></input></br>
+
+                    <button id="modalOcenaEdytuj" onclick="edytuj_zatwierdz()" >Edytuj ocenę</button>
+                    <button id="modalOcenaDodaj" onclick="nowe_zatwierdz()">Dodaj ocenę</button>
+					<button style="color:red" id="modalUczestnikUsun" onclick="usun()">Usuń ocenę</button>
 				</div>
 			</div>
 		</div>
 
         <script>
+			$("#modalUczestnikEdytuj").hide();
+            $("#modalUczestnikDodaj").hide();
+			$("#modalUczestnikUsun").hide();
+
+			$("#modalZamknij").click(function() {
+				$("#modalUczestnik").hide();
+				$("#modalUczestnikId").val("");
+                $("#modalUczestnikIdSelect").val("");
+                $("#modalUczestnikProwadzacy").val("");
+                $("#modalUczestnikEdytuj").hide();
+                $("#modalUczestnikDodaj").hide();
+				$("#modalUczestnikUsun").hide();
+			});
+
+			$("#nowe-ocena").click(function() {
+				$("#modalUczestnik").show();
+                $("#modalUczestnikDodaj").show();
+				$("#modalUczestnikId").hide();
+                $('label[for="modalUczestnikId"]').hide();
+			});
+
 			$("#modalUczestnikEdytuj").hide();
             $("#modalUczestnikDodaj").hide();
 			$("#modalUczestnikUsun").hide();
@@ -306,7 +348,7 @@
 					prowadzacy = 0;
 				}
 
-                $("#modalUczestnikId").val(id);
+                $("#modalUczestnikId").html(id);
                 $("#modalUczestnikIdSelect").val(id_uczestnik);
                 $("#modalUczestnikProwadzacy").val(prowadzacy);
 
@@ -316,6 +358,43 @@
                 $("#modalUczestnikEdytuj").show();
 				$("#modalUczestnikUsun").show();
             }
+
+			function edytuj_zatwierdz(){
+				id = $("#modalUczestnikId").html();
+				id_grupa = getUrlParameter('id');
+				id_uczestnik = $("#modalUczestnikIdSelect").val();
+				prowadzacy = $("#modalUczestnikProwadzacy").val();
+
+				if (prowadzacy == 0){
+					czy_prowadzacy = false;
+				} else if (prowadzacy == 1){
+					czy_prowadzacy = true;
+				}
+
+				data_json = {
+					"id" : parseInt(id),
+					"id_grupa" : parseInt(id_grupa),
+					"id_uczestnik" : parseInt(id_uczestnik),
+					"czy_prowadzacy" : czy_prowadzacy
+				}
+
+				$.ajax({
+					url: '/api/uczestnicy/aktualizuj',
+					type: "POST",
+					data: JSON.stringify(data_json),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							window.location.reload(true);
+						}
+					}
+				});
+			}
 
 			function nowe_zatwierdz(){
 				id_grupa = getUrlParameter('id');
@@ -384,7 +463,6 @@
 					}
                 }
             }
-
 		</script>
 		<script src="/js/nav.js"></script>
 	</body>

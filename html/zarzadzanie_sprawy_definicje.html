@@ -23,25 +23,59 @@
 			}
 		</script>
 		<meta charset="utf-8">
-		<title>System obsługi studentów - dane osobowe</title>
+		<title>System obsługi studentów - zarządzanie sprawami</title>
 		<meta name="description" content="System Obsługi Studentów">
 		<link rel="stylesheet" href="/css/navbar.css">
+        <link rel="stylesheet" href="/css/modal.css">
 		<link rel="stylesheet" href="/css/main.css">
 		<style>
-			#dane_osobowe {
-				padding: 20px;
-				background-color: rgb(0, 73, 168, 0.6);
+			.sprawy {
 				border-radius: 10px;
+				margin: 5px 0px 5px 0px;
+				padding: 15px 15px 15px 15px;
+				width: 500px;
+				background-color: rgb(0, 73, 168, 0.6);
 			}
 
-			#dane_osobowe input {
-				width: 200px;
-				height: 20px;
+			.sprawy h3 {
+				margin: 0px 0px 15px 0px;
+			}
+			.sprawy p {
+				margin: 8px 0px 8px 0px;
 			}
 
-			#dane_osobowe button {
-				width: 100px;
-				height: 30px;
+            .sprawy button{
+                width: 100px;
+            }
+
+            .modal-body input {
+                width: 760px;
+                height: 30px;
+                margin-bottom: 10px;
+            }
+
+            .modal-body textarea {
+                width: 760px;
+                height: 120px;
+                margin-bottom: 10px;
+            }
+
+            .modal-body {
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+
+			#odpowiedzAJAX td {
+                padding: 5px;
+                border-bottom: 1px solid rgb(0, 110, 255);
+            }
+			#odpowiedzAJAX td:not(:nth-last-child(1)) {
+				border-right: 1px solid rgb(0, 110, 255);
+			}
+            #odpowiedzAJAX {
+				padding: 20px;
+				border-radius: 10px;
+				background-color: rgb(0, 73, 168, 0.6);
 			}
 		</style>
 	</head>
@@ -117,140 +151,18 @@
 		</div>
 		<div class="content">
 			<div class="header">
-				<h2>System Obsługi Studentów - dane osobowe</h2>
+				<h2>Definiuj nowe sprawy</h2>
 			</div>
-			<div id="dane_osobowe" class="dane_osobowe">
-				<label for="miasto">Miasto:</label></br>
-				<input id="miasto"></input></br></br>
-
-				<label for="ulica">Ulica:</label></br>
-				<input id="ulica"></input></br></br>
-
-				<label for="nr_domu">Nr domu:</label></br>
-				<input id="nr_domu"></input></br></br>
-
-				<label for="kod_pocztowy">Kod pocztowy:</label></br>
-				<input id="kod_pocztowy"></input></br></br>
-
-				<label for="pesel">Pesel:</label></br>
-				<input id="pesel"></input></br></br>
-
-				<label for="nr_dowodu">Numer dowodu:</label></br>
-				<input id="nr_dowodu"></input></br></br>
-
-				<button id="edytuj_dane">Edytuj dane</button></br></br></br>
-
-				<label for="haslo1">Hasło:</label></br>
-				<input type="password" id="haslo1"></input></br></br>
-
-				<label for="haslo2">Powtórz hasło:</label></br>
-				<input type="password" id="haslo2"></input></br></br>
-
-				<button onclick="zmien_haslo()">Zmień hasło</button>
-			</div>
+			<a href="/zarzadzanie_sprawy.html"><button>Przeglądaj założone sprawy</button></a>
+			<button>Definiuj nową sprawę</button></br></br>
+            <table id="odpowiedzAJAX">
+				<tr>
+					<td><b>Nazwa sprawy</td>
+					<td><b>Modyfikuj typ sprawy</b></td>
+				</tr>
+			</table>
 		</div>
 
-		<script>
-
-			data_json = {
-				"id_uzytkownik" : parseInt(userdata.id)
-			}
-
-			$.ajax({
-				url: '/api/dane_osobowe/pokaz',
-				type: "POST",
-				data: JSON.stringify(data_json),
-				contentType: "application/json; charset=UTF-8",
-				success: function (data) {
-					//console.log(data.status);
-					//console.log(data.result);
-					
-					if(data.status != 200){
-						console.log("Wystąpił błąd!");
-					} else if (data.status == 200){
-						if (data.result != null){
-							$('#miasto').val(data.result['miasto']);
-							$('#ulica').val(data.result['ulica']);
-							$('#nr_domu').val(data.result['nr_domu']);
-							$('#kod_pocztowy').val(data.result['kod_pocztowy']);
-							$('#pesel').val(data.result['pesel']);
-							$('#nr_dowodu').val(data.result['nr_dowodu']);
-						}
-					}
-				}
-			});
-
-			$("#edytuj_dane").click(function() {
-				edytuj_dane(userdata.id);
-			});
-
-			function edytuj_dane(id){
-				let miasto = $('#miasto').val();
-				let ulica = $('#ulica').val();
-				let nr_domu = $('#nr_domu').val();
-				let kod_pocztowy = $('#kod_pocztowy').val();
-				let pesel = $('#pesel').val();
-				let nr_dowodu = $('#nr_dowodu').val();
-
-				data_json = {
-					"id_uzytkownik" : parseInt(userdata.id),
-					"miasto" : miasto,
-					"ulica" : ulica,
-					"nr_domu" : nr_domu,
-					"kod_pocztowy" : kod_pocztowy,
-					"pesel" : pesel,
-					"nr_dowodu" : nr_dowodu
-				}
-
-				$.ajax({
-					url: '/api/dane_osobowe/aktualizuj',
-					type: "POST",
-					data: JSON.stringify(data_json),
-					contentType: "application/json; charset=UTF-8",
-					success: function (data) {				
-						if(data.status != 200){
-							console.log("Wystąpił błąd!");
-						} else if (data.status == 200){
-							if (data.result == "OK"){
-								window.location.reload(true);
-							}
-						}
-					}
-				});
-			}
-
-			function zmien_haslo(id){
-				let haslo1 = $('#haslo1').val();
-				let haslo2 = $('#haslo2').val();
-
-				if (haslo1 != haslo2 || haslo1 == ""){
-					alert("Niepoprawne nowe hasło!");
-				} else {
-
-					data_json = {
-						"id_uzytkownik" : parseInt(userdata.id),
-    					"haslo" : haslo1
-					}
-
-					$.ajax({
-						url: '/api/uzytkownik/nowehaslo',
-						type: "POST",
-						data: JSON.stringify(data_json),
-						contentType: "application/json; charset=UTF-8",
-						success: function (data) {				
-							if(data.status != 200){
-								console.log("Wystąpił błąd!");
-							} else if (data.status == 200){
-								if (data.result == "OK"){
-									wyloguj();
-								}
-							}
-						}
-					});
-				}
-			}
-
-		</script>
 		<script src="/js/nav.js"></script>
 	</body>
 </html>
