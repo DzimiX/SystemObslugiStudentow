@@ -1,32 +1,6 @@
-CREATE TABLE `kursy` (
-  `id` int(11) NOT NULL,
-  `kod` varchar(255) NOT NULL,
-  `nazwa` varchar(255) NOT NULL,
-  `ects` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `kursy_grupy` (
-  `id` int(11) NOT NULL,
-  `id_kursu` int(11) NOT NULL,
-  `id_zapisy` int(11) NOT NULL,
-  `kod_grupy` varchar(255) NOT NULL,
-  `termin` varchar(255) NOT NULL,
-  `sala` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `kursy_grupy_oceny` (
-  `id` int(11) NOT NULL,
-  `id_grupa` int(11) NOT NULL,
-  `id_uczestnik` int(11) NOT NULL,
-  `ocena` float NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `kursy_grupy_uczestnicy` (
-  `id` int(11) NOT NULL,
-  `id_grupa` int(11) NOT NULL,
-  `id_uczestnik` int(11) NOT NULL,
-  `czy_prowadzacy` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+--
+-- Table structure for table `ogloszenia`
+--
 
 CREATE TABLE `ogloszenia` (
   `id` int(11) NOT NULL,
@@ -37,6 +11,12 @@ CREATE TABLE `ogloszenia` (
   `dane` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tokeny`
+--
+
 CREATE TABLE `tokeny` (
   `id` int(11) NOT NULL,
   `id_uzytkownik` int(11) NOT NULL,
@@ -45,10 +25,22 @@ CREATE TABLE `tokeny` (
   `data` bigint(8) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `uprawnienia`
+--
+
 CREATE TABLE `uprawnienia` (
   `id` int(11) NOT NULL,
   `nazwa` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `uzytkownicy`
+--
 
 CREATE TABLE `uzytkownicy` (
   `id` int(11) NOT NULL,
@@ -56,6 +48,12 @@ CREATE TABLE `uzytkownicy` (
   `imie` varchar(255) NOT NULL,
   `nazwisko` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `uzytkownicy_dane`
+--
 
 CREATE TABLE `uzytkownicy_dane` (
   `id_uzytkownik` int(11) NOT NULL,
@@ -67,17 +65,35 @@ CREATE TABLE `uzytkownicy_dane` (
   `nr_dowodu` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `uzytkownicy_hasla`
+--
+
 CREATE TABLE `uzytkownicy_hasla` (
   `id` int(11) NOT NULL,
   `id_uzytkownik` int(11) NOT NULL,
   `haslo` varchar(512) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `uzytkownicy_uprawnienia`
+--
+
 CREATE TABLE `uzytkownicy_uprawnienia` (
   `id` int(11) NOT NULL,
   `id_uzytkownik` int(11) NOT NULL,
   `id_uprawnienie` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wiadomosci`
+--
 
 CREATE TABLE `wiadomosci` (
   `id` int(11) NOT NULL,
@@ -87,11 +103,23 @@ CREATE TABLE `wiadomosci` (
   `dane` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wiadomosci_uczestnicy`
+--
+
 CREATE TABLE `wiadomosci_uczestnicy` (
   `id` int(11) NOT NULL,
   `id_wiadomosc` int(11) NOT NULL,
   `id_uczestnik` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `zapisy`
+--
 
 CREATE TABLE `zapisy` (
   `id` int(11) NOT NULL,
@@ -113,56 +141,65 @@ CREATE TABLE `sprawy` (
 -- Indexes for dumped tables
 --
 
-ALTER TABLE `kursy`
-  ADD PRIMARY KEY (`id`);
-
-ALTER TABLE `kursy_grupy`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_kursu` (`id_kursu`),
-  ADD KEY `id_zapisy` (`id_zapisy`);
-
-ALTER TABLE `kursy_grupy_oceny`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_grupa` (`id_grupa`),
-  ADD KEY `kursy_grupy_oceny_ibfk_1` (`id_uczestnik`);
-
-ALTER TABLE `kursy_grupy_uczestnicy`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `id_grupa_2` (`id_grupa`,`id_uczestnik`),
-  ADD KEY `id_grupa` (`id_grupa`),
-  ADD KEY `id_uczestnik` (`id_uczestnik`);
-
+--
+-- Indexes for table `ogloszenia`
+--
 ALTER TABLE `ogloszenia`
   ADD PRIMARY KEY (`id`);
 
+--
+-- Indexes for table `tokeny`
+--
 ALTER TABLE `tokeny`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `token` (`token`),
   ADD KEY `id_uzytkownik` (`id_uzytkownik`),
   ADD KEY `id_uprawnienie` (`id_uprawnienie`);
 
+--
+-- Indexes for table `uprawnienia`
+--
 ALTER TABLE `uprawnienia`
   ADD PRIMARY KEY (`id`);
 
+--
+-- Indexes for table `uzytkownicy`
+--
 ALTER TABLE `uzytkownicy`
   ADD PRIMARY KEY (`id`);
 
+--
+-- Indexes for table `uzytkownicy_dane`
+--
 ALTER TABLE `uzytkownicy_dane`
   ADD PRIMARY KEY (`id_uzytkownik`);
 
+--
+-- Indexes for table `uzytkownicy_hasla`
+--
 ALTER TABLE `uzytkownicy_hasla`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_uzytkownik` (`id_uzytkownik`);
 
+--
+-- Indexes for table `uzytkownicy_uprawnienia`
+--
 ALTER TABLE `uzytkownicy_uprawnienia`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_uzytkownik` (`id_uzytkownik`),
   ADD KEY `id_uprawnienie` (`id_uprawnienie`);
 
+--
+-- Indexes for table `wiadomosci`
+--
 ALTER TABLE `wiadomosci`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_uzytkownik` (`id_uzytkownik`);
 
+
+--
+-- Indexes for table `wiadomosci_uczestnicy`
+--
 ALTER TABLE `wiadomosci_uczestnicy`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_wiadomosc` (`id_wiadomosc`),
@@ -178,39 +215,51 @@ ALTER TABLE `sprawy`
 -- AUTO_INCREMENT for dumped tables
 --
 
-ALTER TABLE `kursy`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
-ALTER TABLE `kursy_grupy`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
-ALTER TABLE `kursy_grupy_oceny`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
-ALTER TABLE `kursy_grupy_uczestnicy`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
+--
+-- AUTO_INCREMENT for table `ogloszenia`
+--
 ALTER TABLE `ogloszenia`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `tokeny`
+--
 ALTER TABLE `tokeny`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `uprawnienia`
+--
 ALTER TABLE `uprawnienia`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `uzytkownicy`
+--
 ALTER TABLE `uzytkownicy`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `uzytkownicy_hasla`
+--
 ALTER TABLE `uzytkownicy_hasla`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `uzytkownicy_uprawnienia`
+--
 ALTER TABLE `uzytkownicy_uprawnienia`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `wiadomosci`
+--
 ALTER TABLE `wiadomosci`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `wiadomosci_uczestnicy`
+--
 ALTER TABLE `wiadomosci_uczestnicy`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
@@ -222,35 +271,40 @@ ALTER TABLE `sprawy`
 -- Constraints for dumped tables
 --
 
-ALTER TABLE `kursy_grupy`
-  ADD CONSTRAINT `kursy_grupy_ibfk_1` FOREIGN KEY (`id_kursu`) REFERENCES `kursy` (`id`),
-  ADD CONSTRAINT `kursy_grupy_ibfk_2` FOREIGN KEY (`id_zapisy`) REFERENCES `zapisy` (`id`);
-
-ALTER TABLE `kursy_grupy_oceny`
-  ADD CONSTRAINT `kursy_grupy_oceny_ibfk_1` FOREIGN KEY (`id_uczestnik`) REFERENCES `kursy_grupy_uczestnicy` (`id`),
-  ADD CONSTRAINT `kursy_grupy_oceny_ibfk_2` FOREIGN KEY (`id_grupa`) REFERENCES `kursy_grupy` (`id`);
-
-ALTER TABLE `kursy_grupy_uczestnicy`
-  ADD CONSTRAINT `kursy_grupy_uczestnicy_ibfk_1` FOREIGN KEY (`id_grupa`) REFERENCES `kursy_grupy` (`id`),
-  ADD CONSTRAINT `kursy_grupy_uczestnicy_ibfk_2` FOREIGN KEY (`id_uczestnik`) REFERENCES `uzytkownicy` (`id`);
-
+--
+-- Constraints for table `tokeny`
+--
 ALTER TABLE `tokeny`
   ADD CONSTRAINT `tokeny_ibfk_1` FOREIGN KEY (`id_uzytkownik`) REFERENCES `uzytkownicy` (`id`),
   ADD CONSTRAINT `tokeny_ibfk_2` FOREIGN KEY (`id_uprawnienie`) REFERENCES `uprawnienia` (`id`);
 
+--
+-- Constraints for table `uzytkownicy_dane`
+--
 ALTER TABLE `uzytkownicy_dane`
   ADD CONSTRAINT `uzytkownicy_dane_ibfk_1` FOREIGN KEY (`id_uzytkownik`) REFERENCES `uzytkownicy` (`id`);
 
+--
+-- Constraints for table `uzytkownicy_hasla`
+--
 ALTER TABLE `uzytkownicy_hasla`
   ADD CONSTRAINT `uzytkownicy_hasla_ibfk_1` FOREIGN KEY (`id_uzytkownik`) REFERENCES `uzytkownicy` (`id`);
 
+--
+-- Constraints for table `uzytkownicy_uprawnienia`
+--
 ALTER TABLE `uzytkownicy_uprawnienia`
   ADD CONSTRAINT `uzytkownicy_uprawnienia_ibfk_1` FOREIGN KEY (`id_uzytkownik`) REFERENCES `uzytkownicy` (`id`),
   ADD CONSTRAINT `uzytkownicy_uprawnienia_ibfk_2` FOREIGN KEY (`id_uprawnienie`) REFERENCES `uprawnienia` (`id`);
 
+
+
 ALTER TABLE `wiadomosci`
   ADD CONSTRAINT `wiadomosci_ibfk_1` FOREIGN KEY (`id_uzytkownik`) REFERENCES `uzytkownicy` (`id`);
 
+--
+-- Constraints for table `wiadomosci_uczestnicy`
+--
 ALTER TABLE `wiadomosci_uczestnicy`
   ADD CONSTRAINT `wiadomosci_uczestnicy_ibfk_1` FOREIGN KEY (`id_uczestnik`) REFERENCES `uzytkownicy` (`id`),
   ADD CONSTRAINT `wiadomosci_uczestnicy_ibfk_2` FOREIGN KEY (`id_wiadomosc`) REFERENCES `wiadomosci` (`id`);
@@ -287,9 +341,6 @@ INSERT INTO `uzytkownicy_uprawnienia` (`id`, `id_uzytkownik`, `id_uprawnienie`) 
   (4, 4, 2),
   (5, 5, 1);
 
-INSERT INTO `uzytkownicy_dane` (`id_uzytkownik`, `miasto`, `ulica`, `nr_domu`, `kod_pocztowy`, `pesel`, `nr_dowodu`) VALUES
-  (1, 'Wrocław', 'Wrocławska', '77', '50-120', '11223344556', 'XXX123456');
-
 INSERT INTO `ogloszenia` (`id`, `nadawca`, `temat`, `dane`, `widok_od`, `widok_do`) VALUES
   (1, 'Administracja Systemu', 'Konserwacja', 'Trwa konserwacja...', 1620242061, 1731242061);
 
@@ -313,23 +364,3 @@ INSERT INTO `zapisy` (`id`, `nazwa`, `czy_publiczne`) VALUES
 INSERT INTO `sprawy` (`id`, `id_uzytkownik`, `temat`, `data`, `status`, `decyzja`) VALUES
 (1, 4, 'Stypendium Rektora', 1621357963, 'Rozpatrzona', 'Zgoda'),
 (2, 5, 'Stypendium socjalne', 1606357963, 'Rozpatrzona', 'Zgoda');
-
-INSERT INTO `kursy` (`id`, `kod`, `nazwa`, `ects`) VALUES
-  (1, 'MAT001412W', 'Analiza matematyczna 1.1 A', 5),
-  (2, 'MAT001412C', 'Analiza matematyczna 1.1 A ', 3),
-  (3, 'MAT001424C', 'Analiza matematyczna 2.2 A ', 3),
-  (4, 'MAT001424W', 'Analiza matematyczna 2.2 A ', 5),
-  (5, 'FLH121611W', 'Etyka w biznesie', 2);
-
-INSERT INTO `kursy_grupy` (`id`, `id_kursu`, `id_zapisy`, `kod_grupy`, `termin`, `sala`) VALUES
-  (1, 2, 2, 'AM1-02a', 'PN 13:15-15:00', 'Sala wirtualna'),
-  (2, 2, 2, 'AM1-02b', 'PN 15:15-17:55', 'Sala wirtualna'),
-  (3, 1, 2, 'AM1-01a', 'PN 9:00-10:45', 'Sala wirtualna');
-
-INSERT INTO `kursy_grupy_uczestnicy` (`id`, `id_grupa`, `id_uczestnik`, `czy_prowadzacy`) VALUES
-  (1, 3, 3, 1),
-  (2, 3, 5, 0);
-
-INSERT INTO `kursy_grupy_oceny` (`id`, `id_grupa`, `id_uczestnik`, `ocena`) VALUES
-  (1, 3, 2, 3.5);
-
