@@ -945,7 +945,9 @@ pub struct Ocena {
     pub id: i32,
     pub id_grupa : i32,
     pub id_uczestnik : i32,
-    pub ocena : f32
+    pub ocena : f32,
+    pub waga : f32,
+    pub komentarz : String
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
@@ -953,7 +955,9 @@ pub struct Ocena {
 pub struct OcenaNowa {
     pub id_grupa : i32,
     pub id_uczestnik : i32,
-    pub ocena : f32
+    pub ocena : f32,
+    pub waga : f32,
+    pub komentarz : String
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]

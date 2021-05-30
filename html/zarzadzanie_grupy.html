@@ -194,7 +194,7 @@
                 $('label[for="modalGrupyId"]').hide();
 			});
 
-            var id = getUrlParameter('id');
+            var id = getUrlParameter('id_grupa');
 
             if(id < 1){
                 window.location.replace("/zarzadzanie_kursy.html");
@@ -368,7 +368,7 @@
 			}
 
             function pokaz_uczestnikow(id){
-                window.location.href = "/zarzadzanie_grupy_uczestnicy.html?id="+id;
+                window.location.href = "/zarzadzanie_grupy_uczestnicy.html?id_grupa="+id;
             }    
 
 			function usun(){

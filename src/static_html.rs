@@ -12,8 +12,8 @@ pub fn index() -> io::Result<NamedFile> {
     NamedFile::open("html/index.html")
 }
 
-#[get("/<file..>?<id>", rank = 4)]
-pub fn all_id(id: i32, file: PathBuf) -> Option<NamedFile> {
+#[get("/<file..>?<id_grupa>&<id_uczestnik>", rank = 4)]
+pub fn all_id(id_grupa: i32, id_uczestnik: i32, file: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("html/").join(file)).ok()
 }
 

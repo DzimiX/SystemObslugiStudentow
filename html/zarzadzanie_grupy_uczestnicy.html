@@ -137,6 +137,8 @@
                     <td><b>Uczestnik</b></td>
                     <td><b>Czy prowadzący?</b></td>
                     <td><b>Modyfikacja</b></td>
+					<td><b>Ocena końcowa</b></td>
+					<td><b>Oceny</b></td>
                 </tr>
             </table>
 		</div>
@@ -252,7 +254,7 @@
 				}
 			});
 
-            var id = getUrlParameter('id');
+            var id = getUrlParameter('id_grupa');
 
             if(id < 1){
                 window.location.replace("/zarzadzanie_kursy.html");
@@ -324,11 +326,15 @@
 												czy_prowadzacy = "Nie";
 											}
 
+											let ocena_koncowa = "#TODO#";
+
 											$("#kursy").append(
 												"<tr>"+
 													"<td>"+imie+" "+nazwisko+"</td>"+
 													"<td>"+czy_prowadzacy+"</td>"+
 													"<td><button onclick='modyfikuj("+data.result[i]['id']+","+data.result[i]['id_uczestnik']+","+data.result[i]['czy_prowadzacy']+")'>Modyfikuj</button></td>"+
+													"<td>"+ocena_koncowa+"</td>"+
+													"<td><button onclick='oceny("+data.result[i]['id']+")'>Oceny</button></td>"+
 												"</tr>"
 											);
 										}
@@ -359,9 +365,14 @@
 				$("#modalUczestnikUsun").show();
             }
 
+			function oceny(id_uczestnik){
+				id_grupa = getUrlParameter('id_grupa');
+				window.location.replace("/zarzadzanie_grupy_uczestnik_oceny.html?id_grupa="+id_grupa+"&id_uczestnik="+id_uczestnik);
+			}
+
 			function edytuj_zatwierdz(){
 				id = $("#modalUczestnikId").html();
-				id_grupa = getUrlParameter('id');
+				id_grupa = getUrlParameter('id_grupa');
 				id_uczestnik = $("#modalUczestnikIdSelect").val();
 				prowadzacy = $("#modalUczestnikProwadzacy").val();
 
@@ -397,7 +408,7 @@
 			}
 
 			function nowe_zatwierdz(){
-				id_grupa = getUrlParameter('id');
+				id_grupa = getUrlParameter('id_grupa');
 				id_uczestnik = $("#modalUczestnikIdSelect").val();
 				prowadzacy = $("#modalUczestnikProwadzacy").val();
 
@@ -408,7 +419,7 @@
 				}
 
 				data_json = {
-					"id_grupa" : parseInt(getUrlParameter('id')),
+					"id_grupa" : parseInt(getUrlParameter('id_grupa')),
 					"id_uczestnik" : parseInt(id_uczestnik),
 					"czy_prowadzacy" : czy_prowadzacy
 				}
