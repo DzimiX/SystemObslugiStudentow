@@ -22,6 +22,7 @@ use crate::schema::uzytkownicy_dane;
 use crate::schema::kursy;
 use crate::schema::kursy_grupy;
 use crate::schema::kursy_grupy_oceny;
+use crate::schema::kursy_grupy_ocena_koncowa;
 use crate::schema::kursy_grupy_uczestnicy;
 use crate::schema::sprawy;
 
@@ -1036,13 +1037,17 @@ impl Ocena {
         let id = ocena.id;
         let id_grupa = ocena.id_grupa;
         let id_uczestnik = ocena.id_uczestnik;
+        let waga = ocena.waga;
+        let komentarz = ocena.komentarz;
         let ocena = ocena.ocena;
 
         let updated_row = diesel::update(kursy_grupy_oceny::table.filter(kursy_grupy_oceny::id.eq(&id)))
             .set((
                 kursy_grupy_oceny::id_grupa.eq(id_grupa),
                 kursy_grupy_oceny::id_uczestnik.eq(id_uczestnik),
-                kursy_grupy_oceny::ocena.eq(ocena)
+                kursy_grupy_oceny::ocena.eq(ocena),
+                kursy_grupy_oceny::waga.eq(waga),
+                kursy_grupy_oceny::komentarz.eq(komentarz)
             ))
             .execute(conn)
             .is_ok();
@@ -1053,6 +1058,101 @@ impl Ocena {
 
         return true
     }
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_ocena_koncowa"]
+pub struct OcenaKoncowa {
+    pub id: i32,
+    pub id_grupa : i32,
+    pub id_uczestnik : i32,
+    pub ocena : f32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_ocena_koncowa"]
+pub struct OcenaKoncowaNowa {
+    pub id_grupa : i32,
+    pub id_uczestnik : i32,
+    pub ocena : f32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_ocena_koncowa"]
+pub struct OcenaKoncowaId {
+    pub id: i32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_ocena_koncowa"]
+pub struct OcenaKoncowaUczestnikId {
+    pub id_uczestnik: i32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize, Clone)]
+#[table_name = "kursy_grupy_ocena_koncowa"]
+pub struct OcenaKoncowaGrupaUczestnikId {
+    pub id_grupa: i32,
+    pub id_uczestnik: i32,
+}
+
+impl OcenaKoncowa {
+
+    pub fn add(ocena: OcenaKoncowaNowa, conn: &MysqlConnection) -> bool {
+        diesel::insert_into(kursy_grupy_ocena_koncowa::table)
+            .values(&ocena)
+            .execute(conn)
+            .is_ok()
+    }
+
+    pub fn update(ocena: OcenaKoncowa, conn: &MysqlConnection) -> bool {
+        
+        let id = ocena.id;
+        let id_grupa = ocena.id_grupa;
+        let id_uczestnik = ocena.id_uczestnik;
+        let ocena = ocena.ocena;
+
+        let updated_row = diesel::update(kursy_grupy_ocena_koncowa::table.filter(kursy_grupy_ocena_koncowa::id.eq(&id)))
+            .set((
+                kursy_grupy_ocena_koncowa::id_grupa.eq(id_grupa),
+                kursy_grupy_ocena_koncowa::id_uczestnik.eq(id_uczestnik),
+                kursy_grupy_ocena_koncowa::ocena.eq(ocena)
+            ))
+            .execute(conn)
+            .is_ok();
+
+        if updated_row == false {
+            return false
+        }
+
+        return true
+    }
+
+    pub fn delete(id: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(kursy_grupy_ocena_koncowa::table
+            .filter(kursy_grupy_ocena_koncowa::id.eq(id))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+    
+        return true
+    }
+    
+    pub fn get_all(uczestnik: OcenaKoncowaUczestnikId, conn: &MysqlConnection) -> Vec<OcenaKoncowa> {
+        kursy_grupy_ocena_koncowa::table
+            .find(uczestnik.id_uczestnik)
+            .load::<OcenaKoncowa>(conn)
+            .expect("Problem z wczytaniem ocen.")
+    }
+
+    pub fn get_grupa_student(uczestnik: OcenaKoncowaGrupaUczestnikId, conn: &MysqlConnection) -> Vec<OcenaKoncowa> {
+        kursy_grupy_ocena_koncowa::table
+            .filter(kursy_grupy_ocena_koncowa::id_grupa.eq(uczestnik.id_grupa))
+            .filter(kursy_grupy_ocena_koncowa::id_uczestnik.eq(uczestnik.id_uczestnik))
+            .load::<OcenaKoncowa>(conn)
+            .expect("Problem z wczytaniem ocen.")
+    }
+
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]

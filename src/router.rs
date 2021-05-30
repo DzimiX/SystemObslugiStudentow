@@ -22,6 +22,7 @@ use crate::models::{Kurs, KursNowy, KursId};
 use crate::models::{Grupa, GrupaNowa, GrupaId, GrupaKursId, GrupaZapisyKursId};
 use crate::models::{Uczestnik, UczestnikNowy, UczestnikId, UczestnikGrupaId, UczestnikGrupaUczestnikId};
 use crate::models::{Ocena, OcenaNowa, OcenaId, OcenaUczestnikId, OcenaGrupaUczestnikId};
+use crate::models::{OcenaKoncowa, OcenaKoncowaNowa, OcenaKoncowaId, OcenaKoncowaUczestnikId, OcenaKoncowaGrupaUczestnikId};
 use crate::models::{Sprawy, SprawyId, SprawyNowe};
 
 #[post("/uzytkownicy", format = "application/json")]
