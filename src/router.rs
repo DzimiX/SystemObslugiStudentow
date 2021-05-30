@@ -784,7 +784,7 @@ pub fn uczestnik_grupa_usun(conn: DbConn, uczestnik: Json<UczestnikGrupaUczestni
     }))
 }
 
-// Ocena dla uczestnika w grupie
+// Oceny dla uczestnika w grupie
 
 #[post("/ocena", format = "application/json", data = "<uczestnik>")]
 pub fn ocena_grupa_uczestnik(conn: DbConn, uczestnik : Json<OcenaGrupaUczestnikId>, mut cookies : Cookies) -> Json<Value> { 
@@ -796,7 +796,7 @@ pub fn ocena_grupa_uczestnik(conn: DbConn, uczestnik : Json<OcenaGrupaUczestnikI
     }))
 }
 
-#[post("/ocena/nowe", format = "application/json", data = "<ocena>")]
+#[post("/ocena/nowa", format = "application/json", data = "<ocena>")]
 pub fn ocena_nowa(conn: DbConn, ocena: Json<OcenaNowa>, mut cookies : Cookies) -> Json<Value> { 
     // niebezpieczne
 
@@ -843,7 +843,7 @@ pub fn ocena_usun(conn: DbConn, ocena: Json<OcenaId>, mut cookies : Cookies) -> 
     }))
 }
 
-#[post("/ocena_usun", format = "application/json", data = "<ocena>")]
+#[post("/ocena/uczestnik/usun", format = "application/json", data = "<ocena>")]
 pub fn ocena_uczestnik_usun(conn: DbConn, ocena : Json<OcenaGrupaUczestnikId>, mut cookies : Cookies) -> Json<Value> { 
     //niebezpiecznie
 
@@ -857,6 +857,77 @@ pub fn ocena_uczestnik_usun(conn: DbConn, ocena : Json<OcenaGrupaUczestnikId>, m
         "result" : "OK",
     }))
 }
+
+// Ocena końcowa dla uczestnika w grupie
+
+#[post("/ocena/koncowa", format = "application/json", data = "<uczestnik>")]
+pub fn ocena_koncowa_grupa_uczestnik(conn: DbConn, uczestnik : Json<OcenaKoncowaGrupaUczestnikId>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    Json(json!({
+        "status" : 200,
+        "result" : OcenaKoncowa::get_grupa_student(uczestnik.into_inner(),&conn),
+    }))
+}
+
+#[post("/ocena/koncowa/wszystkie", format = "application/json", data = "<uczestnik>")]
+pub fn ocena_koncowa_uczestnik(conn: DbConn, uczestnik : Json<OcenaKoncowaUczestnikId>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    Json(json!({
+        "status" : 200,
+        "result" : OcenaKoncowa::get_all(uczestnik.into_inner(),&conn),
+    }))
+}
+
+#[post("/ocena/koncowa/nowa", format = "application/json", data = "<ocena>")]
+pub fn ocena_koncowa_nowa(conn: DbConn, ocena: Json<OcenaKoncowaNowa>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    let mut status = 400;
+    if OcenaKoncowa::add(ocena.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/ocena/koncowa/aktualizuj", format = "application/json", data = "<ocena>")]
+pub fn ocena_koncowa_aktualizuj(conn: DbConn, ocena: Json<OcenaKoncowa>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let mut status = 400;
+    if OcenaKoncowa::update(ocena.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/ocena/koncowa/usun", format = "application/json", data = "<ocena>")]
+pub fn ocena_koncowa_usun(conn: DbConn, ocena: Json<OcenaKoncowaId>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let id : i32 = format!("{}",ocena.id).parse::<i32>().unwrap();
+
+    let mut status = 400;
+    if OcenaKoncowa::delete(id, &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+// SPRAWY
 
 #[post("/sprawy", format = "application/json")]
 pub fn sprawy(conn: DbConn, mut cookies : Cookies) -> Json<Value> { 

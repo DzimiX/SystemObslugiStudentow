@@ -104,6 +104,12 @@ fn rocket() {
             router::ocena_usun,
             router::ocena_uczestnik_usun,
 
+            router::ocena_koncowa_grupa_uczestnik,
+            router::ocena_koncowa_uczestnik,
+            router::ocena_koncowa_nowa,
+            router::ocena_koncowa_aktualizuj,
+            router::ocena_koncowa_usun,
+
             router::sprawy,
             router::sprawy_nowe,
             router::sprawy_aktualizuj,
