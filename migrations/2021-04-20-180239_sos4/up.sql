@@ -354,11 +354,11 @@ INSERT INTO `kursy_grupy_uczestnicy` (`id`, `id_grupa`, `id_uczestnik`, `czy_pro
   (1, 3, 3, 1),
   (2, 3, 5, 0);
 
-INSERT INTO `kursy_grupy_oceny` (`id`, `id_grupa`, `id_uczestnik`, `ocena`) VALUES
-  (1, 3, 2, 3.5);
+INSERT INTO `kursy_grupy_oceny` (`id`, `id_grupa`, `id_uczestnik`, `ocena`, `waga`, `komentarz`, `data`) VALUES
+  (1, 3, 2, 3.5, 1, 'kartkówka', 1622485561);
 
-INSERT INTO `kursy_grupy_ocena_koncowa` (`id`, `id_grupa`, `id_uczestnik`, `ocena`) VALUES
-  (1, 3, 2, 4);
+INSERT INTO `kursy_grupy_ocena_koncowa` (`id`, `id_grupa`, `id_uczestnik`, `ocena`, `zaakceptowana`, `data_zaakceptowana`, `data_ocena`) VALUES
+  (1, 3, 2, 4, 0, 0, 1622485675);
 
 INSERT INTO `sprawy` (`id`, `id_uzytkownik`, `temat`, `data`, `status`, `decyzja`) VALUES
   (1, 4, 'Stypendium Rektora', 1621357963, 'Rozpatrzona', 'Zgoda'),

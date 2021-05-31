@@ -800,8 +800,17 @@ pub fn ocena_grupa_uczestnik(conn: DbConn, uczestnik : Json<OcenaGrupaUczestnikI
 pub fn ocena_nowa(conn: DbConn, ocena: Json<OcenaNowa>, mut cookies : Cookies) -> Json<Value> { 
     // niebezpieczne
 
+    let ocena_temp = OcenaNowa {
+        id_grupa : ocena.id_grupa,
+        id_uczestnik : ocena.id_uczestnik,
+        ocena : ocena.ocena,
+        waga : ocena.waga,
+        komentarz : String::from(&ocena.komentarz),
+        data : Local::now().timestamp()
+    };
+
     let mut status = 400;
-    if Ocena::add(ocena.into_inner(), &conn) == true {
+    if Ocena::add(ocena_temp, &conn) == true {
         status = 200;
     }
 

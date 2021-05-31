@@ -1037,19 +1037,17 @@ impl Ocena {
     pub fn update(ocena: Ocena, conn: &MysqlConnection) -> bool {
         
         let id = ocena.id;
-        let id_grupa = ocena.id_grupa;
-        let id_uczestnik = ocena.id_uczestnik;
         let waga = ocena.waga;
         let komentarz = ocena.komentarz;
         let ocena = ocena.ocena;
+        let data = Local::now().timestamp();
 
         let updated_row = diesel::update(kursy_grupy_oceny::table.filter(kursy_grupy_oceny::id.eq(&id)))
             .set((
-                kursy_grupy_oceny::id_grupa.eq(id_grupa),
-                kursy_grupy_oceny::id_uczestnik.eq(id_uczestnik),
                 kursy_grupy_oceny::ocena.eq(ocena),
                 kursy_grupy_oceny::waga.eq(waga),
-                kursy_grupy_oceny::komentarz.eq(komentarz)
+                kursy_grupy_oceny::komentarz.eq(komentarz),
+                kursy_grupy_oceny::data.eq(data)
             ))
             .execute(conn)
             .is_ok();
@@ -1116,20 +1114,12 @@ impl OcenaKoncowa {
     pub fn update(ocena: OcenaKoncowa, conn: &MysqlConnection) -> bool {
         
         let id = ocena.id;
-        let id_grupa = ocena.id_grupa;
-        let id_uczestnik = ocena.id_uczestnik;
-        let data_ocena = ocena.data_ocena;
-        let data_zaakceptowana = ocena.data_zaakceptowana;
-        let zaakceptowana = ocena.zaakceptowana;
+        let data_ocena = Local::now().timestamp();
         let ocena = ocena.ocena;
 
         let updated_row = diesel::update(kursy_grupy_ocena_koncowa::table.filter(kursy_grupy_ocena_koncowa::id.eq(&id)))
             .set((
-                kursy_grupy_ocena_koncowa::id_grupa.eq(id_grupa),
-                kursy_grupy_ocena_koncowa::id_uczestnik.eq(id_uczestnik),
                 kursy_grupy_ocena_koncowa::data_ocena.eq(data_ocena),
-                kursy_grupy_ocena_koncowa::data_zaakceptowana.eq(data_zaakceptowana),
-                kursy_grupy_ocena_koncowa::zaakceptowana.eq(zaakceptowana),
                 kursy_grupy_ocena_koncowa::ocena.eq(ocena)
             ))
             .execute(conn)

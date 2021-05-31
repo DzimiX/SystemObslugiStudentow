@@ -130,11 +130,11 @@
 			</div>
 
             <button onclick="window.history.back();">Wróć</button>
-            <button id="nowe">Dodaj nową ocenę</button></br></br>
+            <button id="nowa-ocena">Dodaj nową ocenę</button></br></br>
             
 			<div>Średnia ocen: <span style="color:red" id="srednia">#TODO#</span></div></br>
-			<div>Wystawiona ocena końcowa: <span style="color:red" id="ocenaKoncowa">#TODO#</span></div></br>
-			<button id="koncowa">Ocena końcowa</button></br></br>
+			<div>Wystawiona ocena końcowa: <span id="ocenaKoncowa"></span></div></br>
+			<button id="ocena-koncowa">Ocena końcowa</button></br></br>
 
             <table id="oceny">
                 <tr>
@@ -151,27 +151,123 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<span id="modalOcenaZamknij" class="close">&times;</span>
-					<h2 disabled id='modalOcenaTytul'>Ocena końcowa uczestnika</h2>
+					<h2 disabled id='modalOcenaTytul'>Ocena uczestnika </h2><h2 id='modalOcenaTytulUzytkownik'></h2>
 				</div>
 				<div class="modal-body">
-
-                    <label for="modalOcenaUczestnik">Uczestnik:</label></br>
-					<select id="modalOcenaUczestnik">
-						<option value="-1" selected></option>
-					</select></br></br>
-                    
                     <label for="modalOcenaOcena">Ocena:</label>
 					<input id="modalOcenaOcena"></input></br>
 
+					<label for="modalOcenaWaga">Waga:</label>
+					<input id="modalOcenaWaga"></input></br>
+
+					<label for="modalOcenaKomentarz">Komentarz:</label>
+					<input id="modalOcenaKomentarz"></input></br>
+
                     <button id="modalOcenaEdytuj" onclick="edytuj_zatwierdz()" >Edytuj ocenę</button>
                     <button id="modalOcenaDodaj" onclick="nowe_zatwierdz()">Dodaj ocenę</button>
-					<button style="color:red" id="modalUczestnikUsun" onclick="usun()">Usuń ocenę</button>
+					<button style="color:red" id="modalOcenaUsun" onclick="usun()">Usuń ocenę</button>
+				</div>
+			</div>
+		</div>
+
+		<div id="modalOcenaKoncowa" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<span id="modalOcenaKoncowaZamknij" class="close">&times;</span>
+					<h2 disabled id='modalOcenaKoncowaTytul'>Ocena końcowa uczestnika</h2>
+				</div>
+				<div class="modal-body">
+                    <label for="modalOcenaKoncowaOcena">Ocena:</label>
+					<input id="modalOcenaKoncowaOcena"></input></br>
+
+                    <button id="modalOcenaKoncowaEdytuj" onclick="koncowa_edytuj_zatwierdz()" >Dodaj ocenę końcową</button>
+                    <button id="modalOcenaKoncowaDodaj" onclick="koncowa_nowe_zatwierdz()">Edytuj ocenę końcową</button>
 				</div>
 			</div>
 		</div>
 
         <script>
 			
+			$("#modalOcenaEdytuj").hide();
+            $("#modalOcenaDodaj").hide();
+			$("#modalOcenaUsun").hide();
+
+			$("#modalOcenaZamknij").click(function() {
+				$("#modalOcena").hide();
+				$("#modalOcenaOcena").val("");
+                $("#modalOcenaWaga").val("");
+                $("#modalOcenaKomentarz").val("");
+                $("#modalOcenaEdytuj").hide();
+                $("#modalOcenaDodaj").hide();
+				$("#modalOcenaUsun").hide();
+			});
+
+			$("#nowa-ocena").click(function() {
+				$("#modalOcena").show();
+                $("#modalOcenaDodaj").show();
+				$("#modalOcenaTytul").html("Dodawanie nowej oceny cząstkowej użytkownika ")
+			});
+
+			function nowe_zatwierdz(){
+				let ocena = parseFloat($("#modalOcenaOcena").val());
+				let waga = parseFloat($("#modalOcenaWaga").val());
+				let komentarz = $("#modalOcenaKomentarz").val();
+
+				data_json = {
+					"id_grupa": parseInt(getUrlParameter('id_grupa')),
+					"id_uczestnik": parseInt(getUrlParameter('id_uczestnik')),
+					"ocena": ocena,
+					"waga" : waga,
+					"komentarz" : komentarz,
+					"data" : -1
+				}
+
+				$.ajax({
+					url: '/api/ocena/nowa',
+					type: "POST",
+					data: JSON.stringify(data_json),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							window.location.reload(true);
+						}
+					}
+				});
+			}
+
+			function modyfikuj(id, ocena, waga, komentarz){
+				data_json = {
+					"id": parseInt(id),
+					"id_grupa": parseInt(getUrlParameter('id_grupa')),
+					"id_uczestnik": parseInt(getUrlParameter('id_uczestnik')),
+					"ocena": parseFloat(ocena),
+					"waga" : parseFloat(waga),
+					"komentarz" : komentarz,
+					"data" : -1
+				}
+			}
+
+			$("#modalOcenaKoncowaEdytuj").hide();
+            $("#modalOcenaKoncowaDodaj").hide();
+
+			$("#modalOcenaKoncowaZamknij").click(function() {
+				$("#modalOcenaKoncowa").hide();
+				$("#modalOcenaKoncowaOcena").val("");
+                $("#modalOcenaKoncowaEdytuj").hide();
+                $("#modalOcenaKoncowaDodaj").hide();
+			});
+
+			$("#ocena-koncowa").click(function() {
+				$("#modalOcenaKoncowa").show();
+                $("#modalOcenaKoncowaDodaj").show();
+				$("#modalOcenaKoncowaTytul").html("Ocena końcowa użytkownika ")
+			});
+
 			data_json_grupa = {
 				"id" : parseInt(getUrlParameter('id_grupa'))
 			}
@@ -227,6 +323,29 @@
 					}
 				}
 			});
+
+			$.ajax({
+				url: '/api/ocena/koncowa',
+				type: "POST",
+				data: JSON.stringify(data_json_ocena_uczestnik),
+				contentType: "application/json; charset=UTF-8",
+				success: function (data) {
+					if (data.status != 200){
+						if (data.status == 401){
+							wyloguj();
+						}
+					} else if (data.status == 200){
+						let ocena_koncowa = "-";
+						if ( data.result.length > 0 ){
+							ocena_koncowa = data.result[0]['ocena'];
+						}
+						$("#ocenaKoncowa").append(ocena_koncowa);
+						if (ocena_koncowa != "-"){
+							$("#nowa-ocena-koncowa").hide()
+						}
+					}
+				}
+			})
 
 		</script>
 		<script src="/js/nav.js"></script>
