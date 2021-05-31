@@ -948,7 +948,8 @@ pub struct Ocena {
     pub id_uczestnik : i32,
     pub ocena : f32,
     pub waga : f32,
-    pub komentarz : String
+    pub komentarz : String,
+    pub data : i64
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
@@ -958,7 +959,8 @@ pub struct OcenaNowa {
     pub id_uczestnik : i32,
     pub ocena : f32,
     pub waga : f32,
-    pub komentarz : String
+    pub komentarz : String,
+    pub data : i64
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
@@ -1066,7 +1068,10 @@ pub struct OcenaKoncowa {
     pub id: i32,
     pub id_grupa : i32,
     pub id_uczestnik : i32,
-    pub ocena : f32
+    pub ocena : f32,
+    pub zaakceptowana : bool,
+    pub data_zaakceptowana : i64,
+    pub data_ocena : i64
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
@@ -1074,7 +1079,10 @@ pub struct OcenaKoncowa {
 pub struct OcenaKoncowaNowa {
     pub id_grupa : i32,
     pub id_uczestnik : i32,
-    pub ocena : f32
+    pub ocena : f32,
+    pub zaakceptowana : bool,
+    pub data_zaakceptowana : i64,
+    pub data_ocena : i64
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
@@ -1110,12 +1118,18 @@ impl OcenaKoncowa {
         let id = ocena.id;
         let id_grupa = ocena.id_grupa;
         let id_uczestnik = ocena.id_uczestnik;
+        let data_ocena = ocena.data_ocena;
+        let data_zaakceptowana = ocena.data_zaakceptowana;
+        let zaakceptowana = ocena.zaakceptowana;
         let ocena = ocena.ocena;
 
         let updated_row = diesel::update(kursy_grupy_ocena_koncowa::table.filter(kursy_grupy_ocena_koncowa::id.eq(&id)))
             .set((
                 kursy_grupy_ocena_koncowa::id_grupa.eq(id_grupa),
                 kursy_grupy_ocena_koncowa::id_uczestnik.eq(id_uczestnik),
+                kursy_grupy_ocena_koncowa::data_ocena.eq(data_ocena),
+                kursy_grupy_ocena_koncowa::data_zaakceptowana.eq(data_zaakceptowana),
+                kursy_grupy_ocena_koncowa::zaakceptowana.eq(zaakceptowana),
                 kursy_grupy_ocena_koncowa::ocena.eq(ocena)
             ))
             .execute(conn)
@@ -1153,6 +1167,20 @@ impl OcenaKoncowa {
             .expect("Problem z wczytaniem ocen.")
     }
 
+    pub fn accept(id: i32, conn: &MysqlConnection) -> bool {       
+    
+        let data_zaakceptowana = Local::now().timestamp();
+
+        let updated_row = diesel::update(kursy_grupy_ocena_koncowa::table.filter(kursy_grupy_ocena_koncowa::id.eq(&id)))
+            .set((
+                kursy_grupy_ocena_koncowa::zaakceptowana.eq(true),
+                kursy_grupy_ocena_koncowa::data_zaakceptowana.eq(data_zaakceptowana)
+            ))
+            .execute(conn)
+            .is_ok();
+
+        return true
+    }
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]

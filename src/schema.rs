@@ -24,6 +24,9 @@ table! {
         id_grupa -> Integer,
         id_uczestnik -> Integer,
         ocena -> Float,
+        zaakceptowana -> Bool,
+        data_zaakceptowana -> Bigint,
+        data_ocena -> Bigint,
     }
 }
 
@@ -35,6 +38,7 @@ table! {
         ocena -> Float,
         waga -> Float,
         komentarz -> Varchar,
+        data -> Bigint,
     }
 }
 

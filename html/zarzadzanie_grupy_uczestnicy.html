@@ -285,7 +285,7 @@
                 data_json_uczestnicy = {
                     "id_grupa" : parseInt(id)
                 }
-
+				
 				jQuery.when(
 					$.ajax({
 						url: '/api/uczestnicy',
@@ -305,41 +305,62 @@
 								let data_json_id_uzytkownik = {
 									"id" : parseInt(data.result[i]["id_uczestnik"])
 								}
-								$.ajax({
-									url: '/api/uzytkownik',
-									type: "POST",
-									data: JSON.stringify(data_json_id_uzytkownik),
-									contentType: "application/json; charset=UTF-8",
-									success: function (data2) {
-										if (data2.status != 200){
-											if (data2.status == 401){
-												wyloguj();
-											}
-										} else if (data2.status == 200){
-											id_user = data2.result['id'];
-											imie = data2.result['imie'];
-											nazwisko = data2.result['nazwisko'];
-											let czy_prowadzacy = false;
-											if (data.result[i]['czy_prowadzacy'] == true){
-												czy_prowadzacy = "Tak";
-											} else {
-												czy_prowadzacy = "Nie";
-											}
 
-											let ocena_koncowa = "#TODO#";
-
-											$("#kursy").append(
-												"<tr>"+
-													"<td>"+imie+" "+nazwisko+"</td>"+
-													"<td>"+czy_prowadzacy+"</td>"+
-													"<td><button onclick='modyfikuj("+data.result[i]['id']+","+data.result[i]['id_uczestnik']+","+data.result[i]['czy_prowadzacy']+")'>Modyfikuj</button></td>"+
-													"<td>"+ocena_koncowa+"</td>"+
-													"<td><button onclick='oceny("+data.result[i]['id']+")'>Oceny</button></td>"+
-												"</tr>"
-											);
-										}
+								jQuery.when(
+									$.ajax({
+										url: '/api/uzytkownik',
+										type: "POST",
+										data: JSON.stringify(data_json_id_uzytkownik),
+										contentType: "application/json; charset=UTF-8",
+									})
+								).done( function(data2) {
+									
+									let data_json_koncowa = {
+										"id_grupa" : parseInt(id),
+    									"id_uczestnik" : parseInt(data.result[i]["id"])
 									}
-								});
+
+									$.ajax({
+										url: '/api/ocena/koncowa',
+										type: "POST",
+										data: JSON.stringify(data_json_koncowa),
+										contentType: "application/json; charset=UTF-8",
+										success: function (data3) {
+											if (data2.status != 200){
+												if (data2.status == 401){
+													wyloguj();
+												}
+											} else if (data2.status == 200){
+												id_user = data2.result['id'];
+												imie = data2.result['imie'];
+												nazwisko = data2.result['nazwisko'];
+												let czy_prowadzacy = false;
+												if (data.result[i]['czy_prowadzacy'] == true){
+													czy_prowadzacy = "Tak";
+													backgroundColor = "#29163d";
+												} else {
+													czy_prowadzacy = "Nie";
+													backgroundColor = "";
+												}
+
+												let ocena_koncowa = "-";
+												if ( data3.result.length > 0 ){
+													ocena_koncowa = data3.result[0]['ocena'];
+												}
+
+												$("#kursy").append(
+													"<tr style='background-color:"+backgroundColor+"'>"+
+														"<td>"+imie+" "+nazwisko+"</td>"+
+														"<td>"+czy_prowadzacy+"</td>"+
+														"<td><button onclick='modyfikuj("+data.result[i]['id']+","+data.result[i]['id_uczestnik']+","+data.result[i]['czy_prowadzacy']+")'>Modyfikuj</button></td>"+
+														"<td>"+ocena_koncowa+"</td>"+
+														"<td><button onclick='oceny("+data.result[i]['id']+")'>Oceny</button></td>"+
+													"</tr>"
+												);
+											}
+										}
+									})
+								})
 							}
 						}
 					}

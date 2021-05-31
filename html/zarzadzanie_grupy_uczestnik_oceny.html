@@ -126,13 +126,14 @@
 		</div>
 		<div class="content">
 			<div class="header">
-				<h2>Zarządzanie ocenami użytkownika <span id="uzytkownik">#TODO#</span> w grupie <span id="grupa">#TODO#</span></h2>
+				<h2>Zarządzanie ocenami użytkownika <span style="color:red" id="uzytkownik">#TODO#</span> w grupie <span id="grupa"></span></h2>
 			</div>
 
             <button onclick="window.history.back();">Wróć</button>
             <button id="nowe">Dodaj nową ocenę</button></br></br>
             
-			<div>Średnia ocen: <span id="srednia">#TODO#</span></div></br>
+			<div>Średnia ocen: <span style="color:red" id="srednia">#TODO#</span></div></br>
+			<div>Wystawiona ocena końcowa: <span style="color:red" id="ocenaKoncowa">#TODO#</span></div></br>
 			<button id="koncowa">Ocena końcowa</button></br></br>
 
             <table id="oceny">
@@ -140,6 +141,7 @@
                     <td><b>Ocena</b></td>
                     <td><b>Waga</b></td>
                     <td><b>Komentarz</b></td>
+					<td><b>Data</b></td>
 					<td><b>Modyfikacja</b></td>
                 </tr>
             </table>
@@ -170,6 +172,62 @@
 
         <script>
 			
+			data_json_grupa = {
+				"id" : parseInt(getUrlParameter('id_grupa'))
+			}
+
+			$.ajax({
+				url: '/api/grupa',
+				type: "POST",
+				data: JSON.stringify(data_json_grupa),
+				contentType: "application/json; charset=UTF-8",
+				success: function (data) {
+					if(data.status != 200){
+						console.log("Wystąpił błąd!");
+					} else if (data.status == 200){
+						if (data.result.length > 0) {
+						}
+						for(let i = 0; i < data.result.length; i++){
+							$("#grupa").append(""+data.result[i]['kod_grupy']+"");
+						}
+					}
+				}
+			});
+
+			data_json_ocena_uczestnik= {
+				"id_grupa" : parseInt(getUrlParameter('id_grupa')),
+				"id_uczestnik" : parseInt(getUrlParameter('id_uczestnik'))
+			}
+
+			$.ajax({
+				url: '/api/ocena',
+				type: "POST",
+				data: JSON.stringify(data_json_ocena_uczestnik),
+				contentType: "application/json; charset=UTF-8",
+				success: function (data) {
+					console.log(data.status);
+					console.log(data.result);
+					
+					if(data.status != 200){
+						console.log("Wystąpił błąd!");
+					} else if (data.status == 200){
+						if (data.result.length > 0) {
+						}
+						for(let i = 0; i < data.result.length; i++){
+							$("#oceny").append(
+								"<tr>"+
+									"<td>"+data.result[i]['ocena']+"</td>"+
+									"<td>"+data.result[i]['waga']+"</td>"+
+									"<td>"+data.result[i]['komentarz']+"</td>"+
+									"<td>"+data.result[i]['data']+"</td>"+
+									"<td><button onclick=\"modyfikuj("+data.result[i]['id']+",\'"+data.result[i]['ocena']+"\',\'"+data.result[i]['waga']+"\',\'"+data.result[i]['komentarz']+"\')\">MODYFIKUJ</button></td>"+
+								"</tr>"
+							);
+						}
+					}
+				}
+			});
+
 		</script>
 		<script src="/js/nav.js"></script>
 	</body>

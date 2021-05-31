@@ -20,14 +20,18 @@ CREATE TABLE `kursy_grupy_oceny` (
   `id_uczestnik` int(11) NOT NULL,
   `ocena` float NOT NULL,
   `waga` float NOT NULL,
-  `komentarz` varchar(255) NOT NULL
+  `komentarz` varchar(255) NOT NULL,
+  `data` bigint(8) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `kursy_grupy_ocena_koncowa` (
   `id` int(11) NOT NULL,
   `id_grupa` int(11) NOT NULL,
   `id_uczestnik` int(11) NOT NULL,
-  `ocena` float NOT NULL
+  `ocena` float NOT NULL,
+  `zaakceptowana` tinyint(1) NOT NULL,
+  `data_zaakceptowana` bigint(8) NOT NULL,
+  `data_ocena` bigint(8) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `kursy_grupy_uczestnicy` (
