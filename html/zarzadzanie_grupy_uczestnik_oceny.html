@@ -126,13 +126,13 @@
 		</div>
 		<div class="content">
 			<div class="header">
-				<h2>Zarządzanie ocenami użytkownika <span style="color:red" id="uzytkownik">#TODO#</span> w grupie <span id="grupa"></span></h2>
+				<h2>Zarządzanie ocenami użytkownika <span id="uzytkownik"></span> w grupie <span id="grupa"></span></h2>
 			</div>
 
             <button onclick="window.history.back();">Wróć</button>
             <button id="nowa-ocena">Dodaj nową ocenę</button></br></br>
             
-			<div>Średnia ocen: <span style="color:red" id="srednia">#TODO#</span></div></br>
+			<div>Średnia ocen cząstkowych: <span id="srednia"></span></div></br>
 			<div>Wystawiona ocena końcowa: <span id="ocenaKoncowa"></span></div></br>
 			<button id="ocena-koncowa">Ocena końcowa</button></br></br>
 
@@ -174,7 +174,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<span id="modalOcenaKoncowaZamknij" class="close">&times;</span>
-					<h2 disabled id='modalOcenaKoncowaTytul'>Ocena końcowa uczestnika</h2>
+					<h2 disabled id='modalOcenaKoncowaTytul'>Ocena końcowa o ID: <span id='modalOcenaKoncowaId'></span></h2>
 				</div>
 				<div class="modal-body">
                     <label for="modalOcenaKoncowaOcena">Ocena:</label>
@@ -212,7 +212,7 @@
 				$("#modalOcena").show();
                 $("#modalOcenaDodaj").show();
 				$("#modalOcenaTytul").html("Dodawanie nowej oceny cząstkowej użytkownika <span id='modalOcenaNazwaUzytkownika'></span>")
-				$("#modalOcenaNazwaUzytkownika").html("#todo#");
+				$("#modalOcenaNazwaUzytkownika").html(nazwaUzytkownika);
 			});
 
 			function nowe_zatwierdz(){
@@ -235,11 +235,11 @@
 					data: JSON.stringify(data_json),
 					contentType: "application/json; charset=UTF-8",
 					success: function (data) {
-						console.log(data.status);
-						console.log(data.result);
+						//console.log(data.status);
+						//console.log(data.result);
 						
 						if(data.status != 200){
-							console.log("Wystąpił błąd!");
+							alert("Wystąpił błąd!");
 						} else if (data.status == 200){
 							window.location.reload(true);
 						}
@@ -249,8 +249,7 @@
 
 			function modyfikuj(id, ocena, waga, komentarz){
 
-				$("#modalOcenaTytul").html("Edycja oceny cząstkowej od ID: <span id='modalOcenaId'></span>, użytkownika <span id='modalOcenaNazwaUzytkownika'></span>");
-				$("#modalOcenaNazwaUzytkownika").html("#todo#");
+				$("#modalOcenaTytul").html("Edycja oceny cząstkowej od ID: <span id='modalOcenaId'></span>");
 				$("#modalOcenaId").html(id);
 				$("#modalOcenaOcena").val(ocena);
 				$("#modalOcenaWaga").val(waga);
@@ -280,7 +279,7 @@
 					contentType: "application/json; charset=UTF-8",
 					success: function (data) {
 						if(data.status != 200){
-							console.log("Wystąpił błąd!");
+							alert("Wystąpił błąd!");
 						} else if (data.status == 200){
 							window.location.reload(true);
 						}
@@ -307,8 +306,8 @@
 							data: JSON.stringify(data_json),
 							contentType: "application/json; charset=UTF-8",
 							success: function (data) {
-								console.log(data.status);
-								console.log(data.result);
+								//console.log(data.status);
+								//console.log(data.result);
 								
 								if(data.status != 200){
 									if(data.status == 401){
@@ -339,7 +338,6 @@
 			$("#ocena-koncowa").click(function() {
 				$("#modalOcenaKoncowa").show();
                 $("#modalOcenaKoncowaDodaj").show();
-				$("#modalOcenaKoncowaTytul").html("Ocena końcowa użytkownika ")
 
 				$.ajax({
 					url: '/api/ocena/koncowa',
@@ -373,6 +371,8 @@
 									$("#modalOcenaKoncowaEdytuj").prop("disabled", true);
 								}
 
+								$("#modalOcenaKoncowaId").html(data.result[0]['id']);
+
 								$("#modalOcenaKoncowaDodaj").hide();
 								$("#modalOcenaKoncowaEdytuj").show();
 								$("#modalOcenaKoncowaOcena").val(ocena_koncowa);
@@ -394,10 +394,115 @@
 				})
 			});
 
+			function koncowa_nowe_zatwierdz(){
+
+				let ocena = parseInt($("#modalOcenaKoncowaOcena").val());
+
+				data_json_koncowa = {
+					"id_grupa": parseInt(getUrlParameter('id_grupa')),
+					"id_uczestnik": parseInt(getUrlParameter('id_uczestnik')),
+					"ocena": ocena,
+					"zaakceptowana" : false,
+					"data_zaakceptowana" : -1,
+					"data_ocena" : -1
+				}
+
+				$.ajax({
+					url: '/api/ocena/koncowa/nowa',
+					type: "POST",
+					data: JSON.stringify(data_json_koncowa),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						if(data.status != 200){
+							alert("Wystąpił błąd!");
+						} else if (data.status == 200){
+							window.location.reload(true);
+						}
+					}
+				});
+
+			}
+
+			function koncowa_edytuj_zatwierdz(){
+
+				let id = parseInt($("#modalOcenaKoncowaId").html())
+				let ocena = parseFloat($("#modalOcenaKoncowaOcena").val());
+
+				data_json_koncowa = {
+					"id" : id,
+					"id_grupa": parseInt(getUrlParameter('id_grupa')),
+					"id_uczestnik": parseInt(getUrlParameter('id_uczestnik')),
+					"ocena": ocena,
+					"zaakceptowana" : false,
+					"data_zaakceptowana" : -1,
+					"data_ocena" : -1
+				}
+
+				$.ajax({
+					url: '/api/ocena/koncowa/aktualizuj',
+					type: "POST",
+					data: JSON.stringify(data_json_koncowa),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						if(data.status != 200){
+							alert("Wystąpił błąd!");
+						} else if (data.status == 200){
+							window.location.reload(true);
+						}
+					}
+				});
+			}
+
+			data_json_uczestnik = {
+				"id" : parseInt(getUrlParameter('id_uczestnik'))
+			}
+
+			var nazwaUzytkownika = "";
+
+			jQuery.when(
+					$.ajax({
+					url: '/api/uczestnik',
+					type: "POST",
+					data: JSON.stringify(data_json_uczestnik),
+					contentType: "application/json; charset=UTF-8",
+                	})
+				).done( function(data) {
+					if(data.status != 200){
+						if(data.status == 401){
+							wyloguj();
+						} else {
+							alert("Wystąpił błąd!");
+						}
+					} else if (data.status == 200){
+						//console.log(data.result);
+						
+						data_json_uzytkownik = {
+							"id" : data.result
+						}
+
+						$.ajax({
+							url: '/api/uzytkownik/publiczne',
+							type: "POST",
+							data: JSON.stringify(data_json_uzytkownik),
+							contentType: "application/json; charset=UTF-8",
+							success: function (data) {
+								if(data.status != 200){
+									alert("Wystąpił błąd!");
+								} else if (data.status == 200){
+									//console.log(data.result['imie']);
+									nazwaUzytkownika = data.result['imie']+" "+data.result['nazwisko'];
+									$("#uzytkownik").html(nazwaUzytkownika);
+								}
+							}
+						});
+
+					}
+			});
+
 			data_json_grupa = {
 				"id" : parseInt(getUrlParameter('id_grupa'))
 			}
-
+			
 			$.ajax({
 				url: '/api/grupa',
 				type: "POST",
@@ -405,7 +510,7 @@
 				contentType: "application/json; charset=UTF-8",
 				success: function (data) {
 					if(data.status != 200){
-						console.log("Wystąpił błąd!");
+						alert("Wystąpił błąd!");
 					} else if (data.status == 200){
 						if (data.result.length > 0) {
 						}
@@ -427,11 +532,11 @@
 				data: JSON.stringify(data_json_ocena_uczestnik),
 				contentType: "application/json; charset=UTF-8",
 				success: function (data) {
-					console.log(data.status);
-					console.log(data.result);
+					//console.log(data.status);
+					//console.log(data.result);
 					
 					if(data.status != 200){
-						console.log("Wystąpił błąd!");
+						alert("Wystąpił błąd!");
 					} else if (data.status == 200){
 						if (data.result.length > 0) {
 						}
@@ -478,6 +583,26 @@
 						if (ocena_koncowa != "-"){
 							$("#nowa-ocena-koncowa").hide()
 						}
+					}
+				}
+			})
+
+			$.ajax({
+				url: '/api/ocena/uczestnik/srednia',
+				type: "POST",
+				data: JSON.stringify(data_json_ocena_uczestnik),
+				contentType: "application/json; charset=UTF-8",
+				success: function (data) {
+					if (data.status != 200){
+						if (data.status == 401){
+							wyloguj();
+						}
+					} else if (data.status == 200){
+						let srednia = "-";
+						if ( data.result != -1.0 ){
+							srednia = data.result.toFixed(3);
+						}
+						$("#srednia").html(srednia);
 					}
 				}
 			})

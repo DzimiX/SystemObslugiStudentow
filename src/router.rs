@@ -11,6 +11,7 @@ use super::PRACOWNIK;
 use super::PROWADZACY;
 use super::STUDENT;
 use super::UZYTKOWNIK;
+use super::OCENY;
 
 use crate::models::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
 use crate::models::{AuthLogin, Auth, AuthNowy};
@@ -704,6 +705,15 @@ pub fn uczestnicy_grupa(conn: DbConn, uczestnik: Json<UczestnikGrupaId>, mut coo
     }))
 }
 
+#[post("/uczestnik", format = "application/json", data = "<uczestnik>" )]
+pub fn uczestnik_grupy(conn: DbConn, uczestnik: Json<UczestnikId>, mut cookies : Cookies) -> Json<Value> {
+
+    Json(json!({
+        "status" : 200,
+        "result" : Uczestnik::get_uczestnik(uczestnik.into_inner(),&conn),
+    }))
+}
+
 #[post("/uczestnicy/nowe", format = "application/json", data = "<uczestnik>")]
 pub fn uczestnicy_nowe(conn: DbConn, uczestnik: Json<UczestnikNowy>, mut cookies : Cookies) -> Json<Value> { 
     // niebezpieczne
@@ -800,24 +810,31 @@ pub fn ocena_grupa_uczestnik(conn: DbConn, uczestnik : Json<OcenaGrupaUczestnikI
 pub fn ocena_nowa(conn: DbConn, ocena: Json<OcenaNowa>, mut cookies : Cookies) -> Json<Value> { 
     // niebezpieczne
 
-    let ocena_temp = OcenaNowa {
-        id_grupa : ocena.id_grupa,
-        id_uczestnik : ocena.id_uczestnik,
-        ocena : ocena.ocena,
-        waga : ocena.waga,
-        komentarz : String::from(&ocena.komentarz),
-        data : Local::now().timestamp()
-    };
+    if OCENY.contains(&ocena.ocena) {
+        let ocena_temp = OcenaNowa {
+            id_grupa : ocena.id_grupa,
+            id_uczestnik : ocena.id_uczestnik,
+            ocena : ocena.ocena,
+            waga : ocena.waga,
+            komentarz : String::from(&ocena.komentarz),
+            data : Local::now().timestamp()
+        };
+    
+        let mut status = 400;
+        if Ocena::add(ocena_temp, &conn) == true {
+            status = 200;
+        }
 
-    let mut status = 400;
-    if Ocena::add(ocena_temp, &conn) == true {
-        status = 200;
+        Json(json!({
+            "status" : status,
+            "result" : "OK",
+        }))
+    }else {
+        Json(json!({
+            "status" : 400,
+            "result" : "Zła ocena",
+        }))
     }
-
-    Json(json!({
-        "status" : status,
-        "result" : "OK",
-    }))
 }
 
 #[post("/ocena/aktualizuj", format = "application/json", data = "<ocena>")]
@@ -867,6 +884,23 @@ pub fn ocena_uczestnik_usun(conn: DbConn, ocena : Json<OcenaGrupaUczestnikId>, m
     }))
 }
 
+#[post("/ocena/uczestnik/srednia", format = "application/json", data = "<ocena>")]
+pub fn ocena_uczestnik_srednia(conn: DbConn, ocena : Json<OcenaGrupaUczestnikId>, mut cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    let mut status = 400;
+    let srednia = Ocena::average(ocena.into_inner(), &conn);
+
+    if srednia != -1.0 {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : srednia,
+    }))
+}
+
 // Ocena końcowa dla uczestnika w grupie
 
 #[post("/ocena/koncowa", format = "application/json", data = "<uczestnik>")]
@@ -876,6 +910,16 @@ pub fn ocena_koncowa_grupa_uczestnik(conn: DbConn, uczestnik : Json<OcenaKoncowa
     Json(json!({
         "status" : 200,
         "result" : OcenaKoncowa::get_grupa_student(uczestnik.into_inner(),&conn),
+    }))
+}
+
+#[post("/ocena/koncowa/akceptuj", format = "application/json", data = "<ocena>")]
+pub fn ocena_koncowa_akceptuj(conn: DbConn, ocena : Json<OcenaKoncowaId>, mut cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    Json(json!({
+        "status" : 200,
+        "result" : OcenaKoncowa::accept(ocena.into_inner(),&conn),
     }))
 }
 
