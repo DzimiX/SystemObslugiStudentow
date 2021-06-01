@@ -155,6 +155,7 @@
 					<select id="modalUczestnikIdSelect">
 						<option value="-1" selected></option>
 					</select></br></br>
+					<input disabled id="modalUczestnikIdNazwa"></input>
                     
                     <label for="modalUczestnikProwadzacy">Czy prowadzący:</label>
 					<select id="modalUczestnikProwadzacy">
@@ -165,29 +166,6 @@
                     <button id="modalUczestnikEdytuj" onclick="edytuj_zatwierdz()" >Edytuj</button>
                     <button id="modalUczestnikDodaj" onclick="nowe_zatwierdz()">Dodaj uczestnika</button>
 					<button style="color:red" id="modalUczestnikUsun" onclick="usun()">Usuń uczestnika</button>
-				</div>
-			</div>
-		</div>
-
-		<div id="modalOcena" class="modal">
-			<div class="modal-content">
-				<div class="modal-header">
-					<span id="modalOcenaZamknij" class="close">&times;</span>
-					<h2 disabled id='modalOcenaTytul'>Ocena końcowa uczestnika</h2>
-				</div>
-				<div class="modal-body">
-
-                    <label for="modalOcenaUczestnik">Uczestnik:</label></br>
-					<select id="modalOcenaUczestnik">
-						<option value="-1" selected></option>
-					</select></br></br>
-                    
-                    <label for="modalOcenaOcena">Ocena:</label>
-					<input id="modalOcenaOcena"></input></br>
-
-                    <button id="modalOcenaEdytuj" onclick="edytuj_zatwierdz()" >Edytuj ocenę</button>
-                    <button id="modalOcenaDodaj" onclick="nowe_zatwierdz()">Dodaj ocenę</button>
-					<button style="color:red" id="modalUczestnikUsun" onclick="usun()">Usuń ocenę</button>
 				</div>
 			</div>
 		</div>
@@ -207,31 +185,12 @@
 				$("#modalUczestnikUsun").hide();
 			});
 
-			$("#nowe-ocena").click(function() {
-				$("#modalUczestnik").show();
-                $("#modalUczestnikDodaj").show();
-				$("#modalUczestnikId").hide();
-                $('label[for="modalUczestnikId"]').hide();
-			});
-
-			$("#modalUczestnikEdytuj").hide();
-            $("#modalUczestnikDodaj").hide();
-			$("#modalUczestnikUsun").hide();
-
-			$("#modalZamknij").click(function() {
-				$("#modalUczestnik").hide();
-				$("#modalUczestnikId").val("");
-                $("#modalUczestnikIdSelect").val("");
-                $("#modalUczestnikProwadzacy").val("");
-                $("#modalUczestnikEdytuj").hide();
-                $("#modalUczestnikDodaj").hide();
-				$("#modalUczestnikUsun").hide();
-			});
-
 			$("#nowe").click(function() {
+				$(".select2")[0].style.display = "";
 				$("#modalUczestnik").show();
                 $("#modalUczestnikDodaj").show();
 				$("#modalUczestnikId").hide();
+				$("#modalUczestnikIdNazwa").hide();
                 $('label[for="modalUczestnikId"]').hide();
 			});
 
@@ -375,8 +334,12 @@
 					prowadzacy = 0;
 				}
 
+				$(".select2")[0].style.display = "none";
                 $("#modalUczestnikId").html(id);
                 $("#modalUczestnikIdSelect").val(id_uczestnik);
+				$("#modalUczestnikIdNazwa").val($("#modalUczestnikIdSelect").find('option:selected').text());
+				$("#modalUczestnikIdNazwa").show();
+				$("#modalUczestnikIdSelect").hide();
                 $("#modalUczestnikProwadzacy").val(prowadzacy);
 
 				$("#modalUczestnikId").show();
@@ -464,11 +427,11 @@
 			}
 
 			function usun(){
-                conf = confirm("Czy napewno chcesz usunąć wybraną grupę?")
+                conf = confirm("Czy napewno chcesz usunąć wybranego uczestnika?")
 
                 if(conf){
 
-					id = $("#modalGrupyId").html();
+					id = $("#modalUczestnikId").html();
 					if (id < 1){
 						alert("Błąd");
 					} else {
@@ -486,7 +449,13 @@
 								console.log(data.result);
 								
 								if(data.status != 200){
-									console.log("Wystąpił błąd!");
+									if(data.status == 401){
+										alert("Brak uprawnień.");
+										document.location.href = "/";
+									} else {
+										alert("Wystąpił błąd");
+									}
+									alert("Wystąpił błąd. (użytkownik nie może mieć ocen z kursu)");
 								} else if (data.status == 200){
 									window.location.reload(true);
 								}

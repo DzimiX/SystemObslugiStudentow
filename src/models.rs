@@ -782,13 +782,22 @@ impl Grupa {
     }
 
     pub fn delete(id: i32, conn: &MysqlConnection) -> bool {
-        diesel::delete(kursy_grupy::table
+        let data = diesel::delete(kursy_grupy::table // Result<usize,diesel::result::Error>
             .filter(kursy_grupy::id.eq(id))
         )
-        .execute(conn)
-        .expect("Błąd.");
-    
-        return true
+        .execute(conn);
+
+        match data {
+            Ok(data) => {
+                if (data == 0){
+                    return false;
+                }
+                return true;
+            },
+            Err(_error) => {
+                return false;
+            }
+        };
     }
 
     pub fn update(grupa: Grupa, conn: &MysqlConnection) -> bool {
