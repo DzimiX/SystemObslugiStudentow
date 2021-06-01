@@ -137,6 +137,8 @@
                     <td><b>Uczestnik</b></td>
                     <td><b>Czy prowadzący?</b></td>
                     <td><b>Modyfikacja</b></td>
+					<td><b>Ocena końcowa</b></td>
+					<td><b>Oceny</b></td>
                 </tr>
             </table>
 		</div>
@@ -153,6 +155,7 @@
 					<select id="modalUczestnikIdSelect">
 						<option value="-1" selected></option>
 					</select></br></br>
+					<input disabled id="modalUczestnikIdNazwa"></input>
                     
                     <label for="modalUczestnikProwadzacy">Czy prowadzący:</label>
 					<select id="modalUczestnikProwadzacy">
@@ -163,29 +166,6 @@
                     <button id="modalUczestnikEdytuj" onclick="edytuj_zatwierdz()" >Edytuj</button>
                     <button id="modalUczestnikDodaj" onclick="nowe_zatwierdz()">Dodaj uczestnika</button>
 					<button style="color:red" id="modalUczestnikUsun" onclick="usun()">Usuń uczestnika</button>
-				</div>
-			</div>
-		</div>
-
-		<div id="modalOcena" class="modal">
-			<div class="modal-content">
-				<div class="modal-header">
-					<span id="modalOcenaZamknij" class="close">&times;</span>
-					<h2 disabled id='modalOcenaTytul'>Ocena końcowa uczestnika</h2>
-				</div>
-				<div class="modal-body">
-
-                    <label for="modalOcenaUczestnik">Uczestnik:</label></br>
-					<select id="modalOcenaUczestnik">
-						<option value="-1" selected></option>
-					</select></br></br>
-                    
-                    <label for="modalOcenaOcena">Ocena:</label>
-					<input id="modalOcenaOcena"></input></br>
-
-                    <button id="modalOcenaEdytuj" onclick="edytuj_zatwierdz()" >Edytuj ocenę</button>
-                    <button id="modalOcenaDodaj" onclick="nowe_zatwierdz()">Dodaj ocenę</button>
-					<button style="color:red" id="modalUczestnikUsun" onclick="usun()">Usuń ocenę</button>
 				</div>
 			</div>
 		</div>
@@ -205,31 +185,12 @@
 				$("#modalUczestnikUsun").hide();
 			});
 
-			$("#nowe-ocena").click(function() {
-				$("#modalUczestnik").show();
-                $("#modalUczestnikDodaj").show();
-				$("#modalUczestnikId").hide();
-                $('label[for="modalUczestnikId"]').hide();
-			});
-
-			$("#modalUczestnikEdytuj").hide();
-            $("#modalUczestnikDodaj").hide();
-			$("#modalUczestnikUsun").hide();
-
-			$("#modalZamknij").click(function() {
-				$("#modalUczestnik").hide();
-				$("#modalUczestnikId").val("");
-                $("#modalUczestnikIdSelect").val("");
-                $("#modalUczestnikProwadzacy").val("");
-                $("#modalUczestnikEdytuj").hide();
-                $("#modalUczestnikDodaj").hide();
-				$("#modalUczestnikUsun").hide();
-			});
-
 			$("#nowe").click(function() {
+				$(".select2")[0].style.display = "";
 				$("#modalUczestnik").show();
                 $("#modalUczestnikDodaj").show();
 				$("#modalUczestnikId").hide();
+				$("#modalUczestnikIdNazwa").hide();
                 $('label[for="modalUczestnikId"]').hide();
 			});
 
@@ -252,7 +213,7 @@
 				}
 			});
 
-            var id = getUrlParameter('id');
+            var id = getUrlParameter('id_grupa');
 
             if(id < 1){
                 window.location.replace("/zarzadzanie_kursy.html");
@@ -283,7 +244,7 @@
                 data_json_uczestnicy = {
                     "id_grupa" : parseInt(id)
                 }
-
+				
 				jQuery.when(
 					$.ajax({
 						url: '/api/uczestnicy',
@@ -303,37 +264,62 @@
 								let data_json_id_uzytkownik = {
 									"id" : parseInt(data.result[i]["id_uczestnik"])
 								}
-								$.ajax({
-									url: '/api/uzytkownik',
-									type: "POST",
-									data: JSON.stringify(data_json_id_uzytkownik),
-									contentType: "application/json; charset=UTF-8",
-									success: function (data2) {
-										if (data2.status != 200){
-											if (data2.status == 401){
-												wyloguj();
-											}
-										} else if (data2.status == 200){
-											id_user = data2.result['id'];
-											imie = data2.result['imie'];
-											nazwisko = data2.result['nazwisko'];
-											let czy_prowadzacy = false;
-											if (data.result[i]['czy_prowadzacy'] == true){
-												czy_prowadzacy = "Tak";
-											} else {
-												czy_prowadzacy = "Nie";
-											}
 
-											$("#kursy").append(
-												"<tr>"+
-													"<td>"+imie+" "+nazwisko+"</td>"+
-													"<td>"+czy_prowadzacy+"</td>"+
-													"<td><button onclick='modyfikuj("+data.result[i]['id']+","+data.result[i]['id_uczestnik']+","+data.result[i]['czy_prowadzacy']+")'>Modyfikuj</button></td>"+
-												"</tr>"
-											);
-										}
+								jQuery.when(
+									$.ajax({
+										url: '/api/uzytkownik',
+										type: "POST",
+										data: JSON.stringify(data_json_id_uzytkownik),
+										contentType: "application/json; charset=UTF-8",
+									})
+								).done( function(data2) {
+									
+									let data_json_koncowa = {
+										"id_grupa" : parseInt(id),
+    									"id_uczestnik" : parseInt(data.result[i]["id"])
 									}
-								});
+
+									$.ajax({
+										url: '/api/ocena/koncowa',
+										type: "POST",
+										data: JSON.stringify(data_json_koncowa),
+										contentType: "application/json; charset=UTF-8",
+										success: function (data3) {
+											if (data2.status != 200){
+												if (data2.status == 401){
+													wyloguj();
+												}
+											} else if (data2.status == 200){
+												id_user = data2.result['id'];
+												imie = data2.result['imie'];
+												nazwisko = data2.result['nazwisko'];
+												let czy_prowadzacy = false;
+												if (data.result[i]['czy_prowadzacy'] == true){
+													czy_prowadzacy = "Tak";
+													backgroundColor = "#29163d";
+												} else {
+													czy_prowadzacy = "Nie";
+													backgroundColor = "";
+												}
+
+												let ocena_koncowa = "-";
+												if ( data3.result.length > 0 ){
+													ocena_koncowa = data3.result[0]['ocena'];
+												}
+
+												$("#kursy").append(
+													"<tr style='background-color:"+backgroundColor+"'>"+
+														"<td>"+imie+" "+nazwisko+"</td>"+
+														"<td>"+czy_prowadzacy+"</td>"+
+														"<td><button onclick='modyfikuj("+data.result[i]['id']+","+data.result[i]['id_uczestnik']+","+data.result[i]['czy_prowadzacy']+")'>Modyfikuj</button></td>"+
+														"<td>"+ocena_koncowa+"</td>"+
+														"<td><button onclick='oceny("+data.result[i]['id']+")'>Oceny</button></td>"+
+													"</tr>"
+												);
+											}
+										}
+									})
+								})
 							}
 						}
 					}
@@ -348,8 +334,12 @@
 					prowadzacy = 0;
 				}
 
+				$(".select2")[0].style.display = "none";
                 $("#modalUczestnikId").html(id);
                 $("#modalUczestnikIdSelect").val(id_uczestnik);
+				$("#modalUczestnikIdNazwa").val($("#modalUczestnikIdSelect").find('option:selected').text());
+				$("#modalUczestnikIdNazwa").show();
+				$("#modalUczestnikIdSelect").hide();
                 $("#modalUczestnikProwadzacy").val(prowadzacy);
 
 				$("#modalUczestnikId").show();
@@ -359,9 +349,14 @@
 				$("#modalUczestnikUsun").show();
             }
 
+			function oceny(id_uczestnik){
+				id_grupa = getUrlParameter('id_grupa');
+				window.location.href = "/zarzadzanie_grupy_uczestnik_oceny.html?id_grupa="+id_grupa+"&id_uczestnik="+id_uczestnik;
+			}
+
 			function edytuj_zatwierdz(){
 				id = $("#modalUczestnikId").html();
-				id_grupa = getUrlParameter('id');
+				id_grupa = getUrlParameter('id_grupa');
 				id_uczestnik = $("#modalUczestnikIdSelect").val();
 				prowadzacy = $("#modalUczestnikProwadzacy").val();
 
@@ -397,7 +392,7 @@
 			}
 
 			function nowe_zatwierdz(){
-				id_grupa = getUrlParameter('id');
+				id_grupa = getUrlParameter('id_grupa');
 				id_uczestnik = $("#modalUczestnikIdSelect").val();
 				prowadzacy = $("#modalUczestnikProwadzacy").val();
 
@@ -408,7 +403,7 @@
 				}
 
 				data_json = {
-					"id_grupa" : parseInt(getUrlParameter('id')),
+					"id_grupa" : parseInt(getUrlParameter('id_grupa')),
 					"id_uczestnik" : parseInt(id_uczestnik),
 					"czy_prowadzacy" : czy_prowadzacy
 				}
@@ -432,11 +427,11 @@
 			}
 
 			function usun(){
-                conf = confirm("Czy napewno chcesz usunąć wybraną grupę?")
+                conf = confirm("Czy napewno chcesz usunąć wybranego uczestnika?")
 
                 if(conf){
 
-					id = $("#modalGrupyId").html();
+					id = $("#modalUczestnikId").html();
 					if (id < 1){
 						alert("Błąd");
 					} else {
@@ -454,7 +449,13 @@
 								console.log(data.result);
 								
 								if(data.status != 200){
-									console.log("Wystąpił błąd!");
+									if(data.status == 401){
+										alert("Brak uprawnień.");
+										document.location.href = "/";
+									} else {
+										alert("Wystąpił błąd");
+									}
+									alert("Wystąpił błąd. (użytkownik nie może mieć ocen z kursu)");
 								} else if (data.status == 200){
 									window.location.reload(true);
 								}

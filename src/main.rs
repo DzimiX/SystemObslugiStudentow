@@ -26,6 +26,8 @@ static PROWADZACY    : i32 = 3;
 static STUDENT       : i32 = 2;
 static UZYTKOWNIK    : i32 = 1;
 
+static OCENY : &'static[f32] = &[2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5];
+
 use chrono::{Local};
 
 fn main() {
@@ -92,6 +94,7 @@ fn rocket() {
             router::grupy_aktualizuj,
             router::grupy_nowe,
 
+            router::uczestnik_grupy,
             router::uczestnicy_grupa,
             router::uczestnicy_nowe,
             router::uczestnicy_aktualizuj,
@@ -103,6 +106,14 @@ fn rocket() {
             router::ocena_aktualizuj,
             router::ocena_usun,
             router::ocena_uczestnik_usun,
+            router::ocena_uczestnik_srednia,
+
+            router::ocena_koncowa_akceptuj,
+            router::ocena_koncowa_grupa_uczestnik,
+            router::ocena_koncowa_uczestnik,
+            router::ocena_koncowa_nowa,
+            router::ocena_koncowa_aktualizuj,
+            router::ocena_koncowa_usun,
 
             router::sprawy,
             router::sprawy_nowe,

@@ -18,7 +18,20 @@ CREATE TABLE `kursy_grupy_oceny` (
   `id` int(11) NOT NULL,
   `id_grupa` int(11) NOT NULL,
   `id_uczestnik` int(11) NOT NULL,
-  `ocena` float NOT NULL
+  `ocena` float NOT NULL,
+  `waga` float NOT NULL,
+  `komentarz` varchar(255) NOT NULL,
+  `data` bigint(8) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `kursy_grupy_ocena_koncowa` (
+  `id` int(11) NOT NULL,
+  `id_grupa` int(11) NOT NULL,
+  `id_uczestnik` int(11) NOT NULL,
+  `ocena` float NOT NULL,
+  `zaakceptowana` tinyint(1) NOT NULL,
+  `data_zaakceptowana` bigint(8) NOT NULL,
+  `data_ocena` bigint(8) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `kursy_grupy_uczestnicy` (
@@ -126,6 +139,11 @@ ALTER TABLE `kursy_grupy_oceny`
   ADD KEY `id_grupa` (`id_grupa`),
   ADD KEY `kursy_grupy_oceny_ibfk_1` (`id_uczestnik`);
 
+ALTER TABLE `kursy_grupy_ocena_koncowa`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id_grupa` (`id_grupa`,`id_uczestnik`),
+  ADD KEY `kursy_grupy_ocena_koncowa_ibfk_2` (`id_uczestnik`);
+
 ALTER TABLE `kursy_grupy_uczestnicy`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id_grupa_2` (`id_grupa`,`id_uczestnik`),
@@ -188,6 +206,9 @@ ALTER TABLE `kursy_grupy`
 ALTER TABLE `kursy_grupy_oceny`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
+ALTER TABLE `kursy_grupy_ocena_koncowa`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `kursy_grupy_uczestnicy`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
@@ -233,6 +254,10 @@ ALTER TABLE `kursy_grupy`
 ALTER TABLE `kursy_grupy_oceny`
   ADD CONSTRAINT `kursy_grupy_oceny_ibfk_1` FOREIGN KEY (`id_uczestnik`) REFERENCES `kursy_grupy_uczestnicy` (`id`),
   ADD CONSTRAINT `kursy_grupy_oceny_ibfk_2` FOREIGN KEY (`id_grupa`) REFERENCES `kursy_grupy` (`id`);
+
+ALTER TABLE `kursy_grupy_ocena_koncowa`
+  ADD CONSTRAINT `kursy_grupy_ocena_koncowa_ibfk_1` FOREIGN KEY (`id_grupa`) REFERENCES `kursy_grupy` (`id`),
+  ADD CONSTRAINT `kursy_grupy_ocena_koncowa_ibfk_2` FOREIGN KEY (`id_uczestnik`) REFERENCES `kursy_grupy_uczestnicy` (`id`);
 
 ALTER TABLE `kursy_grupy_uczestnicy`
   ADD CONSTRAINT `kursy_grupy_uczestnicy_ibfk_1` FOREIGN KEY (`id_grupa`) REFERENCES `kursy_grupy` (`id`),
@@ -329,8 +354,11 @@ INSERT INTO `kursy_grupy_uczestnicy` (`id`, `id_grupa`, `id_uczestnik`, `czy_pro
   (1, 3, 3, 1),
   (2, 3, 5, 0);
 
-INSERT INTO `kursy_grupy_oceny` (`id`, `id_grupa`, `id_uczestnik`, `ocena`) VALUES
-  (1, 3, 2, 3.5);
+INSERT INTO `kursy_grupy_oceny` (`id`, `id_grupa`, `id_uczestnik`, `ocena`, `waga`, `komentarz`, `data`) VALUES
+  (1, 3, 2, 3.5, 1, 'kartkówka', 1622485561);
+
+INSERT INTO `kursy_grupy_ocena_koncowa` (`id`, `id_grupa`, `id_uczestnik`, `ocena`, `zaakceptowana`, `data_zaakceptowana`, `data_ocena`) VALUES
+  (1, 3, 2, 4, 0, 0, 1622485675);
 
 INSERT INTO `sprawy` (`id`, `id_uzytkownik`, `temat`, `data`, `status`, `decyzja`) VALUES
   (1, 4, 'Stypendium Rektora', 1621357963, 'Rozpatrzona', 'Zgoda'),

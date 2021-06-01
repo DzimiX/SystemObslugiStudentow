@@ -194,7 +194,7 @@
                 $('label[for="modalGrupyId"]').hide();
 			});
 
-            var id = getUrlParameter('id');
+            var id = getUrlParameter('id_grupa');
 
             if(id < 1){
                 window.location.replace("/zarzadzanie_kursy.html");
@@ -214,7 +214,12 @@
 						console.log(data.result);
 						
 						if(data.status != 200){
-							console.log("Wystąpił błąd!");
+							if(data.status == 401){
+								alert("Brak uprawnień.");
+								document.location.href = "/";
+							} else {
+								alert("Wystąpił błąd");
+							}
 						} else if (data.status == 200){
 							if (data.result.length > 0) {
 							}
@@ -368,7 +373,7 @@
 			}
 
             function pokaz_uczestnikow(id){
-                window.location.href = "/zarzadzanie_grupy_uczestnicy.html?id="+id;
+                window.location.href = "/zarzadzanie_grupy_uczestnicy.html?id_grupa="+id;
             }    
 
 			function usun(){
@@ -394,7 +399,14 @@
 								console.log(data.result);
 								
 								if(data.status != 200){
-									console.log("Wystąpił błąd!");
+									if(data.status == 401){
+										alert("Brak uprawnień.");
+										document.location.href = "/";
+									} else if (data.status == 400){
+										alert("Wystąpił błąd. (grupa musi być pusta)");
+									} else {
+										alert("Wystąpił błąd");
+									}
 								} else if (data.status == 200){
 									window.location.reload(true);
 								}
