@@ -24,7 +24,7 @@
 			}
 		</script>
 		<meta charset="utf-8">
-		<title>System obsługi studentów - nowy użytkownik</title>
+		<title>System obsługi studentów - edycja użytkownika</title>
 		<meta name="description" content="System Obsługi Studentów">
 		<link rel="stylesheet" href="/css/navbar.css">
         <link rel="stylesheet" href="/css/select2.min.css">
@@ -34,6 +34,11 @@
                 width: 500px;
                 height: 30px;
                 margin: 10px 0px 5px 0px;
+            }
+            textarea {
+                width: 500px;
+                height: 300px;
+                margin: 5px 0px 5px 0px;
             }
             #uzytkownicy {
 				padding: 20px;
@@ -46,17 +51,22 @@
 		<div id="navbar" class="navbar"></div>
 		<div class="content">
 			<div class="header">
-				<h2>Dodawanie nowego użytkownika</h2>
+				<h2>Edycja istniejącego użytkownika</h2>
 			</div>
 			<button onclick="window.history.back();">Wróć</button></br></br>
 			<div id="uzytkownicy">
+                <input disabled id="login" placeholder="Login"></input></br>
 				<input id="imie" placeholder="Imię"></input></br>
 				<input id="nazwisko" placeholder="Nazwisko"></input></br>
-				<input id="login" placeholder="Login"></input></br>
-				</br>
-				<span style="color:rgb(255, 217, 0)">Hasło zostanie wygenerowane automatycznie.</span>
+                </br>
+                <input id="miasto" placeholder="Miasto"></input></br>
+                <input id="ulica" placeholder="Ulica"></input></br>
+                <input id="nr_domu" placeholder="Nr Domu"></input></br>
+                <input id="kod_pocztowy" placeholder="Kod Pocztowy"></input></br>
+                <input id="pesel" placeholder="PESEL"></input></br>
+                <input id="nr_dowodu" placeholder="Nr Dowodu"></input></br>
 				</br></br>
-                <button id="wyslij_wiadomosc">Dodaj użytkownika</button>
+                <button id="edytuj_dane">Edytuj dane użytkownika</button><button id="edytuj_uprawnienia">Uprawnienia</button><button id="reset_hasla">Resetuj hasło</button>
             </div>
 		</div>
 		<script>
