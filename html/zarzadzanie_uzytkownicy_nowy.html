@@ -40,6 +40,9 @@
 				border-radius: 10px;
 				background-color: rgb(0, 73, 168, 0.6);
 			}
+			#haslo_wygenerowane {
+				color:rgb(255, 217, 0);
+			}
         </style>
 	</head>
 	<body>
@@ -50,17 +53,152 @@
 			</div>
 			<button onclick="window.history.back();">Wróć</button></br></br>
 			<div id="uzytkownicy">
-				<input id="imie" placeholder="Imię"></input></br>
-				<input id="nazwisko" placeholder="Nazwisko"></input></br>
+				<input onchange="login()" id="imie" placeholder="Imię"></input></br>
+				<input onchange="login()" id="nazwisko" placeholder="Nazwisko"></input></br>
 				<input id="login" placeholder="Login"></input></br>
 				</br>
 				<span style="color:rgb(255, 217, 0)">Hasło zostanie wygenerowane automatycznie.</span>
 				</br></br>
-                <button id="wyslij_wiadomosc">Dodaj użytkownika</button>
+                <button onclick='stworz_uzytkownika()' id="stworz_uzytkownika">Dodaj użytkownika</button>
+				</br>
+				<div id="haslo_wygenerowane"></div>
             </div>
 		</div>
 		<script>
+
+			function login(){
+				let temp_login = "";
+				temp_login += $("#imie").val().charAt(0).toLowerCase();
+				temp_login += $("#nazwisko").val().toLowerCase();
+				$("#login").val(temp_login)
+			}
             
+			function stworz_uzytkownika(){
+
+				let imie = $("#imie").val();
+				let nazwisko = $("#nazwisko").val();
+				let login = $("#login").val();
+
+				if (imie != "" && nazwisko != "" && login != ""){
+					
+					data_json = {
+						"login" : login,
+						"imie" : imie,
+						"nazwisko" : nazwisko,
+					}
+
+					jQuery.when(
+						$.ajax({
+							url: '/api/uzytkownik/nowy',
+							type: "POST",
+							data: JSON.stringify(data_json),
+							accept: "*/*",
+							contentType: "application/json; charset=UTF-8",
+						})
+					).done( function(data) {
+
+						if (data.status != 200) {
+							if (data.status == 401){
+								wyloguj();
+							} else {
+								alert("wystąpił błąd!");
+							}
+						} else if (data.status == 200){
+
+							let haslo_startowe = Math.random().toString(36).slice(-8);
+
+							data_json_dane = {
+								"id_uzytkownik" : parseInt(data.result['id']),
+								"miasto" : "",
+								"ulica" : "",
+								"nr_domu" : "",
+								"kod_pocztowy" : "",
+								"pesel" : "",
+								"nr_dowodu" : ""
+							}
+
+							$.ajax({
+								url: '/api/dane_osobowe/nowe',
+								type: "POST",
+								data: JSON.stringify(data_json_dane),
+								accept: "*/*",
+								contentType: "application/json; charset=UTF-8",
+								success: function (data2) {
+									if (data2.status != 200){
+										if (data2.status == 401){
+											wyloguj();
+										} else {
+											alert("Wystąpił błąd wprowadzenia danych osobowych.")
+										}
+									}
+								}
+							})
+
+							dane_json_haslo = {
+								"id_uzytkownik" : parseInt(data.result['id']),
+								"haslo" : haslo_startowe
+							}
+
+							$.ajax({
+								url: '/api/uzytkownik/nowehaslo',
+								type: "POST",
+								data: JSON.stringify(dane_json_haslo),
+								accept: "*/*",
+								contentType: "application/json; charset=UTF-8",
+								success: function (data3) {
+									if (data3.status != 200){
+										if (data3.status == 401){
+											wyloguj();
+										} else {
+											alert("Wystąpił błąd w trakcie dodawania hasła.")
+										}
+									} else if (data3.status == 200){
+										$("#stworz_uzytkownika").hide();
+										$("#imie").prop("disabled",true);
+										$("#nazwisko").prop("disabled",true);
+										$("#login").prop("disabled",true);
+										$("#haslo_wygenerowane").html("<b>Wygenerowane hasło dla użytkownika to: "+haslo_startowe);
+										$("#haslo_wygenerowane").append("</br><button onclick='reload(\""+haslo_startowe+"\")'>Wciśnij przycisk aby kontynuować...</button></b>");
+										alert("Wygenerowane hasło to: "+haslo_startowe);
+									}
+								}
+							})
+
+							dane_json_uprawnienie = {
+								"id_uzytkownik" : parseInt(data.result['id']),
+    							"id_uprawnienie" : 1
+							}
+
+							$.ajax({
+								url: '/api/uzytkownik/uprawnienie/nowe',
+								type: "POST",
+								data: JSON.stringify(dane_json_uprawnienie),
+								accept: "*/*",
+								contentType: "application/json; charset=UTF-8",
+								success: function (data4) {
+									if (data4.status != 200){
+										if (data4.status == 401){
+											wyloguj();
+										} else {
+											alert("Wystąpił błąd w trakcie dodawania uprawnienia.")
+										}
+									}
+								}
+							})
+						}
+					})
+				} else {
+					alert("Błąd wprowadzonych danych!");
+				}
+
+			}
+
+			function reload(pass){
+				if(confirm("Hasło użytkownika: "+pass+"\nPo potwierdzeniu nastąpi przeładowanie strony...")){
+					window.location.reload(true);
+				}
+			}
+
 		</script>
 		<script src="/js/nav.js"></script>
 	</body>

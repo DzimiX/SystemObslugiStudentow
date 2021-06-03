@@ -163,7 +163,8 @@ ALTER TABLE `uprawnienia`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `uzytkownicy`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `login` (`login`);
 
 ALTER TABLE `uzytkownicy_dane`
   ADD PRIMARY KEY (`id_uzytkownik`);
@@ -174,8 +175,7 @@ ALTER TABLE `uzytkownicy_hasla`
 
 ALTER TABLE `uzytkownicy_uprawnienia`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_uzytkownik` (`id_uzytkownik`),
-  ADD KEY `id_uprawnienie` (`id_uprawnienie`);
+  ADD UNIQUE KEY `id_uzytkownik` (`id_uzytkownik`,`id_uprawnienie`);
 
 ALTER TABLE `wiadomosci`
   ADD PRIMARY KEY (`id`),
@@ -310,10 +310,14 @@ INSERT INTO `uzytkownicy_hasla` (`id`, `id_uzytkownik`, `haslo`) VALUES
 
 INSERT INTO `uzytkownicy_uprawnienia` (`id`, `id_uzytkownik`, `id_uprawnienie`) VALUES
   (1, 1, 5),
-  (2, 2, 4),
-  (3, 3, 3),
-  (4, 4, 2),
-  (5, 5, 1);
+  (2, 1, 1),
+  (3, 2, 4),
+  (4, 2, 1),
+  (5, 3, 3),
+  (6, 3, 1),
+  (7, 4, 2),
+  (8, 4, 1),
+  (9, 5, 1);
 
 INSERT INTO `uzytkownicy_dane` (`id_uzytkownik`, `miasto`, `ulica`, `nr_domu`, `kod_pocztowy`, `pesel`, `nr_dowodu`) VALUES
   (1, 'Wrocław', 'Wrocławska', '77', '50-120', '11223344556', 'XXX123456');

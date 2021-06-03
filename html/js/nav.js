@@ -44,11 +44,6 @@ $.get("navbar.html", function(data){
         }
     }
 
-    function wyloguj(){
-        deleteAllCookies();
-        document.location.href = "/logowanie.html";
-    }
-
     $("#wyloguj_navbar").click(function() {
         deleteAllCookies();
         document.location.href = "/logowanie.html";

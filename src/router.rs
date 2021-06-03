@@ -15,6 +15,7 @@ use super::OCENY;
 
 use crate::models_user::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
 use crate::models_user::{DaneOsobowe, DaneOsoboweId};
+use crate::models_auth::{UprawnienieId, UzytkownikUprawnieniaNowe, UzytkownikUprawnienia};
 use crate::models_auth::{AuthLogin, Auth, AuthNowy};
 use crate::models_messages::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscBezDaty, NowaWiadomoscUczestnik};
 use crate::models_announcements::{Ogloszenie, OgloszenieNowe, OgloszenieId};
@@ -73,10 +74,20 @@ pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
 
 #[post("/uzytkownik/nowy", format = "application/json", data = "<nowy_uzytkownik>")]
 pub fn uzytkownicy_nowy(conn: DbConn, nowy_uzytkownik: Json<NowyUzytkownik>) -> Json<Value> { 
-    Json(json!({
-        "status" : Uzytkownik::add(nowy_uzytkownik.into_inner(), &conn),
-        "result" : Uzytkownik::all(&conn).first(),
-    }))
+    // niebezpieczne
+    
+    let mut result = Uzytkownik::add(nowy_uzytkownik.into_inner(), &conn);
+    if result == true {
+        return Json(json!({
+            "status" : 200,
+            "result" : Uzytkownik::all(&conn).first(),
+        }));
+    } else {
+        return Json(json!({
+            "status" : 400,
+            "result" : result,
+        }));
+    }
 }
 
 #[post("/uzytkownik", format = "application/json", data = "<id>")]
@@ -127,6 +138,57 @@ pub fn uzytkownik(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) ->
     return Json(json!({
         "status" : 401,
         "result" : "Unauthorized",
+    }))
+}
+
+//add_privilege
+#[post("/uzytkownik/uprawnienie/nowe", format = "application/json", data = "<uprawnienie>")]
+pub fn uzytkownik_uprawnienie_nowe(conn: DbConn, uprawnienie: Json<UzytkownikUprawnieniaNowe>, mut cookies: Cookies) -> Json<Value>{
+    // niebezpieczne
+
+    return Json(json!({
+        "status" : 200,
+        "result" : AuthLogin::add_privilege(uprawnienie.into_inner(), &conn),
+    }))
+}
+
+#[post("/uzytkownik/uprawnienie/usun", format = "application/json", data = "<uprawnienie>")]
+pub fn uzytkownik_uprawnienie_usun(conn: DbConn, uprawnienie: Json<UzytkownikUprawnieniaNowe>, mut cookies: Cookies) -> Json<Value>{
+    // niebezpieczne
+
+    return Json(json!({
+        "status" : 200,
+        "result" : AuthLogin::delete_privilege(uprawnienie.into_inner(), &conn),
+    }))
+}
+
+#[post("/uzytkownik/uprawnienie/najwyzsze", format = "application/json", data = "<id>")]
+pub fn uzytkownik_uprawnienie_najwyzsze(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) -> Json<Value>{
+    // niebezpieczne
+
+    return Json(json!({
+        "status" : 200,
+        "result" : AuthLogin::get_privilege_id(id.id, &conn),
+    }))
+}
+
+#[post("/uzytkownik/uprawnienia", format = "application/json", data = "<id>")]
+pub fn uzytkownik_uprawnienia(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) -> Json<Value>{
+    // niebezpieczne
+
+    return Json(json!({
+        "status" : 200,
+        "result" : AuthLogin::get_privilege_id_all(id.id, &conn),
+    }))
+}
+
+#[post("/uprawnienie", format = "application/json", data = "<id>")]
+pub fn uprawnienie(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) -> Json<Value>{
+    // niebezpieczne
+
+    return Json(json!({
+        "status" : 200,
+        "result" : AuthLogin::get_privilege_name(id.id, &conn),
     }))
 }
 
@@ -235,10 +297,9 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
         if zgadza {
 
             let id_uprawnienie : i32 = AuthLogin::get_privilege_id(id_uzytkownik, &conn);
-                
             let now_timestamp = Local::now().timestamp();
-            let delayed_timestamp = now_timestamp + 36000; // + 36000s = + 10h
-
+            let hours_10_in_seconds : i64 = 36000;
+            let delayed_timestamp = now_timestamp + hours_10_in_seconds;
             let mut token : String = AuthLogin::generate_fresh_token(&conn);
             
             while &token == "False"{
@@ -266,11 +327,6 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
                 return Json(json!({
                     "status" : 200,
                     "result" : "Authorized"
-                    //{
-                        //"id_uzytkownik": id_uzytkownik,
-                        //"id_uprawnienie": id_uprawnienie,
-                        //"token": token
-                    //},
                 }))
             }
         }
@@ -280,15 +336,13 @@ pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookie
         "status" : 400,
         "result" : "Bad Request",
     }))
-
 }
 
-#[get("/auth", format = "application/json")] 
+#[post("/auth", format = "application/json")] 
 pub fn autoryzacja(conn: DbConn, mut cookies : Cookies) -> Json<Value> {
 
     let cookie_temp = Cookie::new("token", "False");
     let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
-    println!("{}", &token);
 
     let auth : Auth = AuthLogin::check_token(&token, &conn);
 

@@ -65,7 +65,7 @@ impl Uzytkownik {
         uzytkownicy::table
             .order(uzytkownicy::id.desc())
             .load::<Uzytkownik>(conn)
-            .expect("Problem z wczytaniem użytkownika.")
+            .expect("Problem z wczytaniem użytkowników.")
     }
 
     pub fn get(id: i32, conn: &MysqlConnection) -> Vec<Uzytkownik> {
