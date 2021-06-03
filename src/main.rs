@@ -69,6 +69,10 @@ fn rocket() {
             router::uzytkownik,
             router::uzytkownik_publiczne,
             router::uzytkownik_nowe_haslo,
+            router::uzytkownik_uprawnienie_najwyzsze,
+            router::uzytkownik_uprawnienia,
+            router::uzytkownik_uprawnienie_nowe,
+            router::uzytkownik_uprawnienie_usun,
 
             router::wiadomosci_nowa,
             router::wiadomosci_pokaz,
@@ -130,6 +134,7 @@ fn rocket() {
             router::sprawy_usun,
             router::sprawy_pokaz,
             
+            router::uprawnienie,
             router::logowanie,
             router::autoryzacja,
         ])

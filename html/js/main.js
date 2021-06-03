@@ -44,3 +44,8 @@ var getUrlParameter = function getUrlParameter(sParam) {
     }
     return false;
 };
+
+function wyloguj(){
+    deleteAllCookies();
+    document.location.href = "/logowanie.html";
+}

@@ -48,10 +48,17 @@ pub struct UzytkownikHaslo {
     pub haslo: String,
 }
 
-#[derive(Insertable, Queryable, Serialize)]
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
 #[table_name = "uzytkownicy_uprawnienia"]
 pub struct UzytkownikUprawnienia {
     pub id: i32,
+    pub id_uzytkownik: i32,
+    pub id_uprawnienie: i32,
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "uzytkownicy_uprawnienia"]
+pub struct UzytkownikUprawnieniaNowe {
     pub id_uzytkownik: i32,
     pub id_uprawnienie: i32,
 }
@@ -61,6 +68,12 @@ pub struct UzytkownikUprawnienia {
 pub struct Uprawnienia {
     pub id: i32,
     pub nazwa: String,
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "uprawnienia"]
+pub struct UprawnienieId {
+    pub id: i32
 }
 
 #[derive(Queryable, Serialize)]
@@ -103,14 +116,53 @@ impl AuthLogin {
         return false;
     }
 
-    pub fn get_privilege_id(id: i32, conn: &MysqlConnection) -> i32 {
-        let data : UzytkownikUprawnienia = uzytkownicy_uprawnienia::table
+    pub fn add_privilege(privilege: UzytkownikUprawnieniaNowe, conn: &MysqlConnection) -> bool {
+        diesel::insert_into(uzytkownicy_uprawnienia::table)
+            .values(&privilege)
+            .execute(conn)
+            .is_ok()
+    }
+
+    pub fn delete_privilege(privilege: UzytkownikUprawnieniaNowe, conn: &MysqlConnection) -> bool {
+        diesel::delete(uzytkownicy_uprawnienia::table
+            .filter(uzytkownicy_uprawnienia::id_uzytkownik.eq(privilege.id_uzytkownik))
+            .filter(uzytkownicy_uprawnienia::id_uprawnienie.eq(privilege.id_uprawnienie))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+
+        return true
+    }
+
+    pub fn get_privilege_id(id: i32, conn: &MysqlConnection) -> i32 { // najwyższy poziom uprawnień użytkownika
+        let data : Result<UzytkownikUprawnienia,diesel::result::Error> = uzytkownicy_uprawnienia::table
             .filter(uzytkownicy_uprawnienia::id_uzytkownik.eq(id))
             .order(uzytkownicy_uprawnienia::id_uprawnienie.desc())
-            .first(conn)
-            .expect("Błędne dane.");
+            .first(conn);
         
-        return data.id_uprawnienie;
+        match data {
+            Ok(data) => return data.id_uprawnienie,
+            Err(_error) => return -1,
+        };
+    }
+
+    pub fn get_privilege_id_all(id: i32, conn: &MysqlConnection) -> Vec<UzytkownikUprawnienia> { // najwyższy poziom uprawnień użytkownika
+        uzytkownicy_uprawnienia::table
+            .filter(uzytkownicy_uprawnienia::id_uzytkownik.eq(id))
+            .order(uzytkownicy_uprawnienia::id_uprawnienie.desc())
+            .load::<UzytkownikUprawnienia>(conn)
+            .expect("Problem z wczytaniem uprawnień użytkownika.")
+    }
+
+    pub fn get_privilege_name(id: i32, conn: &MysqlConnection) -> String {
+        let data : Result<Uprawnienia,diesel::result::Error> = uprawnienia::table
+            .filter(uprawnienia::id.eq(id))
+            .first(conn);
+ 
+        match data {
+            Ok(data) => return data.nazwa,
+            Err(_error) => return String::from("null"),
+        };
     }
 
     pub fn generate_fresh_token(conn: &MysqlConnection) -> String {

@@ -64,25 +64,94 @@
 		<div id="navbar" class="navbar"></div>
 		<div class="content">
 			<div class="header">
-				<h2>Zarządzanie użytkownikami</h2>
+				<h2>Lista użytkowników</h2>
 			</div>
 			<a href="/zarzadzanie_uzytkownicy_nowy.html"><button>Dodaj nowego użytkownika</button></a></br></br>
             <table id="uzytkownicy">
 				<tr>
-					<td><b>ID</b></td>
 					<td><b>Login</b></td>
 					<td><b>Imię</b></td>
 					<td><b>Nazwisko</b></td>
                     <td><b>Najwyższy poziom uprawnień</b></td>
-                    <td><b>Szczegóły</b></td>
 				</tr>
 			</table>
 		</div>
 
         <script>
+			jQuery.when(
+					$.ajax({
+						url: '/api/uzytkownicy',
+						type: "POST",
+						data: JSON.stringify(""),
+						accept: "*/*",
+						contentType: "application/json; charset=UTF-8",
+                	})
+			).done( function(data) {
+				if (data.status != 200){
+					if (data.status == 401){
+						wyloguj();
+					} else {
+						alert("Wystąpił błąd.");
+					}
+				} else if (data.status == 200){
+					if (data.result.length > 0) {
+						for(let i = 0; i < data.result.length; i++){
+							data_json = {
+								"id" : parseInt(data.result[i]['id'])
+							}
+							jQuery.when(
+								$.ajax({
+									url: '/api/uzytkownik/uprawnienie/najwyzsze',
+									type: "POST",
+									data: JSON.stringify(data_json),
+									accept: "*/*",
+									contentType: "application/json; charset=UTF-8",
+								})
+							).done( function(data2) {
+								if(data2.status != 200){
+									if (data2.status == 401){
+										wyloguj();
+									} else {
+										alert("Wystąpił błąd.");
+									}
+								} else if (data2.status == 200){
+									data_json_uprawnienie = {
+										"id" : parseInt(data2.result)
+									}
+									$.ajax({
+										url: '/api/uprawnienie',
+										type: "POST",
+										data: JSON.stringify(data_json_uprawnienie),
+										contentType: "application/json; charset=UTF-8",
+										success: function (data3) {
+											$("#uzytkownicy").append(
+												"<tr>"+
+													"<td>"+data.result[i]['login']+"</td>"+
+													"<td>"+data.result[i]['imie']+"</td>"+
+													"<td>"+data.result[i]['nazwisko']+"</td>"+
+													"<td>"+data3.result+"</td>"+
+													"<td><button onclick='edytuj("+data.result[i]['id']+")'>Szczegóły użytkownika</button></td>"+
+													"<td><button onclick='uprawnienia("+data.result[i]['id']+")'>Uprawnienia</button></td>"+
+												"</tr>"
+											)
+										}
+									})
+								}
+							});
+						}
+					}
+				}
+			});
 
-		</script>
+			function edytuj(id){
+				window.location.href = "/zarzadzanie_uzytkownicy_edycja.html?id="+id;
+			}
 
+			function uprawnienia(id){
+				window.location.href = "/zarzadzanie_uzytkownicy_uprawnienia.html?id="+id;
+			}
+
+		</script> 
 		<script src="/js/nav.js"></script>
 	</body>
 </html>
