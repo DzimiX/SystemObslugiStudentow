@@ -48,75 +48,7 @@
 		</style>
 	</head>
 	<body>
-		<div class="navbar">
-			<a id="menu-strona" href="/">Strona główna</a>
-			<div id="dropdown-wiadomosci" class="dropdown">
-				<button class="dropbtn">
-					<span>Wiadomości</span> 
-					<i class="arrow down"></i>
-				</button>
-				<div class="dropdown-content">
-					<a id="dropdown-wiadomosci-skrzynka" href="/wiadomosci.html"><span>Skrzynka odbiorcza</span></a>
-					<a id="dropdown-wiadomosci-utworz" href="/wiadomosc_nowa.html"><span>Utwórz wiadomość</span></a>
-				</div>
-			</div>
-			<a id="menu-ogloszenia" href="/ogloszenia.html">Zarządzanie ogłoszeniami</a>
-			<div id="dropdown-uzytkownicy" class="dropdown">
-				<button class="dropbtn">
-					<span class="disabled">Zarządzanie użytkownikami</span> 
-					<i class="arrow down"></i>
-				</button>
-				<div class="dropdown-content">
-					<a id="dropdown-uzytkownicy-lista" href="#"><span class="disabled">Lista użytkowników</span></a>
-					<a id="dropdown-uzytkownicy-utworz" href="#"><span class="disabled">Utwórz użytkownika</span></a>
-				</div>
-			</div>
-			<a id="menu-zarzadzanie-zapisy" href="/zarzadzanie_zapisy.html">Zarządzanie zapisami</a>
-			<a id="menu-zapisy" href="/"><span class="disabled">Zapisy</span></a>
-			<a id="menu-zarzadzanie-kursy" href="/zarzadzanie_kursy.html">Zarządzanie kursami</a>
-			<div id="dropdown-kursy" class="dropdown">
-				<button class="dropbtn">
-					<span class="disabled">Kursy</span>
-					<i class="arrow down"></i>
-				</button>
-				<div class="dropdown-content">
-					<a id="dropdown-kursy-zajecia" href="#"><span class="disabled">Zajęcia</span></a>
-					<a id="dropdown-kursy-oceny" href="#"><span class="disabled">Oceny</span></a>
-				</div>
-			</div>
-			<a id="menu-indeks" href="/"><span class="disabled">Indeks</span></a>
-			<div id="dropdown-sprawy" class="dropdown">
-				<button class="dropbtn">
-					<span class="disabled">Sprawy</span>
-					<i class="arrow down"></i>
-				</button>
-				<div class="dropdown-content">
-					<a id="dropdown-sprawy-moje" href="#"><span class="disabled">Moje sprawy</span></a>
-					<a id="dropdown-sprawy-utworz" href="#"><span class="disabled">Załóż sprawę</span></a>
-				</div>
-			</div>
-			<div id="dropdown-sprawyz" class="dropdown">
-				<button class="dropbtn">
-					<span>Zarządzanie sprawami</span>
-					<i class="arrow down"></i>
-				</button>
-				<div class="dropdown-content">
-					<a id="dropdown-sprawy-moje" href="/zarzadzanie_sprawy.html"><span>Zarządzaj sprawami</span></a>
-					<a id="dropdown-sprawy-utworz" href="/zarzadzanie_sprawy_definicje.html"><span>Definiuj sprawy</span></a>
-				</div>
-			</div>
-			<div class="dropdown-right">
-				<button class="dropbtn">
-					<span id="auth-imie">Imie</span> <span id="auth-nazwisko">Nazwisko</span> (<span id="auth-ranga">Ranga</span>)
-					<i class="arrow down"></i>
-				</button>
-				<div class="dropdown-content">
-					<a href="/dane_osobowe.html"><span>Dane osobowe</span></a>
-					<a href="#"><span class="disabled">Ustawienia</span></a>
-					<a id="wyloguj_navbar" href="/wyloguj.html">Wyloguj</a>
-				</div>
-			</div>
-		</div>
+		<div id="navbar" class="navbar"></div>
 		<div class="content">
 			<div class="header">
 				<h2>Zarządzanie grupami dla kursu: <span id="nazwakursu"></span></h2>

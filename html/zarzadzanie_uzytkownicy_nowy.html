@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pl">
+	<head>
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/main.js"></script>
+        <script src="/js/select2.min.js"></script>
+		<script>
+			setTimeout(function(){$('body').animate({opacity:'1'},500)},400);
+			if (getCookie("token") == null) {
+				document.location.href = "/logowanie.html";
+				document.body.innerHTML = "";
+				window.stop();
+			} else {
+				var userdata = {
+					"id" : parseInt(getCookie("id")),
+					"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
+				}
+
+				if (userdata.id_uprawnien < 1){ // minimalny poziom uprawnień (zabezpieczenie api osobno)
+					document.location.href = "/";
+					document.body.innerHTML = "";
+					window.stop();
+				}
+			}
+		</script>
+		<meta charset="utf-8">
+		<title>System obsługi studentów - nowy użytkownik</title>
+		<meta name="description" content="System Obsługi Studentów">
+		<link rel="stylesheet" href="/css/navbar.css">
+        <link rel="stylesheet" href="/css/select2.min.css">
+		<link rel="stylesheet" href="/css/main.css">
+        <style>
+            input {
+                width: 500px;
+                height: 30px;
+                margin: 10px 0px 5px 0px;
+            }
+            textarea {
+                width: 500px;
+                height: 300px;
+                margin: 5px 0px 5px 0px;
+            }
+        </style>
+	</head>
+	<body>
+		<div id="navbar" class="navbar"></div>
+		<div class="content">
+			<div class="header">
+				<h2>Dodawanie nowego użytkownika</h2>
+			</div>
+			<button onclick="window.history.back();">Wróć</button>
+			<div>
+				<input id="imie" placeholder="Imię"></input></br>
+				<input id="nazwisko" placeholder="Nazwisko"></input></br>
+				<input id="login" placeholder="Login"></input></br>
+				</br>
+				<span style="color:rgb(255, 217, 0)">Hasło zostanie wygenerowane automatycznie.</span>
+				</br></br>
+                <button id="wyslij_wiadomosc">Dodaj użytkownika</button>
+            </div>
+		</div>
+		<script>
+            
+		</script>
+		<script src="/js/nav.js"></script>
+	</body>
+</html>
