@@ -13,18 +13,18 @@ use super::STUDENT;
 use super::UZYTKOWNIK;
 use super::OCENY;
 
-use crate::models::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
-use crate::models::{AuthLogin, Auth, AuthNowy};
-use crate::models::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscBezDaty, NowaWiadomoscUczestnik};
-use crate::models::{Ogloszenie, OgloszenieNowe, OgloszenieId};
-use crate::models::{Zapisy, ZapisyNowe, ZapisyId};
-use crate::models::{DaneOsobowe, DaneOsoboweId};
-use crate::models::{Kurs, KursNowy, KursId};
-use crate::models::{Grupa, GrupaNowa, GrupaId, GrupaKursId, GrupaZapisyKursId};
-use crate::models::{Uczestnik, UczestnikNowy, UczestnikId, UczestnikGrupaId, UczestnikGrupaUczestnikId};
-use crate::models::{Ocena, OcenaNowa, OcenaId, OcenaUczestnikId, OcenaGrupaUczestnikId};
-use crate::models::{OcenaKoncowa, OcenaKoncowaNowa, OcenaKoncowaId, OcenaKoncowaUczestnikId, OcenaKoncowaGrupaUczestnikId};
-use crate::models::{Sprawy, SprawyId, SprawyNowe};
+use crate::models_user::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
+use crate::models_user::{DaneOsobowe, DaneOsoboweId};
+use crate::models_auth::{AuthLogin, Auth, AuthNowy};
+use crate::models_messages::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscBezDaty, NowaWiadomoscUczestnik};
+use crate::models_announcements::{Ogloszenie, OgloszenieNowe, OgloszenieId};
+use crate::models_enrollment::{Zapisy, ZapisyNowe, ZapisyId};
+use crate::models_courses::{Kurs, KursNowy, KursId};
+use crate::models_groups::{Grupa, GrupaNowa, GrupaId, GrupaKursId, GrupaZapisyKursId};
+use crate::models_groups::{Uczestnik, UczestnikNowy, UczestnikId, UczestnikGrupaId, UczestnikGrupaUczestnikId};
+use crate::models_scores::{Ocena, OcenaNowa, OcenaId, OcenaUczestnikId, OcenaGrupaUczestnikId};
+use crate::models_scores::{OcenaKoncowa, OcenaKoncowaNowa, OcenaKoncowaId, OcenaKoncowaUczestnikId, OcenaKoncowaGrupaUczestnikId};
+use crate::models_applications::{Sprawy, SprawyId, SprawyNowe};
 
 #[post("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn, mut cookies: Cookies) -> Json<Value> {
@@ -879,7 +879,7 @@ pub fn ocena_uczestnik_usun(conn: DbConn, ocena : Json<OcenaGrupaUczestnikId>, m
     }
 
     Json(json!({
-        "status" : "status",
+        "status" : status,
         "result" : "OK",
     }))
 }

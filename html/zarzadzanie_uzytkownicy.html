@@ -23,23 +23,40 @@
 			}
 		</script>
 		<meta charset="utf-8">
-		<title>System obsługi studentów</title>
+		<title>System obsługi studentów - zarządzanie użytkownikami</title>
 		<meta name="description" content="System Obsługi Studentów">
 		<link rel="stylesheet" href="/css/navbar.css">
+        <link rel="stylesheet" href="/css/modal.css">
 		<link rel="stylesheet" href="/css/main.css">
 		<style>
-			.ogloszenie {
+            .modal-body input {
+                width: 760px;
+                height: 30px;
+                margin-bottom: 10px;
+            }
+
+            .modal-body textarea {
+                width: 760px;
+                height: 120px;
+                margin-bottom: 10px;
+            }
+
+            .modal-body {
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+
+			#uzytkownicy td {
+                padding: 5px;
+                border-bottom: 1px solid rgb(0, 110, 255);
+            }
+			#uzytkownicy td:not(:nth-last-child(1)) {
+				border-right: 1px solid rgb(0, 110, 255);
+			}
+            #uzytkownicy {
+				padding: 20px;
 				border-radius: 10px;
-				margin: 5px 0px 5px 0px;
-				padding: 15px 15px 15px 15px;
-				width: 500px;
 				background-color: rgb(0, 73, 168, 0.6);
-			}
-			.ogloszenie h3 {
-				margin: 0px 0px 15px 0px;
-			}
-			.ogloszenie p {
-				margin: 8px 0px 8px 0px;
 			}
 		</style>
 	</head>
@@ -115,48 +132,26 @@
 		</div>
 		<div class="content">
 			<div class="header">
-				<h2>System Obsługi Studentów</h2>
+				<h2>Zarządzanie użytkownikami</h2>
 			</div>
-			<div id="ogloszenia" class="ogloszenia"></div>
+            <button onclick="window.history.back();">Wróć</button>
+			<a href="/zarzadzanie_uzytkownicy_nowy.html"><button>Dodaj nowego użytkownika</button></a></br></br>
+            <table id="uzytkownicy">
+				<tr>
+					<td><b>ID</b></td>
+					<td><b>Login</b></td>
+					<td><b>Imię</b></td>
+					<td><b>Nazwisko</b></td>
+                    <td><b>Najwyższy poziom uprawnień</b></td>
+                    <td><b>Szczegóły</b></td>
+				</tr>
+			</table>
 		</div>
 
-		<script>
-			$.ajax({
-					url: '/api/ogloszenia',
-					type: "POST",
-					//data: JSON.stringify(data_json),
-					contentType: "application/json; charset=UTF-8",
-					success: function (data) {
-						console.log(data.status);
-						console.log(data.result);
-						
-						if(data.status != 200){
-							console.log("Wystąpił błąd!");
-						} else if (data.status == 200){
-							if (data.result.length > 0) {
-								$("#ogloszenia").append(
-									"<h3>Lista ogłoszeń:</h3>"
-								);
-							}
-							for(let i = 0; i < data.result.length; i++){
-
-								let date = new Date(data.result[i]['widok_od'] * 1000);
-								if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
-								if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
-								let datestring = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate();
-
-								$("#ogloszenia").append(
-									"<div class='ogloszenie'>"+
-										"<p>Nadawca: <i>"+data.result[i]['nadawca']+"</i></p>"+
-										"<h3>"+data.result[i]['temat']+"</h3>"+
-										"<p class='text'>"+data.result[i]['dane']+"</p>"+
-									"</div>"
-								);
-                        	}
-						}
-					}
-				});
+        <script>
+			
 		</script>
+
 		<script src="/js/nav.js"></script>
 	</body>
 </html>

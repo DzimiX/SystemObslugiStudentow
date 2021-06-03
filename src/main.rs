@@ -12,9 +12,18 @@ extern crate rocket_contrib;
 #[macro_use] extern crate serde_json;
 
 mod router;
-mod models;
 mod schema;
 mod static_html;
+
+mod models_user;
+mod models_auth;
+mod models_messages;
+mod models_announcements;
+mod models_enrollment;
+mod models_courses;
+mod models_groups;
+mod models_scores;
+mod models_applications;
 
 mod db;
 
