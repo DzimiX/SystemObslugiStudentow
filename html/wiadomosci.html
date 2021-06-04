@@ -83,6 +83,10 @@
 		
 		<script src="/js/nav.js"></script>
 		<script>
+			uzytkownik_id = {
+				"id" : userdata.id
+			}
+
 			$.ajax({
 				url: '/api/wiadomosci/domnie',
 				type: "POST",
