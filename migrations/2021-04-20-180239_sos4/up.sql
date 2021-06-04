@@ -121,6 +121,22 @@ CREATE TABLE `sprawy` (
   `decyzja` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `kursy_grupy_terminy` (
+  `id` int(11) NOT NULL,
+  `id_grupa` int(11) NOT NULL,
+  `data_start` bigint(8) NOT NULL,
+  `data_koniec` bigint(8) NOT NULL,
+  `temat_zajec` varchar(255) DEFAULT NULL,
+  `komentarz` varchar(512) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `kursy_grupy_terminy_obecnosc` (
+  `id` int(11) NOT NULL,
+  `id_termin` int(11) NOT NULL,
+  `id_uczestnik` int(11) NOT NULL,
+  `obecnosc` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- --------------------------------------------------------
 --
 -- Indexes for dumped tables
@@ -193,6 +209,14 @@ ALTER TABLE `sprawy`
   ADD PRIMARY KEY (`id`),
   ADD KEY `sprawy_ibfk_1` (`id_uzytkownik`);
 
+ALTER TABLE `kursy_grupy_terminy`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id_grupa` (`id_grupa`,`data_start`,`data_koniec`);
+
+ALTER TABLE `kursy_grupy_terminy_obecnosc`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id_termin` (`id_termin`,`id_uczestnik`);
+
 --
 -- AUTO_INCREMENT for dumped tables
 --
@@ -242,6 +266,11 @@ ALTER TABLE `zapisy`
 ALTER TABLE `sprawy`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+ALTER TABLE `kursy_grupy_terminy`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `kursy_grupy_terminy_obecnosc`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -286,6 +315,13 @@ ALTER TABLE `wiadomosci_uczestnicy`
 
 ALTER TABLE `sprawy`
   ADD CONSTRAINT `sprawy_ibfk_1` FOREIGN KEY (`id_uzytkownik`) REFERENCES `uzytkownicy` (`id`);
+
+ALTER TABLE `kursy_grupy_terminy`
+  ADD CONSTRAINT `kursy_grupy_terminy_ibfk_1` FOREIGN KEY (`id_grupa`) REFERENCES `kursy_grupy` (`id`);
+
+ALTER TABLE `kursy_grupy_terminy_obecnosc`
+  ADD CONSTRAINT `kursy_grupy_terminy_obecnosc_ibfk_1` FOREIGN KEY (`id_termin`) REFERENCES `kursy_grupy_terminy` (`id`),
+  ADD CONSTRAINT `kursy_grupy_terminy_obecnosc_ibfk_2` FOREIGN KEY (`id_uczestnik`) REFERENCES `kursy_grupy_uczestnicy` (`id`);
 
 INSERT INTO `uprawnienia` (`id`, `nazwa`) VALUES
   (1, 'Użytkownik'),

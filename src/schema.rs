@@ -43,6 +43,26 @@ table! {
 }
 
 table! {
+    kursy_grupy_terminy (id) {
+        id -> Integer,
+        id_grupa -> Integer,
+        data_start -> Bigint,
+        data_koniec -> Bigint,
+        temat_zajec -> Nullable<Varchar>,
+        komentarz -> Nullable<Varchar>,
+    }
+}
+
+table! {
+    kursy_grupy_terminy_obecnosc (id) {
+        id -> Integer,
+        id_termin -> Integer,
+        id_uczestnik -> Integer,
+        obecnosc -> Integer,
+    }
+}
+
+table! {
     kursy_grupy_uczestnicy (id) {
         id -> Integer,
         id_grupa -> Integer,
@@ -159,6 +179,9 @@ joinable!(kursy_grupy_ocena_koncowa -> kursy_grupy (id_grupa));
 joinable!(kursy_grupy_ocena_koncowa -> kursy_grupy_uczestnicy (id_uczestnik));
 joinable!(kursy_grupy_oceny -> kursy_grupy (id_grupa));
 joinable!(kursy_grupy_oceny -> kursy_grupy_uczestnicy (id_uczestnik));
+joinable!(kursy_grupy_terminy -> kursy_grupy (id_grupa));
+joinable!(kursy_grupy_terminy_obecnosc -> kursy_grupy_terminy (id_termin));
+joinable!(kursy_grupy_terminy_obecnosc -> kursy_grupy_uczestnicy (id_uczestnik));
 joinable!(kursy_grupy_uczestnicy -> kursy_grupy (id_grupa));
 joinable!(kursy_grupy_uczestnicy -> uzytkownicy (id_uczestnik));
 joinable!(sprawy -> uzytkownicy (id_uzytkownik));
@@ -177,6 +200,8 @@ allow_tables_to_appear_in_same_query!(
     kursy_grupy,
     kursy_grupy_ocena_koncowa,
     kursy_grupy_oceny,
+    kursy_grupy_terminy,
+    kursy_grupy_terminy_obecnosc,
     kursy_grupy_uczestnicy,
     ogloszenia,
     sprawy,
