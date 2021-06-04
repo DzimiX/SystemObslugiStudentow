@@ -90,6 +90,36 @@ pub fn uzytkownicy_nowy(conn: DbConn, nowy_uzytkownik: Json<NowyUzytkownik>) -> 
     }
 }
 
+#[post("/uzytkownik/usun", format = "application/json", data = "<uzytkownik>")]
+pub fn uzytkownik_usun(conn: DbConn, uzytkownik: Json<UzytkownikID>) -> Json<Value> { 
+    // niebezpieczne
+    
+    let mut status = 400;
+    if Uzytkownik::delete(uzytkownik.id, &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
+#[post("/uzytkownik/aktualizuj", format = "application/json", data = "<uzytkownik>")]
+pub fn uzytkownik_aktualizuj(conn: DbConn, uzytkownik: Json<Uzytkownik>) -> Json<Value> { 
+    // niebezpieczne
+    
+    let mut status = 400;
+    if Uzytkownik::update(uzytkownik.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+
 #[post("/uzytkownik", format = "application/json", data = "<id>")]
 pub fn uzytkownik(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) -> Json<Value> {
 
@@ -141,7 +171,6 @@ pub fn uzytkownik(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) ->
     }))
 }
 
-//add_privilege
 #[post("/uzytkownik/uprawnienie/nowe", format = "application/json", data = "<uprawnienie>")]
 pub fn uzytkownik_uprawnienie_nowe(conn: DbConn, uprawnienie: Json<UzytkownikUprawnieniaNowe>, mut cookies: Cookies) -> Json<Value>{
     // niebezpieczne

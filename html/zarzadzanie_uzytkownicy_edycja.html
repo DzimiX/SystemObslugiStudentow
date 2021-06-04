@@ -40,13 +40,16 @@
 				border-radius: 10px;
 				background-color: rgb(0, 73, 168, 0.6);
 			}
+			#haslo_wygenerowane {
+				color:rgb(255, 217, 0);
+			}
         </style>
 	</head>
 	<body>
 		<div id="navbar" class="navbar"></div>
 		<div class="content">
 			<div class="header">
-				<h2>Edycja istniejącego użytkownika</h2>
+				<h2>Edycja istniejącego użytkownika o ID: <span id="id"></span></h2>
 			</div>
 			<button onclick="window.history.back();">Wróć</button></br></br>
 			<div id="uzytkownicy">
@@ -61,17 +64,209 @@
                 <input id="pesel" placeholder="PESEL"></input></br>
                 <input id="nr_dowodu" placeholder="Nr Dowodu"></input></br>
 				</br></br>
-                <button id="edytuj_dane">Edytuj dane użytkownika</button><button id="edytuj_uprawnienia">Uprawnienia</button>
+                <button onclick="edytuj()" id="edytuj_dane">Edytuj dane użytkownika</button><button onclick="uprawnienia()" id="edytuj_uprawnienia">Uprawnienia</button>
 				</br></br>
-				<button style="color:red" id="reset_hasla">Resetuj hasło</button>
+				<button onclick='reset_confirm()' style="color:red" id="reset_hasla">Resetuj hasło</button>
 				</br></br>
 				<span style="color:red"><b>Usunięcie użytkownika wymaga usunięcia wszystkich jego danych (wliczając oceny, zapisy na kursy itd.)</b></span>
 				</br>
 				<button style="color:red" id="reset_hasla">Usuń użytkownika</button>
+				</br></br>
+				<div id='haslo_wygenerowane'></div>
             </div>
 		</div>
 		<script>
-            
+            data_json_id = {
+				"id" : parseInt(getUrlParameter('id'))
+			}
+
+			$.ajax({
+				url: '/api/uzytkownik',
+				type: "POST",
+				data: JSON.stringify(data_json_id),
+				contentType: "application/json; charset=UTF-8",
+				success: function (data) {					
+					if(data.status != 200){
+						if (data.status == 401){
+							wyloguj();
+						} else {
+							alert("Wystąpił błąd.")
+						}
+					} else if (data.status == 200){
+						$("#login").val(data.result['login']);
+						$("#imie").val(data.result['imie']);
+						$("#nazwisko").val(data.result['nazwisko']);
+						$("#id").html(data.result['id']);
+					}
+				}
+			});
+
+			data_json_id_uzytkownik = {
+				"id_uzytkownik" : parseInt(getUrlParameter('id'))
+			}
+
+			$.ajax({
+				url: '/api/dane_osobowe/pokaz',
+				type: "POST",
+				data: JSON.stringify(data_json_id_uzytkownik),
+				contentType: "application/json; charset=UTF-8",
+				success: function (data) {					
+					if(data.status != 200){
+						if (data.status == 401){
+							wyloguj();
+						} else {
+							alert("Wystąpił błąd.")
+						}
+					} else if (data.status == 200){
+						$("#kod_pocztowy").val(data.result['kod_pocztowy']);
+						$("#miasto").val(data.result['miasto']);
+						$("#nr_domu").val(data.result['nr_domu']);
+						$("#nr_dowodu").val(data.result['nr_dowodu']);
+						$("#pesel").val(data.result['pesel']);
+						$("#ulica").val(data.result['ulica']);
+					}
+				}
+			});
+
+			function edytuj(){
+				
+				data_json_aktualizuj_uzytkownik = {
+					"id" : parseInt(getUrlParameter('id')),
+					"login" : $("#login").val(),
+					"imie" : $("#imie").val(),
+					"nazwisko" : $("#nazwisko").val(),
+				}
+
+				$.ajax({
+					url: '/api/uzytkownik/aktualizuj',
+					type: "POST",
+					data: JSON.stringify(data_json_aktualizuj_uzytkownik),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {					
+						if(data.status != 200){
+							if(data.status == 401){
+								wyloguj();
+							} else {
+								alert("Wystąpił błąd w trakcie aktualizacji podstawowych danych osobowych!");
+							}
+						}
+					}
+				});
+
+				data_json_aktualizuj_dane = {
+					"id_uzytkownik" : parseInt(getUrlParameter('id')),
+					"miasto" : $("#miasto").val(),
+					"ulica" : $("#ulica").val(),
+					"nr_domu" : $("#nr_domu").val(),
+					"kod_pocztowy" : $("#kod_pocztowy").val(),
+					"pesel" : $("#pesel").val(),
+					"nr_dowodu" : $("#nr_dowodu").val()
+				}
+
+				$.ajax({
+					url: '/api/dane_osobowe/aktualizuj',
+					type: "POST",
+					data: JSON.stringify(data_json_aktualizuj_dane),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {					
+						if(data.status != 200){
+							if(data.status == 401){
+								wyloguj();
+							} else {
+								alert("Wystąpił błąd w trakcie aktualizacji szczegółowych danych osobowych!");
+							}
+						} else if (data.status == 200){
+							window.location.reload(true);
+						}
+					}
+				});
+
+			}
+
+			function reset_confirm(){
+				if(confirm("Czy na pewno chcesz zresetować hasło?")){
+					reset_hasla();
+				}
+			}
+
+			function reset_hasla(){
+				let haslo_startowe = Math.random().toString(36).slice(-8);
+				
+				dane_json_haslo = {
+					"id_uzytkownik" : parseInt(getUrlParameter('id')),
+					"haslo" : haslo_startowe
+				}
+
+				$.ajax({
+					url: '/api/uzytkownik/nowehaslo',
+					type: "POST",
+					data: JSON.stringify(dane_json_haslo),
+					accept: "*/*",
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						if (data.status != 200){
+							if (data.status == 401){
+								wyloguj();
+							} else {
+								alert("Wystąpił błąd w trakcie dodawania hasła.")
+							}
+						} else if (data.status == 200){
+							$("#haslo_wygenerowane").html("<b>Wygenerowane hasło dla użytkownika to: "+haslo_startowe);
+							alert("Wygenerowane hasło to: "+haslo_startowe);
+						}
+					}
+				})
+			}
+
+			function uprawnienia(){
+				window.location.href = "/zarzadzanie_uzytkownicy_uprawnienia.html?id="+parseInt(getUrlParameter('id'));
+			}
+
+			function usun_confirm(){
+				if(confirm("Czy na pewno chcesz usunąć konto użytkownika?")){
+					usun();
+				}
+			}
+
+			function usun(){
+				data_json_usun_dane = {
+					"id_uzytkownik" : parseInt(getUrlParameter('id'))
+				}
+
+				$.ajax({
+					url: '/api/dane_osobowe/usun',
+					type: "POST",
+					data: JSON.stringify(data_json_usun_dane),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {					
+						if (data.status == 401){
+							wyloguj();
+						} else {
+							alert("Wystąpił błąd.")
+						}
+					}
+				});
+
+				data_json_usun_uzytkownik = {
+					"id" : parseInt(getUrlParameter('id'))
+				}
+
+				$.ajax({
+					url: '/api/uzytkownik/usun',
+					type: "POST",
+					data: JSON.stringify(data_json_usun_uzytkownik),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {					
+						if (data.status == 401){
+							wyloguj();
+						} else {
+							alert("Wystąpił błąd.")
+						}
+					}
+				});
+
+			}
+
 		</script>
 		<script src="/js/nav.js"></script>
 	</body>

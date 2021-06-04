@@ -73,6 +73,8 @@ fn rocket() {
             router::uzytkownik_uprawnienia,
             router::uzytkownik_uprawnienie_nowe,
             router::uzytkownik_uprawnienie_usun,
+            router::uzytkownik_aktualizuj,
+            router::uzytkownik_usun,
 
             router::wiadomosci_nowa,
             router::wiadomosci_pokaz,
