@@ -46,8 +46,6 @@ static UZYTKOWNIK    : i32 = 1;
 
 static OCENY : &'static[f32] = &[2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5];
 
-use chrono::{Local};
-
 fn main() {
     println!("ZAMIAST http:://127.0.0.1:9090/ KORZYSTAĆ Z http://localhost.:9090/ (związane z polityką cookies - w cookies trzymany jest token z autoryzacji)");
     rocket();
