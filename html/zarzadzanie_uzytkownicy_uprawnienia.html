@@ -60,7 +60,7 @@
                 <label for="uzytkownik">Użytkownik</label></br>
                 <span class="yellow">Uprawnienie użytkownika wymagane jest do korzystania z serwisu.</br>Odebranie uprawnienia spowoduje wyłączenie konta.</span></br>
 				</br>
-                <button id="zapisz">Zapisz</button>
+                <button onclick="set_permisions" id="zapisz">Zapisz</button>
             </div>
 		</div>
 		<script>
@@ -81,6 +81,177 @@
 					}
 				}
 			});
+
+			$.ajax({
+				url: '/api/uzytkownik/uprawnienia',
+				type: "POST",
+				data: JSON.stringify(data_json_id),
+				contentType: "application/json; charset=UTF-8",
+				success: function (data) {					
+					if(data.status != 200){
+						alert("Wystąpił błąd!");
+					} else if (data.status == 200){
+						for(let i = 0; i < data.result.length; i++){
+							console.log(data.result[i])
+							if (data.result[i]['id_uprawnienie'] == 1){
+								$("#uzytkownik").prop("checked",true);
+							}
+							if (data.result[i]['id_uprawnienie'] == 2){
+								$("#student").prop("checked",true);
+							}
+							if (data.result[i]['id_uprawnienie'] == 3){
+								$("#prowadzacy").prop("checked",true);
+							}
+							if (data.result[i]['id_uprawnienie'] == 4){
+								$("#pracownik").prop("checked",true);
+							}
+							if (data.result[i]['id_uprawnienie'] == 5){
+								$("#administrator").prop("checked",true);
+							}
+						}
+					}
+				}
+			});
+
+			function set_permisions(){
+
+				let counter = 0;
+
+				let data_json_id_uzytkownik = {
+					"id_uzytkownik" : parseInt(getUrlParameter('id'))
+				}
+
+				$.ajax({
+					url: '/api/uzytkownik/uprawnienie/usun/wszystkie',
+					type: "POST",
+					data: JSON.stringify(data_json_id_uzytkownik),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {					
+						if(data.status != 200){
+							if (data.status == 401){
+								wyloguj()
+							} else {
+								alert("Wystąpił błąd!");
+							}
+						}
+					}
+				});
+
+				if($("#administrator").prop("checked")) {
+					counter += 1;
+					let data_json_uprawnienie = {
+						"id_uzytkownik" : parseInt(getUrlParameter('id')),
+						"id_uprawnienie" : 5
+					}
+					$.ajax({
+						url: '/api/uzytkownik/uprawnienie/nowe',
+						type: "POST",
+						data: JSON.stringify(data_json_uprawnienie),
+						contentType: "application/json; charset=UTF-8",
+						success: function (data) {					
+							if(data.status != 200){
+								if (data.status == 401){
+									wyloguj()
+								} else {
+									alert("Wystąpił błąd!");
+								}
+							}
+						}
+					});
+				}
+
+				if($("#pracownik").prop("checked")) {
+					counter += 1;
+					let data_json_uprawnienie = {
+						"id_uzytkownik" : parseInt(getUrlParameter('id')),
+						"id_uprawnienie" : 4
+					}
+					$.ajax({
+						url: '/api/uzytkownik/uprawnienie/nowe',
+						type: "POST",
+						data: JSON.stringify(data_json_uprawnienie),
+						contentType: "application/json; charset=UTF-8",
+						success: function (data) {					
+							if(data.status != 200){
+								if (data.status == 401){
+									wyloguj()
+								} else {
+									alert("Wystąpił błąd!");
+								}
+							}
+						}
+					});
+				}
+
+				if($("#prowadzacy").prop("checked")) {
+					counter += 1;
+					let data_json_uprawnienie = {
+						"id_uzytkownik" : parseInt(getUrlParameter('id')),
+						"id_uprawnienie" : 3
+					}
+					$.ajax({
+						url: '/api/uzytkownik/uprawnienie/nowe',
+						type: "POST",
+						data: JSON.stringify(data_json_uprawnienie),
+						contentType: "application/json; charset=UTF-8",
+						success: function (data) {					
+							if(data.status != 200){
+								if (data.status == 401){
+									wyloguj()
+								} else {
+									alert("Wystąpił błąd!");
+								}
+							}
+						}
+					});
+				}
+
+				if($("#student").prop("checked")) {
+					counter += 1;
+					let data_json_uprawnienie = {
+						"id_uzytkownik" : parseInt(getUrlParameter('id')),
+						"id_uprawnienie" : 2
+					}
+					$.ajax({
+						url: '/api/uzytkownik/uprawnienie/nowe',
+						type: "POST",
+						data: JSON.stringify(data_json_uprawnienie),
+						contentType: "application/json; charset=UTF-8",
+						success: function (data) {					
+							if(data.status != 200){
+								if (data.status == 401){
+									wyloguj()
+								} else {
+									alert("Wystąpił błąd!");
+								}
+							}
+						}
+					});
+				}
+
+				if($("#uzytkownik").prop("checked")) {
+					counter += 1;
+					let data_json_uprawnienie = {
+						"id_uzytkownik" : parseInt(getUrlParameter('id')),
+						"id_uprawnienie" : 1
+					}
+					$.ajax({
+						url: '/api/uzytkownik/uprawnienie/nowe',
+						type: "POST",
+						data: JSON.stringify(data_json_uprawnienie),
+						contentType: "application/json; charset=UTF-8",
+						success: function (data) {					
+							if(data.status != 200){
+								if (data.status == 401){
+									wyloguj()
+								} else {
+									alert("Wystąpił błąd!");
+								}
+							}
+						}
+					});
+				}
+			}
 		</script>
 		<script src="/js/nav.js"></script>
 	</body>

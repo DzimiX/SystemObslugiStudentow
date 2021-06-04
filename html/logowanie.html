@@ -100,9 +100,6 @@
 					data: JSON.stringify(data_json),
 					contentType: "application/json; charset=UTF-8",
 					success: function (data) {
-						console.log(data.status);
-						console.log(data.result);
-						
 						if(data.status != 200){
 							alert("Niepoprawne dane logowania")
 						} else if (data.status == 200){
