@@ -68,46 +68,46 @@
                 <label for="form-imie">Imię:</label>
                 <input id="form-imie" name="imie"></input></br>
                 <label for="form-nazwisko">Nazwisko:</label>
-                <input id="form-nazwisko" name="nazwisko"></input></br></br>
-                <label for="form-login">Login:</label>
-                <input id="form-login" name="login"></input></br>
-                <label for="form-haslo">Hasło:</label>
-                <input type="password" id="form-haslo" name="haslo"></input></br>
-                <label for="form-haslo2">Powtórz hasło:</label>
-                <input type="password" id="form-haslo2" name="haslo2"></input></br></br>
+                <input id="form-nazwisko" name="nazwisko"></input></br>
+                <label for="form-email">Email:</label>
+                <input id="form-email" name="email"></input></br>
                 <button id="register-button">Utwórz konto</button> lub
                 <a href="/logowanie.html">Zaloguj się</a>
+                <div id='info' style='color:yellow;margin:20px'></div>
             </div>
         </div>
 
         <script>
-            
+            $("#info").hide();
             if (getCookie("token") != null) {
 				document.location.href = "/";
 			}
 
-            $("#login-button").click(function() {
-
-				data_json = {
-					"login" : document.getElementById("form-login").value,
-					"haslo" : document.getElementById("form-haslo").value
+            $("#register-button").click(function() {              
+				data_json_register = {
+					"imie" : $("#form-imie").val(),
+					"nazwisko" : $("#form-nazwisko").val(),
+                    "email" : $("#form-email").val()
 				}
-				
-				console.log(data_json);
-
+                
 				$.ajax({
-					url: '/api/login',
+					url: '/api/rejestracja',
 					type: "POST",
-					data: JSON.stringify(data_json),
+					data: JSON.stringify(data_json_register),
 					contentType: "application/json; charset=UTF-8",
-					success: function (data) {
-						console.log(data.status);
-						console.log(data.result);
-						
+					success: function (data) {					
 						if(data.status != 200){
 							console.log("Wystąpił błąd!");
 						} else if (data.status == 200){
-							document.location.href = "/";
+							alert("Po aktywacji konta na podany email otrzymasz dane dotyczące logowania.");
+                            let login = "login";
+                            let haslo = "haslo"
+                            $("#form-imie").prop("disabled",true);
+                            $("#form-nazwisko").prop("disabled",true);
+                            $("#form-email").prop("disabled",true);
+                            $("#info").append("<b>Dane dotyczące logowania:</b></br>");
+                            $("#info").append(login+" : "+haslo);
+                            $("#info").show();
 						}
 					}
 				});

@@ -1,24 +1,9 @@
 # SystemObslugiStudentow
 
-Nowy wspaniały projekt.
+Projekt pełniący rolę systemu zarządzania tokiem studiów.
 
 # Ważne!
 ZAMIAST http:://127.0.0.1:9090/ KORZYSTAĆ Z http://localhost.:9090/ (związane z polityką cookies - w cookies trzymany jest token z autoryzacji)
-
-## Jak rust to ogarnąć wypada
-* Coś do nauczenia się rusta xD
-	* https://www.rust-lang.org/learn
-	* https://doc.rust-lang.org/beta/
-* Coś do obsługi baz danych
-	* https://diesel.rs/
-	* https://github.com/perdumonocle/sql-builder
-* Coś do zrobienia gui
-	* https://github.com/linebender/druid
-	* https://github.com/MoAlyousef/fltk-rs
-	* https://github.com/woboq/qmetaobject-rs
-	* https://dev.to/davidedelpapa/rust-gui-introduction-a-k-a-the-state-of-rust-gui-libraries-as-of-january-2021-40gl
-* Jeden z lepszych guide jak zrobić api w rust
-	* https://www.youtube.com/watch?v=VMZdGX9wC4g
 
 ## Baza danych do testów
 * XAMPP: https://www.apachefriends.org/pl/index.html
