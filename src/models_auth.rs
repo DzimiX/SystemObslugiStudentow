@@ -64,6 +64,12 @@ pub struct UzytkownikUprawnieniaNowe {
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "uzytkownicy_uprawnienia"]
+pub struct UzytkownikIdUprawnienia {
+    pub id_uzytkownik: i32,
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
 #[table_name = "uprawnienia"]
 pub struct Uprawnienia {
     pub id: i32,
@@ -127,6 +133,16 @@ impl AuthLogin {
         diesel::delete(uzytkownicy_uprawnienia::table
             .filter(uzytkownicy_uprawnienia::id_uzytkownik.eq(privilege.id_uzytkownik))
             .filter(uzytkownicy_uprawnienia::id_uprawnienie.eq(privilege.id_uprawnienie))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+
+        return true
+    }
+
+    pub fn delete_privilege_all(privilege: UzytkownikIdUprawnienia, conn: &MysqlConnection) -> bool {
+        diesel::delete(uzytkownicy_uprawnienia::table
+            .filter(uzytkownicy_uprawnienia::id_uzytkownik.eq(privilege.id_uzytkownik))
         )
         .execute(conn)
         .expect("Błąd.");

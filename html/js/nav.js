@@ -81,10 +81,7 @@ $.get("navbar.html", function(data){
         type: "POST",
         data: JSON.stringify(uzytkownik_id),
         contentType: "application/json; charset=UTF-8",
-        success: function (data) {
-            console.log(data.status);
-            console.log(data.result);
-            
+        success: function (data) {            
             if (data.status != 200){
                 if (data.status == 401){
                     wyloguj();

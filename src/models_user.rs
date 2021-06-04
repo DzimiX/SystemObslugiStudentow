@@ -6,7 +6,7 @@ use crate::schema::uzytkownicy;
 use crate::schema::uzytkownicy_hasla;
 use crate::schema::uzytkownicy_dane;
 
-#[derive(Queryable, Serialize)]
+#[derive(Queryable, Serialize, Deserialize)]
 pub struct Uzytkownik {
     pub id: i32,
     pub login: String,
@@ -61,6 +61,36 @@ impl Uzytkownik {
             .is_ok()
     }
 
+    pub fn update(uzytkownik: Uzytkownik, conn: &MysqlConnection) -> bool {
+        let id = uzytkownik.id;
+        let imie = uzytkownik.imie;
+        let nazwisko = uzytkownik.nazwisko;
+
+        let updated_row = diesel::update(uzytkownicy::table.filter(uzytkownicy::id.eq(&id)))
+            .set((
+                uzytkownicy::imie.eq(imie),
+                uzytkownicy::nazwisko.eq(nazwisko),
+            ))
+            .execute(conn)
+            .is_ok();
+
+        if updated_row == false {
+            return false
+        }
+
+        return true
+    }
+
+    pub fn delete(id: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(uzytkownicy::table
+            .filter(uzytkownicy::id.eq(id))
+        )
+        .execute(conn)
+        .expect("Błąd.");
+
+        return true
+    }
+
     pub fn all(conn: &MysqlConnection) -> Vec<Uzytkownik> {
         uzytkownicy::table
             .order(uzytkownicy::id.desc())
@@ -96,6 +126,16 @@ impl Uzytkownik {
             .values(&data)
             .execute(conn)
             .is_ok()
+    }
+
+    pub fn delete_password(id: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(uzytkownicy_hasla::table
+            .filter(uzytkownicy_hasla::id_uzytkownik.eq(id))
+        )
+        .execute(conn)
+        .unwrap();
+
+        return true
     }
 }
 
