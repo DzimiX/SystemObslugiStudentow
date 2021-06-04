@@ -21,7 +21,8 @@
 				</div>
 			</div>
 			<a id="menu-zarzadzanie-zapisy" href="/zarzadzanie_zapisy.html">Zarządzanie zapisami</a>
-			<a id="menu-zapisy" href="/"><span class="disabled">Zapisy</span></a>
+			<a id="menu-rekrutacja" href="/rekrutacja.html"><span class="disabled">Rekrutacja</span></a>
+			<a id="menu-zapisy" href="/zapisy.html"><span class="disabled">Zapisy</span></a>
 			<a id="menu-zarzadzanie-kursy" href="/zarzadzanie_kursy.html">Zarządzanie kursami</a>
 			<div id="dropdown-kursy" class="dropdown">
 				<button class="dropbtn">
@@ -33,8 +34,28 @@
 					<a id="dropdown-kursy-oceny" href="#"><span class="disabled">Oceny</span></a>
 				</div>
 			</div>
+			<div id="dropdown-kursy-prowadzacy" class="dropdown">
+				<button class="dropbtn">
+					<span class="disabled">Prowadzenie zajęć</span>
+					<i class="arrow down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a id="dropdown-kursy-zajecia" href="#"><span class="disabled">Zajęcia</span></a>
+					<a id="dropdown-kursy-oceny" href="#"><span class="disabled">Oceny</span></a>
+				</div>
+			</div>
 			<a id="menu-indeks" href="/"><span class="disabled">Indeks</span></a>
 			<div id="dropdown-sprawy" class="dropdown">
+				<button class="dropbtn">
+					<span class="disabled">Sprawy</span>
+					<i class="arrow down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a id="dropdown-sprawy-moje" href="#"><span class="disabled">Moje sprawy</span></a>
+					<a id="dropdown-sprawy-utworz" href="#"><span class="disabled">Załóż sprawę</span></a>
+				</div>
+			</div>
+			<div id="dropdown-sprawy-pracownik" class="dropdown">
 				<button class="dropbtn">
 					<span class="disabled">Sprawy</span>
 					<i class="arrow down"></i>
@@ -63,5 +84,17 @@
 					<a href="/dane_osobowe.html"><span>Dane osobowe</span></a>
 					<a href="#"><span class="disabled">Ustawienia</span></a>
 					<a id="wyloguj_navbar" href="/wyloguj.html">Wyloguj</a>
+				</div>
+			</div>
+			<div class="dropdown-right">
+				<button class="dropbtn disabled">
+					<span id="rola">Rola</span>
+					<i class="arrow down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a>Domyślna rola</a>
+					<a>Przeglądaj jako użytkownik</a>
+					<a>Przeglądaj jako student</a>
+					<a>Przeglądaj jako prowadzący</a>
 				</div>
 			</div>

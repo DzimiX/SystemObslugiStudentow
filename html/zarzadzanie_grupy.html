@@ -71,6 +71,7 @@
                     <td><b>Sala</b></td>
                     <td><b>Szczegóły</b></td>
                     <td><b>Uczestnicy</b></td>
+					<tD><b>Terminy</b></tD>
                 </tr>
             </table>
 		</div>
@@ -216,6 +217,7 @@
                                         "<td>"+data.result[i]['sala']+"</td>"+
                                         "<td><button onclick=\"pokaz_szczegoly("+data.result[i]['id']+",\'"+data.result[i]['id_zapisy']+"\',\'"+data.result[i]['kod_grupy']+"\',\'"+data.result[i]['termin']+"\',\'"+data.result[i]['sala']+"\')\">SZCZEGÓŁY</button></td>"+
                                         "<td><button onclick='pokaz_uczestnikow("+data.result[i]['id']+")'>UCZESTNICY</button></td>"+
+										"<td><button onclick='terminy("+data.result[i]['id']+")'>TERMINY</button></td>"+
 									"</tr>"
 								);
                         	}
@@ -254,6 +256,10 @@
 						}
 					}
 				});
+			}
+
+			function terminy(id){
+				window.location.href = "/zarzadzanie_grupy_terminy.html?id_grupa="+id;
 			}
 
             function pokaz_szczegoly(id, id_zapisy, kod, termin, sala){

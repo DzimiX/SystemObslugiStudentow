@@ -1,5 +1,7 @@
 -- This file should undo anything in `up.sql`
 
+DROP TABLE `kursy_grupy_terminy_obecnosc`;
+DROP TABLE `kursy_grupy_terminy`;
 DROP TABLE `kursy_grupy_ocena_koncowa`;
 DROP TABLE `kursy_grupy_oceny`;
 DROP TABLE `kursy_grupy_uczestnicy`;

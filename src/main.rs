@@ -33,6 +33,7 @@ mod router_groups;
 mod router_scores;
 mod router_applications;
 mod router_auth;
+mod router_groups_frequency;
 
 mod db;
 

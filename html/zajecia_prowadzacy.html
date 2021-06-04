@@ -79,13 +79,13 @@
 
         <script>
 			jQuery.when(
-				$.ajax({
-					url: '/api/uzytkownicy',
-					type: "POST",
-					data: JSON.stringify(""),
-					accept: "*/*",
-					contentType: "application/json; charset=UTF-8",
-				})
+                $.ajax({
+                    url: '/api/uzytkownicy',
+                    type: "POST",
+                    data: JSON.stringify(""),
+                    accept: "*/*",
+                    contentType: "application/json; charset=UTF-8",
+                })
 			).done( function(data) {
 				if (data.status != 200){
 					if (data.status == 401){
@@ -144,11 +144,7 @@
 			});
 
 			function edytuj(id){
-				window.location.href = "/zarzadzanie_uzytkownicy_edycja.html?id="+id;
-			}
-
-			function uprawnienia(id){
-				window.location.href = "/zarzadzanie_uzytkownicy_uprawnienia.html?id="+id;
+				window.location.href = "/zajecia_prowadzacy_grupa.html?id="+id;
 			}
 
 		</script> 

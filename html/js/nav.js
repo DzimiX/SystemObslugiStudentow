@@ -1,4 +1,4 @@
-//userdata.id_uprawnien = 6; // nadpisanie widoku
+//userdata.id_uprawnien = 5; // nadpisanie widoku
 $.get("navbar.html", function(data){
     $("#navbar").html(data);
    
@@ -6,41 +6,84 @@ $.get("navbar.html", function(data){
 
     function widok(id_uprawnien){
         
-        if(id_uprawnien == 1 || id_uprawnien == 2 || id_uprawnien == 3){
+        if(id_uprawnien == 1){ // UŻYTKOWNIK
+            $("#dropdown-wiadomosci").show();
             $("#menu-ogloszenia").hide();
             $("#dropdown-uzytkownicy").hide();
             $("#menu-zarzadzanie-zapisy").hide();
+            $("#menu-rekrutacja").show();
+            $("#menu-zapisy").hide();
             $("#menu-zarzadzanie-kursy").hide();
+            $("#dropdown-kursy").hide();
+            $("#dropdown-kursy-prowadzacy").hide();
+            $("#menu-indeks").hide();
+            $("#dropdown-sprawy").show();
+            $("#dropdown-sprawy-pracownik").hide();
+            $("#dropdown-sprawyz").hide();           
+        }
+
+        if(id_uprawnien == 2){ // STUDENT
+            $("#dropdown-wiadomosci").show();
+            $("#menu-ogloszenia").hide();
+            $("#dropdown-uzytkownicy").hide();
+            $("#menu-zarzadzanie-zapisy").hide();
+            $("#menu-rekrutacja").hide();
+            $("#menu-zapisy").show();
+            $("#menu-zarzadzanie-kursy").hide();
+            $("#dropdown-kursy").show();
+            $("#dropdown-kursy-prowadzacy").hide();
+            $("#menu-indeks").hide();
+            $("#dropdown-sprawy").show();
+            $("#dropdown-sprawy-pracownik").hide();
+            $("#dropdown-sprawyz").hide();  
+        }
+
+        if(id_uprawnien == 3){ // PROWADZĄCY
+            $("#dropdown-wiadomosci").show();
+            $("#menu-ogloszenia").hide();
+            $("#dropdown-uzytkownicy").hide();
+            $("#menu-zarzadzanie-zapisy").hide();
+            $("#menu-rekrutacja").hide();
+            $("#menu-zapisy").show();
+            $("#menu-zarzadzanie-kursy").hide();
+            $("#dropdown-kursy").hide();
+            $("#dropdown-kursy-prowadzacy").show();
+            $("#menu-indeks").show();
+            $("#dropdown-sprawy").hide();
+            $("#dropdown-sprawy-pracownik").show();
             $("#dropdown-sprawyz").hide();
         }
 
-        if(id_uprawnien == 1){
-            $("#dropdown-kursy").hide();
-            $("#menu-indeks").hide();
-        }
-
-        if(id_uprawnien == 3 || id_uprawnien == 4 || id_uprawnien == 5){
-            $("#menu-indeks").hide();
-        }
-
-        if(id_uprawnien == 4){
+        if(id_uprawnien == 4){ // PRACOWNIK
+            $("#dropdown-wiadomosci").show();
+            $("#menu-ogloszenia").show();
             $("#dropdown-uzytkownicy").hide();
+            $("#menu-zarzadzanie-zapisy").show();
+            $("#menu-rekrutacja").hide();
             $("#menu-zapisy").hide();
+            $("#menu-zarzadzanie-kursy").show();
             $("#dropdown-kursy").hide();
+            $("#dropdown-kursy-prowadzacy").hide();
+            $("#menu-indeks").hide();
             $("#dropdown-sprawy").hide();
-        }
-
-        if(id_uprawnien == 4){
-            $("#dropdown-uzytkownicy").hide();
-            $("#menu-zapisy").hide();
-            $("#dropdown-kursy").hide();
-            $("#dropdown-sprawy").hide();
+            $("#dropdown-sprawy-pracownik").show();
+            $("#dropdown-sprawyz").show();
         }
 
         if(id_uprawnien == 5){
+            $("#dropdown-wiadomosci").show();
+            $("#menu-ogloszenia").show();
+            $("#dropdown-uzytkownicy").show();
+            $("#menu-zarzadzanie-zapisy").show();
+            $("#menu-rekrutacja").hide();
             $("#menu-zapisy").hide();
+            $("#menu-zarzadzanie-kursy").show();
             $("#dropdown-kursy").hide();
+            $("#dropdown-kursy-prowadzacy").hide();
+            $("#menu-indeks").hide();
             $("#dropdown-sprawy").hide();
+            $("#dropdown-sprawy-pracownik").show();
+            $("#dropdown-sprawyz").show();
         }
     }
 
