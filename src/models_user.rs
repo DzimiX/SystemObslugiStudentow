@@ -86,7 +86,7 @@ impl Uzytkownik {
             .filter(uzytkownicy::id.eq(id))
         )
         .execute(conn)
-        .is_ok();
+        .expect("Błąd.");
 
         return true
     }
@@ -126,6 +126,16 @@ impl Uzytkownik {
             .values(&data)
             .execute(conn)
             .is_ok()
+    }
+
+    pub fn delete_password(id: i32, conn: &MysqlConnection) -> bool {
+        diesel::delete(uzytkownicy_hasla::table
+            .filter(uzytkownicy_hasla::id_uzytkownik.eq(id))
+        )
+        .execute(conn)
+        .unwrap();
+
+        return true
     }
 }
 

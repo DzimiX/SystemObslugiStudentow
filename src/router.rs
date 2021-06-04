@@ -15,7 +15,7 @@ use super::OCENY;
 
 use crate::models_user::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
 use crate::models_user::{DaneOsobowe, DaneOsoboweId};
-use crate::models_auth::{UprawnienieId, UzytkownikUprawnieniaNowe, UzytkownikUprawnienia};
+use crate::models_auth::{UprawnienieId, UzytkownikUprawnieniaNowe, UzytkownikUprawnienia, UzytkownikIdUprawnienia};
 use crate::models_auth::{AuthLogin, Auth, AuthNowy};
 use crate::models_messages::{Wiadomosc, WiadomoscId, NowaWiadomosc, NowaWiadomoscBezDaty, NowaWiadomoscUczestnik};
 use crate::models_announcements::{Ogloszenie, OgloszenieNowe, OgloszenieId};
@@ -191,6 +191,16 @@ pub fn uzytkownik_uprawnienie_usun(conn: DbConn, uprawnienie: Json<UzytkownikUpr
     }))
 }
 
+#[post("/uzytkownik/uprawnienie/usun/wszystkie", format = "application/json", data = "<uprawnienie>")]
+pub fn uzytkownik_uprawnienie_usun_wszystkie(conn: DbConn, uprawnienie: Json<UzytkownikIdUprawnienia>, mut cookies: Cookies) -> Json<Value>{
+    // niebezpieczne
+
+    return Json(json!({
+        "status" : 200,
+        "result" : AuthLogin::delete_privilege_all(uprawnienie.into_inner(), &conn),
+    }))
+}
+
 #[post("/uzytkownik/uprawnienie/najwyzsze", format = "application/json", data = "<id>")]
 pub fn uzytkownik_uprawnienie_najwyzsze(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) -> Json<Value>{
     // niebezpieczne
@@ -309,6 +319,19 @@ pub fn uzytkownik_nowe_haslo(conn: DbConn, nowe_haslo: Json<NoweHaslo>, mut cook
         "result" : "Unauthorized",
     }))
     
+}
+
+#[post("/uzytkownik/usunhaslo", format = "application/json", data = "<id>")]
+pub fn uzytkownik_usun_haslo(conn: DbConn, id: Json<UzytkownikID>, mut cookies: Cookies) -> Json<Value>{
+    // niebezpieczne
+
+    AuthLogin::delete_user_token(id.id, &conn);
+    Uzytkownik::delete_password(id.id, &conn);
+
+    return Json(json!({
+        "status" : 200,
+        "result" : "OK",
+    }))
 }
 
 #[post("/login", format = "application/json", data = "<login_dane>")] 

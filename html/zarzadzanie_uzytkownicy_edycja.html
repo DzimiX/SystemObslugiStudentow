@@ -70,7 +70,7 @@
 				</br></br>
 				<span style="color:red"><b>Usunięcie użytkownika wymaga usunięcia wszystkich jego danych (wliczając oceny, zapisy na kursy itd.)</b></span>
 				</br>
-				<button style="color:red" id="reset_hasla">Usuń użytkownika</button>
+				<button onclick='usun_confirm()' style="color:red" id="usun">Usuń użytkownika</button>
 				</br></br>
 				<div id='haslo_wygenerowane'></div>
             </div>
@@ -229,8 +229,10 @@
 			}
 
 			function usun(){
+				let id = parseInt(getUrlParameter('id'));
+
 				data_json_usun_dane = {
-					"id_uzytkownik" : parseInt(getUrlParameter('id'))
+					"id_uzytkownik" : id
 				}
 
 				$.ajax({
@@ -239,16 +241,58 @@
 					data: JSON.stringify(data_json_usun_dane),
 					contentType: "application/json; charset=UTF-8",
 					success: function (data) {					
-						if (data.status == 401){
-							wyloguj();
-						} else {
-							alert("Wystąpił błąd.")
+						if (data.status != 200){
+							if (data.status == 401){
+								wyloguj();
+							} else {
+								alert("Wystąpił błąd.")
+							}
+						}
+					}
+				});
+
+				data_json_usun_dane = {
+					"id_uzytkownik" : id
+				}
+
+				$.ajax({
+					url: '/api/uzytkownik/uprawnienie/usun/wszystkie',
+					type: "POST",
+					data: JSON.stringify(data_json_usun_dane),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {					
+						if (data.status != 200){
+							if (data.status == 401){
+								wyloguj();
+							} else {
+								alert("Wystąpił błąd.")
+							}
 						}
 					}
 				});
 
 				data_json_usun_uzytkownik = {
-					"id" : parseInt(getUrlParameter('id'))
+					"id" : id
+				}
+
+				$.ajax({
+					url: '/api/uzytkownik/usunhaslo',
+					type: "POST",
+					data: JSON.stringify(data_json_usun_uzytkownik),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {					
+						if (data.status != 200){
+							if (data.status == 401){
+								wyloguj();
+							} else {
+								alert("Wystąpił błąd.")
+							}
+						}
+					}
+				});
+
+				data_json_usun_uzytkownik = {
+					"id" : id
 				}
 
 				$.ajax({
@@ -257,10 +301,14 @@
 					data: JSON.stringify(data_json_usun_uzytkownik),
 					contentType: "application/json; charset=UTF-8",
 					success: function (data) {					
-						if (data.status == 401){
-							wyloguj();
-						} else {
-							alert("Wystąpił błąd.")
+						if (data.status != 200){
+							if (data.status == 401){
+								wyloguj();
+							} else {
+								alert("Wystąpił błąd. Nie można usunąć użytkownika.")
+							}
+						} else if (data.status == 200){
+							window.location.href = "/zarzadzanie_uzytkownicy.html";
 						}
 					}
 				});

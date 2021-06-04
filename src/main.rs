@@ -11,7 +11,6 @@ extern crate rocket_contrib;
 #[macro_use] extern crate serde_derive;
 #[macro_use] extern crate serde_json;
 
-mod router;
 mod schema;
 mod static_html;
 
@@ -24,6 +23,8 @@ mod models_courses;
 mod models_groups;
 mod models_scores;
 mod models_applications;
+
+mod router;
 
 mod db;
 
@@ -73,8 +74,10 @@ fn rocket() {
             router::uzytkownik_uprawnienia,
             router::uzytkownik_uprawnienie_nowe,
             router::uzytkownik_uprawnienie_usun,
+            router::uzytkownik_uprawnienie_usun_wszystkie,
             router::uzytkownik_aktualizuj,
             router::uzytkownik_usun,
+            router::uzytkownik_usun_haslo,
 
             router::wiadomosci_nowa,
             router::wiadomosci_pokaz,
