@@ -268,5 +268,4 @@ impl Uczestnik {
             .expect("Problem z wczytaniem uczestników.")
     }
 
-
 }

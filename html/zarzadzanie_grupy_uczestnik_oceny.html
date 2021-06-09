@@ -165,10 +165,7 @@
 					type: "POST",
 					data: JSON.stringify(data_json),
 					contentType: "application/json; charset=UTF-8",
-					success: function (data) {
-						//console.log(data.status);
-						//console.log(data.result);
-						
+					success: function (data) {				
 						if(data.status != 200){
 							alert("Wystąpił błąd!");
 						} else if (data.status == 200){
@@ -236,10 +233,7 @@
 							type: "POST",
 							data: JSON.stringify(data_json),
 							contentType: "application/json; charset=UTF-8",
-							success: function (data) {
-								//console.log(data.status);
-								//console.log(data.result);
-								
+							success: function (data) {							
 								if(data.status != 200){
 									if(data.status == 401){
 										alert("Brak uprawnień.");
@@ -404,13 +398,10 @@
 						} else {
 							alert("Wystąpił błąd!");
 						}
-					} else if (data.status == 200){
-						//console.log(data.result);
-						
+					} else if (data.status == 200){				
 						data_json_uzytkownik = {
 							"id" : data.result
 						}
-
 						$.ajax({
 							url: '/api/uzytkownik/publiczne',
 							type: "POST",
@@ -426,7 +417,6 @@
 								}
 							}
 						});
-
 					}
 			});
 
