@@ -64,7 +64,7 @@ pub fn uzytkownicy_index(conn: DbConn, cookies: Cookies) -> Json<Value> {
 pub fn uzytkownicy_nowy(conn: DbConn, nowy_uzytkownik: Json<NowyUzytkownik>, cookies: Cookies) -> Json<Value> { 
     // niebezpieczne
     
-    let mut result = Uzytkownik::add(nowy_uzytkownik.into_inner(), &conn);
+    let result = Uzytkownik::add(nowy_uzytkownik.into_inner(), &conn);
     if result == true {
         return Json(json!({
             "status" : 200,
