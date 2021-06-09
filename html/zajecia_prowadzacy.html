@@ -46,14 +46,14 @@
                 padding-bottom: 20px;
             }
 
-			#uzytkownicy td {
+			#grupy td {
                 padding: 5px;
                 border-bottom: 1px solid rgb(0, 110, 255);
             }
-			#uzytkownicy td:not(:nth-last-child(1)) {
+			#grupy td:not(:nth-last-child(1)) {
 				border-right: 1px solid rgb(0, 110, 255);
 			}
-            #uzytkownicy {
+            #grupy {
 				padding: 20px;
 				border-radius: 10px;
 				background-color: rgb(0, 73, 168, 0.6);
@@ -64,25 +64,27 @@
 		<div id="navbar" class="navbar"></div>
 		<div class="content">
 			<div class="header">
-				<h2>Lista użytkowników</h2>
+				<h2>Lista prowadzonych grup</h2>
 			</div>
-			<a href="/zarzadzanie_uzytkownicy_nowy.html"><button>Dodaj nowego użytkownika</button></a></br></br>
-            <table id="uzytkownicy">
+			<table id="grupy">
 				<tr>
-					<td><b>Login</b></td>
-					<td><b>Imię</b></td>
-					<td><b>Nazwisko</b></td>
-                    <td><b>Najwyższy poziom uprawnień</b></td>
+					<td><b>Nazwa kursu</b></td>
+					<td><b>Kod grupy</b></td>
 				</tr>
 			</table>
 		</div>
 
         <script>
+
+			data_uzytkownik_json = {
+				"id_uczestnik" : parseInt(getCookie("id"))
+			}
+
 			jQuery.when(
                 $.ajax({
-                    url: '/api/uzytkownicy',
+                    url: '/api/uczestnik/prowadzone',
                     type: "POST",
-                    data: JSON.stringify(""),
+                    data: JSON.stringify(data_uzytkownik_json),
                     accept: "*/*",
                     contentType: "application/json; charset=UTF-8",
                 })
@@ -96,46 +98,52 @@
 				} else if (data.status == 200){
 					if (data.result.length > 0) {
 						for(let i = 0; i < data.result.length; i++){
-							data_json = {
-								"id" : parseInt(data.result[i]['id'])
+							data_grupa_json = {
+								"id" : parseInt(data.result[i]['id_grupa'])
 							}
 							jQuery.when(
 								$.ajax({
-									url: '/api/uzytkownik/uprawnienie/najwyzsze',
+									url: '/api/grupa',
 									type: "POST",
-									data: JSON.stringify(data_json),
+									data: JSON.stringify(data_grupa_json),
 									accept: "*/*",
 									contentType: "application/json; charset=UTF-8",
 								})
 							).done( function(data2) {
-								if(data2.status != 200){
+								if (data2.status != 200){
 									if (data2.status == 401){
 										wyloguj();
 									} else {
 										alert("Wystąpił błąd.");
 									}
 								} else if (data2.status == 200){
-									data_json_uprawnienie = {
-										"id" : parseInt(data2.result)
+									data_kurs_json = {
+										"id" : parseInt(data2.result[0]['id_kursu'])
 									}
+
 									$.ajax({
-										url: '/api/uprawnienie',
+										url: '/api/kurs',
 										type: "POST",
-										data: JSON.stringify(data_json_uprawnienie),
+										data: JSON.stringify(data_kurs_json),
 										contentType: "application/json; charset=UTF-8",
-										success: function (data3) {
-											$("#uzytkownicy").append(
-												"<tr>"+
-													"<td>"+data.result[i]['login']+"</td>"+
-													"<td>"+data.result[i]['imie']+"</td>"+
-													"<td>"+data.result[i]['nazwisko']+"</td>"+
-													"<td>"+data3.result+"</td>"+
-													"<td><button onclick='edytuj("+data.result[i]['id']+")'>Szczegóły użytkownika</button></td>"+
-													"<td><button onclick='uprawnienia("+data.result[i]['id']+")'>Uprawnienia</button></td>"+
-												"</tr>"
-											)
+										success: function (data3) {										
+											if(data.status != 200){
+												if (data3.status == 401){
+													wyloguj();
+												} else {
+													alert("Wystąpił błąd.");
+												}
+											} else if (data3.status == 200){
+												$("#grupy").append(
+													"<tr>"+
+														"<td>"+data3.result[0]['nazwa']+"</td>"+
+														"<td>"+data2.result[0]['kod_grupy']+"</td>"+
+														"<td><button onclick='uczestnicy("+data2.result[0]['id']+")'>Uczestnicy</button></td>"+
+													"</tr>"
+												);
+											}
 										}
-									})
+									});
 								}
 							});
 						}
@@ -143,8 +151,8 @@
 				}
 			});
 
-			function edytuj(id){
-				window.location.href = "/zajecia_prowadzacy_grupa.html?id="+id;
+			function uczestnicy(id){
+				window.location.href = "/zajecia_prowadzacy_uczestnicy.html?id_grupa="+id;
 			}
 
 		</script> 

@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="pl">
+	<head>
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/main.js"></script>
+		<script src="/js/select2.min.js"></script>
+		<script>
+			setTimeout(function(){$('body').animate({opacity:'1'},500)},400);
+			if (getCookie("token") == null) {
+				document.location.href = "/logowanie.html";
+				document.body.innerHTML = "";
+				window.stop();
+			} else {
+				var userdata = {
+					"id" : parseInt(getCookie("id")),
+					"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
+				}
+
+				if (userdata.id_uprawnien < 1){ // minimalny poziom uprawnień (zabezpieczenie api osobno)
+					document.location.href = "/";
+					document.body.innerHTML = "";
+					window.stop();
+				}
+			}
+		</script>
+		<meta charset="utf-8">
+		<title>System obsługi studentów - zarządzanie grupami</title>
+		<meta name="description" content="System Obsługi Studentów">
+		<link rel="stylesheet" href="/css/navbar.css">
+		<link rel="stylesheet" href="/css/main.css">
+		<link rel="stylesheet" href="/css/modal.css">
+		<link rel="stylesheet" href="/css/select2.min.css">
+		<style>
+            #kursy td {
+                padding: 5px;
+                border-bottom: 1px solid rgb(0, 110, 255);
+            }
+			#kursy td:not(:nth-last-child(1)) {
+				border-right: 1px solid rgb(0, 110, 255);
+			}
+            #kursy {
+				padding: 20px;
+				border-radius: 10px;
+				background-color: rgb(0, 73, 168, 0.6);
+			}
+
+			select {
+                width: 766px;
+                color: black;
+                margin: 5px 0px 5px 0px;
+            }
+            .select2-results * {
+                color: black;
+            }
+		</style>
+	</head>
+	<body>
+		<div id="navbar" class="navbar"></div>
+		<div class="content">
+			<div class="header">
+				<h2>Zarządzanie uczestnikami w grupie: <span id="kodgrupy"></span></h2>
+			</div>
+
+            <button onclick="window.history.back();">Wróć</button></br></br>
+
+            <table id="kursy">
+                <tr>
+                    <td><b>Uczestnik</b></td>
+					<td><b>Ocena końcowa</b></td>
+					<td><b>Oceny</b></td>
+                </tr>
+            </table>
+		</div>
+
+		<div id="modalUczestnik" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<span id="modalZamknij" class="close">&times;</span>
+					<h2 disabled id='modalOgloszenieTytul'>Uczestnik <span><label for="modalUczestnikId"> o ID = </label><span id="modalUczestnikId"></span></span></h2>
+				</div>
+				<div class="modal-body">
+
+                    <label for="modalUczestnikIdSelect">Uczestnik:</label></br>
+					<select id="modalUczestnikIdSelect">
+						<option value="-1" selected></option>
+					</select></br></br>
+					<input disabled id="modalUczestnikIdNazwa"></input>
+                    
+                    <label for="modalUczestnikProwadzacy">Czy prowadzący:</label>
+					<select id="modalUczestnikProwadzacy">
+						<option value="0">Nie</option>
+						<option value="1">Tak</option>
+					</select></br></br>
+
+                    <button id="modalUczestnikEdytuj" onclick="edytuj_zatwierdz()" >Edytuj</button>
+                    <button id="modalUczestnikDodaj" onclick="nowe_zatwierdz()">Dodaj uczestnika</button>
+					<button style="color:red" id="modalUczestnikUsun" onclick="usun()">Usuń uczestnika</button>
+				</div>
+			</div>
+		</div>
+
+        <script>
+			$("#modalUczestnikEdytuj").hide();
+            $("#modalUczestnikDodaj").hide();
+			$("#modalUczestnikUsun").hide();
+
+			$("#modalZamknij").click(function() {
+				$("#modalUczestnik").hide();
+				$("#modalUczestnikId").val("");
+                $("#modalUczestnikIdSelect").val("");
+                $("#modalUczestnikProwadzacy").val("");
+                $("#modalUczestnikEdytuj").hide();
+                $("#modalUczestnikDodaj").hide();
+				$("#modalUczestnikUsun").hide();
+			});
+
+			$("#nowe").click(function() {
+				$(".select2")[0].style.display = "";
+				$("#modalUczestnik").show();
+                $("#modalUczestnikDodaj").show();
+				$("#modalUczestnikId").hide();
+				$("#modalUczestnikIdNazwa").hide();
+                $('label[for="modalUczestnikId"]').hide();
+			});
+
+			$("#modalUczestnikIdSelect").select2();
+
+			$.ajax({
+				url: '/api/uzytkownicy',
+				type: "POST",
+				contentType: "application/json; charset=UTF-8",
+				success: function (data) {
+					if (data.status != 200){
+						if (data.status == 401){
+							wyloguj();
+						}
+					} else if (data.status == 200){
+						for(let i = 0; i < data.result.length; i++){
+							$("#modalUczestnikIdSelect").append(new Option(data.result[i]["imie"]+" "+data.result[i]["nazwisko"], data.result[i]["id"]));
+						}
+					}
+				}
+			});
+
+            var id = getUrlParameter('id_grupa');
+
+            if(id < 1){
+                window.location.replace("/zarzadzanie_kursy.html");
+            } else {
+
+				data_json_grupa = {
+					"id" : parseInt(id)
+				}
+
+				$.ajax({
+					url: '/api/grupa',
+					type: "POST",
+                    data: JSON.stringify(data_json_grupa),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							if (data.result.length > 0) {
+							}
+							for(let i = 0; i < data.result.length; i++){
+								$("#kodgrupy").append(""+data.result[i]['kod_grupy']+"");
+                        	}
+						}
+					}
+			    });
+
+                data_json_uczestnicy = {
+                    "id_grupa" : parseInt(id)
+                }
+				
+				jQuery.when(
+					$.ajax({
+						url: '/api/uczestnicy',
+						type: "POST",
+						data: JSON.stringify(data_json_uczestnicy),
+						accept: "*/*",
+						contentType: "application/json; charset=UTF-8",
+                	})
+				).done( function(data) {
+					if (data.status != 200){
+						if (data.status == 401){
+							wyloguj();
+						} else {
+							alert("Wystąpił błąd.");
+						}
+					} else if (data.status == 200){
+						if (data.result.length > 0) {
+							for(let i = 0; i < data.result.length; i++){
+								let data_json_id_uzytkownik = {
+									"id" : parseInt(data.result[i]["id_uczestnik"])
+								}
+
+								jQuery.when(
+									$.ajax({
+										url: '/api/uzytkownik',
+										type: "POST",
+										data: JSON.stringify(data_json_id_uzytkownik),
+										contentType: "application/json; charset=UTF-8",
+									})
+								).done( function(data2) {
+									
+									let data_json_koncowa = {
+										"id_grupa" : parseInt(id),
+    									"id_uczestnik" : parseInt(data.result[i]["id"])
+									}
+
+									$.ajax({
+										url: '/api/ocena/koncowa',
+										type: "POST",
+										data: JSON.stringify(data_json_koncowa),
+										contentType: "application/json; charset=UTF-8",
+										success: function (data3) {
+											if (data2.status != 200){
+												if (data2.status == 401){
+													wyloguj();
+												}
+											} else if (data2.status == 200){
+												id_user = data2.result['id'];
+												imie = data2.result['imie'];
+												nazwisko = data2.result['nazwisko'];
+												let czy_prowadzacy = false;
+												if (data.result[i]['czy_prowadzacy'] == false){
+                                                    let ocena_koncowa = "-";
+                                                    if ( data3.result.length > 0 ){
+                                                        ocena_koncowa = data3.result[0]['ocena'];
+                                                    }
+													$("#kursy").append(
+                                                        "<tr>"+
+                                                            "<td>"+imie+" "+nazwisko+"</td>"+
+                                                            "<td>"+ocena_koncowa+"</td>"+
+                                                            "<td><button onclick='oceny("+data.result[i]['id']+")'>Oceny</button></td>"+
+                                                        "</tr>"
+												    );
+												}
+											}
+										}
+									})
+								})
+							}
+						}
+					}
+				});
+            }
+
+			function oceny(id_uczestnik){
+				id_grupa = getUrlParameter('id_grupa');
+				window.location.href = "/zarzadzanie_grupy_uczestnik_oceny.html?id_grupa="+id_grupa+"&id_uczestnik="+id_uczestnik;
+			}
+		</script>
+		<script src="/js/nav.js"></script>
+	</body>
+</html>

@@ -392,7 +392,10 @@ INSERT INTO `kursy_grupy` (`id`, `id_kursu`, `id_zapisy`, `kod_grupy`, `termin`,
 
 INSERT INTO `kursy_grupy_uczestnicy` (`id`, `id_grupa`, `id_uczestnik`, `czy_prowadzacy`) VALUES
   (1, 3, 3, 1),
-  (2, 3, 5, 0);
+  (2, 3, 5, 0),
+  (3, 1, 1, 1),
+  (4, 2, 1, 1),
+  (5, 3, 1, 1);
 
 INSERT INTO `kursy_grupy_oceny` (`id`, `id_grupa`, `id_uczestnik`, `ocena`, `waga`, `komentarz`, `data`) VALUES
   (1, 3, 2, 3.5, 1, 'kartkówka', 1622485561);
