@@ -70,6 +70,12 @@ pub struct UczestnikId {
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
 #[table_name = "kursy_grupy_uczestnicy"]
+pub struct UczestnikIdUzytkownik {
+    pub id_uczestnik: i32,
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy_uczestnicy"]
 pub struct UczestnikGrupaId {
     pub id_grupa: i32,
 }
@@ -157,7 +163,6 @@ impl Grupa {
 
         return true
     }
-
 }
 
 impl Uczestnik {
@@ -254,5 +259,14 @@ impl Uczestnik {
 
         return true
     }
+
+    pub fn get_grupy_prowadzacy(uczestnik : UczestnikIdUzytkownik, conn: &MysqlConnection) -> Vec<Uczestnik> {
+        kursy_grupy_uczestnicy::table
+            .filter(kursy_grupy_uczestnicy::id_uczestnik.eq(uczestnik.id_uczestnik))
+            .filter(kursy_grupy_uczestnicy::czy_prowadzacy.eq(true))
+            .load::<Uczestnik>(conn)
+            .expect("Problem z wczytaniem uczestników.")
+    }
+
 
 }

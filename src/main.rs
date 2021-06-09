@@ -120,6 +120,7 @@ fn rocket() {
             router_groups::uczestnicy_aktualizuj,
             router_groups::uczestnik_usun,
             router_groups::uczestnik_grupa_usun,
+            router_groups::uczestnik_prowadzone,
 
             router_scores::ocena_grupa_uczestnik,
             router_scores::ocena_nowa,

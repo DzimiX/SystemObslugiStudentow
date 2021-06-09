@@ -4,7 +4,7 @@ use serde_json::Value;
 use rocket::http::Cookies;
 
 use crate::models_groups::{Grupa, GrupaNowa, GrupaId, GrupaKursId, GrupaZapisyKursId};
-use crate::models_groups::{Uczestnik, UczestnikNowy, UczestnikId, UczestnikGrupaId, UczestnikGrupaUczestnikId};
+use crate::models_groups::{Uczestnik, UczestnikNowy, UczestnikId, UczestnikGrupaId, UczestnikGrupaUczestnikId, UczestnikIdUzytkownik};
 use crate::models_scores::{Ocena, OcenaGrupaUczestnikId};
 
 #[post("/grupa", format = "application/json", data = "<grupa>")]
@@ -102,6 +102,17 @@ pub fn uczestnik_grupy(conn: DbConn, uczestnik: Json<UczestnikId>, cookies : Coo
     Json(json!({
         "status" : 200,
         "result" : Uczestnik::get_uczestnik(uczestnik.into_inner(),&conn),
+    }))
+}
+
+//get_grupy_prowadzacy
+
+#[post("/uczestnik/prowadzone", format = "application/json", data = "<uczestnik>" )]
+pub fn uczestnik_prowadzone(conn: DbConn, uczestnik: Json<UczestnikIdUzytkownik>, cookies : Cookies) -> Json<Value> {
+
+    Json(json!({
+        "status" : 200,
+        "result" : Uczestnik::get_grupy_prowadzacy(uczestnik.into_inner(),&conn),
     }))
 }
 
