@@ -1,4 +1,4 @@
-//userdata.id_uprawnien = 5; // nadpisanie widoku
+userdata.id_uprawnien = 3; // nadpisanie widoku
 $.get("navbar.html", function(data){
     $("#navbar").html(data);
    
@@ -15,7 +15,7 @@ $.get("navbar.html", function(data){
             $("#menu-zapisy").hide();
             $("#menu-zarzadzanie-kursy").hide();
             $("#dropdown-kursy").hide();
-            $("#dropdown-kursy-prowadzacy").hide();
+            $("#menu-kursy-prowadzacy").hide();
             $("#menu-indeks").hide();
             $("#dropdown-sprawy").show();
             $("#dropdown-sprawy-pracownik").hide();
@@ -31,7 +31,7 @@ $.get("navbar.html", function(data){
             $("#menu-zapisy").show();
             $("#menu-zarzadzanie-kursy").hide();
             $("#dropdown-kursy").show();
-            $("#dropdown-kursy-prowadzacy").hide();
+            $("#menu-kursy-prowadzacy").hide();
             $("#menu-indeks").hide();
             $("#dropdown-sprawy").show();
             $("#dropdown-sprawy-pracownik").hide();
@@ -44,11 +44,11 @@ $.get("navbar.html", function(data){
             $("#dropdown-uzytkownicy").hide();
             $("#menu-zarzadzanie-zapisy").hide();
             $("#menu-rekrutacja").hide();
-            $("#menu-zapisy").show();
+            $("#menu-zapisy").hide();
             $("#menu-zarzadzanie-kursy").hide();
             $("#dropdown-kursy").hide();
-            $("#dropdown-kursy-prowadzacy").show();
-            $("#menu-indeks").show();
+            $("#menu-kursy-prowadzacy").show();
+            $("#menu-indeks").hide();
             $("#dropdown-sprawy").hide();
             $("#dropdown-sprawy-pracownik").show();
             $("#dropdown-sprawyz").hide();
@@ -63,7 +63,7 @@ $.get("navbar.html", function(data){
             $("#menu-zapisy").hide();
             $("#menu-zarzadzanie-kursy").show();
             $("#dropdown-kursy").hide();
-            $("#dropdown-kursy-prowadzacy").hide();
+            $("#menu-kursy-prowadzacy").hide();
             $("#menu-indeks").hide();
             $("#dropdown-sprawy").hide();
             $("#dropdown-sprawy-pracownik").show();
@@ -79,7 +79,7 @@ $.get("navbar.html", function(data){
             $("#menu-zapisy").hide();
             $("#menu-zarzadzanie-kursy").show();
             $("#dropdown-kursy").hide();
-            $("#dropdown-kursy-prowadzacy").hide();
+            $("#menu-kursy-prowadzacy").hide();
             $("#menu-indeks").hide();
             $("#dropdown-sprawy").hide();
             $("#dropdown-sprawy-pracownik").show();
