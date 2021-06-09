@@ -64,7 +64,7 @@
 		<div id="navbar" class="navbar"></div>
 		<div class="content">
 			<div class="header">
-				<h2>Lista użytkowników</h2>
+				<h2>Lista prowadzonych grup</h2>
 			</div>
 			<table id="grupy">
 				<tr>
@@ -138,7 +138,7 @@
 													"<tr>"+
 														"<td>"+data3.result[0]['nazwa']+"</td>"+
 														"<td>"+data2.result[0]['kod_grupy']+"</td>"+
-														"<td><button onclick='uczestnicy("+data3.result[0]['id']+")'>Uczestnicy</button></td>"+
+														"<td><button onclick='uczestnicy("+data2.result[0]['id']+")'>Uczestnicy</button></td>"+
 													"</tr>"
 												);
 											}
@@ -151,8 +151,8 @@
 				}
 			});
 
-			function edytuj(id){
-				window.location.href = "/zajecia_prowadzacy_grupa.html?id="+id;
+			function uczestnicy(id){
+				window.location.href = "/zajecia_prowadzacy_uczestnicy.html?id_grupa="+id;
 			}
 
 		</script> 
