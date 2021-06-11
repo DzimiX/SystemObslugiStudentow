@@ -24,7 +24,7 @@
 			}
 		</script>
 		<meta charset="utf-8">
-		<title>System obsługi studentów - zarządzanie ocenami</title>
+		<title>System obsługi studentów - oceny w kursie</title>
 		<meta name="description" content="System Obsługi Studentów">
 		<link rel="stylesheet" href="/css/navbar.css">
 		<link rel="stylesheet" href="/css/main.css">
@@ -58,11 +58,10 @@
 		<div id="navbar" class="navbar"></div>
 		<div class="content">
 			<div class="header">
-				<h2>Zarządzanie ocenami użytkownika <span id="uzytkownik"></span> w grupie <span id="grupa"></span></h2>
+				<h2>Oceny w grupie <span id="grupa"></span></h2>
 			</div>
 
-            <button onclick="window.history.back();">Wróć</button>
-            <button id="nowa-ocena">Dodaj nową ocenę</button></br></br>
+            <button onclick="window.history.back();">Wróć</button></br></br>
             
 			<div>Średnia ocen cząstkowych: <span id="srednia"></span></div></br>
 			<div>Wystawiona ocena końcowa: <span id="ocenaKoncowa"></span></div></br>
@@ -74,32 +73,8 @@
                     <td><b>Waga</b></td>
                     <td><b>Komentarz</b></td>
 					<td><b>Data</b></td>
-					<td><b>Modyfikacja</b></td>
                 </tr>
             </table>
-		</div>
-
-		<div id="modalOcena" class="modal">
-			<div class="modal-content">
-				<div class="modal-header">
-					<span id="modalOcenaZamknij" class="close">&times;</span>
-					<h2 disabled id='modalOcenaTytul'>Ocena uczestnika </h2>
-				</div>
-				<div class="modal-body">
-                    <label for="modalOcenaOcena">Ocena:</label>
-					<input id="modalOcenaOcena"></input></br>
-
-					<label for="modalOcenaWaga">Waga:</label>
-					<input id="modalOcenaWaga"></input></br>
-
-					<label for="modalOcenaKomentarz">Komentarz:</label>
-					<input id="modalOcenaKomentarz"></input></br>
-
-                    <button id="modalOcenaEdytuj" onclick="edytuj_zatwierdz()" >Edytuj ocenę</button>
-                    <button id="modalOcenaDodaj" onclick="nowe_zatwierdz()">Dodaj ocenę</button>
-					<button style="color:red" id="modalOcenaUsun" onclick="usun()">Usuń ocenę</button>
-				</div>
-			</div>
 		</div>
 
 		<div id="modalOcenaKoncowa" class="modal">
@@ -110,16 +85,18 @@
 				</div>
 				<div class="modal-body">
                     <label for="modalOcenaKoncowaOcena">Ocena:</label>
-					<input id="modalOcenaKoncowaOcena"></input></br>
+					<input style="color:black" disabled id="modalOcenaKoncowaOcena"></input></br>
 
 					<label for="modalOcenaKoncowaZaakceptowana">Zaakceptowana:</label>
-					<input disabled id="modalOcenaKoncowaZaakceptowana"></input></br>
+					<input style="color:black" disabled id="modalOcenaKoncowaZaakceptowana"></input></br>
 
 					<label for="modalOcenaKoncowaZaakceptowanaData">Data akceptacji:</label>
-					<input disabled id="modalOcenaKoncowaZaakceptowanaData"></input></br>
+					<input style="color:black" disabled id="modalOcenaKoncowaZaakceptowanaData"></input></br>
 
-					<button id="modalOcenaKoncowaDodaj" onclick="koncowa_nowe_zatwierdz()">Dodaj ocenę końcową</button>
-                    <button id="modalOcenaKoncowaEdytuj" onclick="koncowa_edytuj_zatwierdz()" >Edytuj ocenę końcową</button>
+                    <label for="modalOcenaKoncowaFeedback">Feedback dotyczący kursu:</label>
+                    <textarea id="modalOcenaKoncowaFeedback"></textarea>
+
+                    <button id="modalOcenaKoncowaAkceptuj" onclick="koncowa_akceptuj()" >Akceptuj ocenę końcową</button>
 				</div>
 			</div>
 		</div>
@@ -146,110 +123,6 @@
 				$("#modalOcenaNazwaUzytkownika").html(nazwaUzytkownika);
 			});
 
-			function nowe_zatwierdz(){
-				let ocena = parseFloat($("#modalOcenaOcena").val());
-				let waga = parseFloat($("#modalOcenaWaga").val());
-				let komentarz = $("#modalOcenaKomentarz").val();
-
-				data_json = {
-					"id_grupa": parseInt(getUrlParameter('id_grupa')),
-					"id_uczestnik": parseInt(getUrlParameter('id_uczestnik')),
-					"ocena": ocena,
-					"waga" : waga,
-					"komentarz" : komentarz,
-					"data" : -1
-				}
-
-				$.ajax({
-					url: '/api/ocena/nowa',
-					type: "POST",
-					data: JSON.stringify(data_json),
-					contentType: "application/json; charset=UTF-8",
-					success: function (data) {				
-						if(data.status != 200){
-							alert("Wystąpił błąd!");
-						} else if (data.status == 200){
-							window.location.reload(true);
-						}
-					}
-				});
-			}
-
-			function modyfikuj(id, ocena, waga, komentarz){
-
-				$("#modalOcenaTytul").html("Edycja oceny cząstkowej od ID: <span id='modalOcenaId'></span>");
-				$("#modalOcenaId").html(id);
-				$("#modalOcenaOcena").val(ocena);
-				$("#modalOcenaWaga").val(waga);
-				$("#modalOcenaKomentarz").val(komentarz);
-				
-				$("#modalOcenaDodaj").hide();
-				$("#modalOcenaUsun").show();
-				$("#modalOcenaEdytuj").show();
-				$("#modalOcena").show();
-			}
-
-			function edytuj_zatwierdz(){
-				data_json = {
-					"id": parseInt($("#modalOcenaId").html()),
-					"id_grupa": parseInt(getUrlParameter('id_grupa')),
-					"id_uczestnik": parseInt(getUrlParameter('id_uczestnik')),
-					"ocena": parseFloat($("#modalOcenaOcena").val()),
-					"waga" : parseFloat($("#modalOcenaWaga").val()),
-					"komentarz" : $("#modalOcenaKomentarz").val(),
-					"data" : -1
-				}
-				
-				$.ajax({
-					url: '/api/ocena/aktualizuj',
-					type: "POST",
-					data: JSON.stringify(data_json),
-					contentType: "application/json; charset=UTF-8",
-					success: function (data) {
-						if(data.status != 200){
-							alert("Wystąpił błąd!");
-						} else if (data.status == 200){
-							window.location.reload(true);
-						}
-					}
-				});
-			}
-
-			function usun(){
-                let conf = confirm("Czy napewno chcesz usunąć wybraną ocenę?")
-
-                if(conf){
-
-					id = $("#modalOcenaId").html();
-					if (id < 1){
-						alert("Błąd");
-					} else {
-						data_json = {
-							"id" : parseInt(id)
-						}
-
-						$.ajax({
-							url: 'api/ocena/usun',
-							type: "POST",
-							data: JSON.stringify(data_json),
-							contentType: "application/json; charset=UTF-8",
-							success: function (data) {							
-								if(data.status != 200){
-									if(data.status == 401){
-										alert("Brak uprawnień.");
-										document.location.href = "/";
-									} else {
-										alert("Wystąpił błąd");
-									}
-								} else if (data.status == 200){
-									window.location.reload(true);
-								}
-							}
-						});
-					}
-                }
-            }
-
 			$("#modalOcenaKoncowaEdytuj").hide();
             $("#modalOcenaKoncowaDodaj").hide();
 
@@ -262,7 +135,8 @@
 
 			$("#ocena-koncowa").click(function() {
 				$("#modalOcenaKoncowa").show();
-                $("#modalOcenaKoncowaDodaj").show();
+                $("#modalOcenaKoncowaAkceptuj").show();
+                $("#modalOcenaKoncowaFeedback").show();
 
 				$.ajax({
 					url: '/api/ocena/koncowa',
@@ -279,7 +153,7 @@
 							if ( data.result.length > 0 ){
 								ocena_koncowa = data.result[0]['ocena'];
 							}
-							$("#ocenaKoncowa").html(ocena_koncowa);
+							//$("#ocenaKoncowa").html(ocena_koncowa);
 							if (ocena_koncowa != "-"){
 								$("#modalOcenaKoncowaEdytuj").prop("disabled", false);
 								let zaakceptowana = "Nie";
@@ -293,20 +167,17 @@
 									if(date.getMinutes() < 10){ minutes_append = 0; } else { minutes_append = ""; }
 									if(date.getSeconds() < 10){ seconds_append = 0; } else { seconds_append = ""; }
 									zaakceptowana_data = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate()+" "+hours_append+date.getHours()+":"+minutes_append+date.getMinutes()+":"+seconds_append+date.getSeconds();
-									$("#modalOcenaKoncowaEdytuj").prop("disabled", true);
+                                    $("#modalOcenaKoncowaFeedback").hide();
+                                    $('label[for="modalOcenaKoncowaFeedback"]').hide();
+                                    $("#modalOcenaKoncowaAkceptuj").hide();
 								}
 
 								$("#modalOcenaKoncowaId").html(data.result[0]['id']);
-
-								$("#modalOcenaKoncowaDodaj").hide();
-								$("#modalOcenaKoncowaEdytuj").show();
 								$("#modalOcenaKoncowaOcena").val(ocena_koncowa);
 								$("#modalOcenaKoncowaData").val(data.result[0]['data_ocena']);
 								$("#modalOcenaKoncowaZaakceptowana").val(zaakceptowana);
 								$("#modalOcenaKoncowaZaakceptowanaData").val(zaakceptowana_data);
 							} else {
-								$("#modalOcenaKoncowaEdytuj").hide();
-								$("#modalOcenaKoncowaDodaj").show();
 								$("#modalOcenaKoncowaZaakceptowana").hide();
 								$('label[for="modalOcenaKoncowaZaakceptowana"]').hide();
 								$("#modalOcenaKoncowaZaakceptowanaData").hide();
@@ -317,107 +188,6 @@
 						}
 					}
 				})
-			});
-
-			function koncowa_nowe_zatwierdz(){
-
-				let ocena = parseInt($("#modalOcenaKoncowaOcena").val());
-
-				data_json_koncowa = {
-					"id_grupa": parseInt(getUrlParameter('id_grupa')),
-					"id_uczestnik": parseInt(getUrlParameter('id_uczestnik')),
-					"ocena": ocena,
-					"zaakceptowana" : false,
-					"data_zaakceptowana" : -1,
-					"data_ocena" : -1
-				}
-
-				$.ajax({
-					url: '/api/ocena/koncowa/nowa',
-					type: "POST",
-					data: JSON.stringify(data_json_koncowa),
-					contentType: "application/json; charset=UTF-8",
-					success: function (data) {
-						if(data.status != 200){
-							alert("Wystąpił błąd!");
-						} else if (data.status == 200){
-							window.location.reload(true);
-						}
-					}
-				});
-
-			}
-
-			function koncowa_edytuj_zatwierdz(){
-
-				let id = parseInt($("#modalOcenaKoncowaId").html())
-				let ocena = parseFloat($("#modalOcenaKoncowaOcena").val());
-
-				data_json_koncowa = {
-					"id" : id,
-					"id_grupa": parseInt(getUrlParameter('id_grupa')),
-					"id_uczestnik": parseInt(getUrlParameter('id_uczestnik')),
-					"ocena": ocena,
-					"zaakceptowana" : false,
-					"data_zaakceptowana" : -1,
-					"data_ocena" : -1
-				}
-
-				$.ajax({
-					url: '/api/ocena/koncowa/aktualizuj',
-					type: "POST",
-					data: JSON.stringify(data_json_koncowa),
-					contentType: "application/json; charset=UTF-8",
-					success: function (data) {
-						if(data.status != 200){
-							alert("Wystąpił błąd!");
-						} else if (data.status == 200){
-							window.location.reload(true);
-						}
-					}
-				});
-			}
-
-			data_json_uczestnik = {
-				"id" : parseInt(getUrlParameter('id_uczestnik'))
-			}
-
-			var nazwaUzytkownika = "";
-
-			jQuery.when(
-					$.ajax({
-					url: '/api/uczestnik',
-					type: "POST",
-					data: JSON.stringify(data_json_uczestnik),
-					contentType: "application/json; charset=UTF-8",
-                	})
-				).done( function(data) {
-					if(data.status != 200){
-						if(data.status == 401){
-							wyloguj();
-						} else {
-							alert("Wystąpił błąd!");
-						}
-					} else if (data.status == 200){				
-						data_json_uzytkownik = {
-							"id" : data.result
-						}
-						$.ajax({
-							url: '/api/uzytkownik/publiczne',
-							type: "POST",
-							data: JSON.stringify(data_json_uzytkownik),
-							contentType: "application/json; charset=UTF-8",
-							success: function (data) {
-								if(data.status != 200){
-									alert("Wystąpił błąd!");
-								} else if (data.status == 200){
-									//console.log(data.result['imie']);
-									nazwaUzytkownika = data.result['imie']+" "+data.result['nazwisko'];
-									$("#uzytkownik").html(nazwaUzytkownika);
-								}
-							}
-						});
-					}
 			});
 
 			data_json_grupa = {
@@ -431,7 +201,11 @@
 				contentType: "application/json; charset=UTF-8",
 				success: function (data) {
 					if(data.status != 200){
-						alert("Wystąpił błąd!");
+						if (data.status == 401){
+							wyloguj();
+						} else {
+                            alert("Wystąpił błąd");
+                        }
 					} else if (data.status == 200){
 						if (data.result.length > 0) {
 						}
@@ -452,12 +226,13 @@
 				type: "POST",
 				data: JSON.stringify(data_json_ocena_uczestnik),
 				contentType: "application/json; charset=UTF-8",
-				success: function (data) {
-					//console.log(data.status);
-					//console.log(data.result);
-					
+				success: function (data) {				
 					if(data.status != 200){
-						alert("Wystąpił błąd!");
+						if (data.status == 401){
+							wyloguj();
+						} else {
+                            alert("Wystąpił błąd");
+                        }
 					} else if (data.status == 200){
 						if (data.result.length > 0) {
 						}
@@ -477,7 +252,6 @@
 									"<td>"+data.result[i]['waga']+"</td>"+
 									"<td>"+data.result[i]['komentarz']+"</td>"+
 									"<td>"+datestring+"</td>"+
-									"<td><button onclick=\"modyfikuj("+data.result[i]['id']+",\'"+data.result[i]['ocena']+"\',\'"+data.result[i]['waga']+"\',\'"+data.result[i]['komentarz']+"\')\">MODYFIKUJ</button></td>"+
 								"</tr>"
 							);
 						}
@@ -494,16 +268,23 @@
 					if (data.status != 200){
 						if (data.status == 401){
 							wyloguj();
-						}
+						} else {
+                            alert("Wystąpił błąd");
+                        }
 					} else if (data.status == 200){
 						let ocena_koncowa = "-";
 						if ( data.result.length > 0 ){
 							ocena_koncowa = data.result[0]['ocena'];
+                            if (data.result[0]['zaakceptowana'] == 0){
+                                ocena_koncowa += " <span style='color:red'><b>(niezaakceptowana)</b></span>";
+                            }
 						}
 						$("#ocenaKoncowa").append(ocena_koncowa);
 						if (ocena_koncowa != "-"){
 							$("#nowa-ocena-koncowa").hide()
-						}
+						} else if (ocena_koncowa == "-"){
+                            $("#ocena-koncowa").hide();
+                        }
 					}
 				}
 			})
@@ -517,7 +298,9 @@
 					if (data.status != 200){
 						if (data.status == 401){
 							wyloguj();
-						}
+						} else {
+                            $("#srednia").html("<span style='color:red'><b>brak ocen</b></span>");
+                        }
 					} else if (data.status == 200){
 						let srednia = "-";
 						if ( data.result != -1.0 ){
@@ -527,6 +310,36 @@
 					}
 				}
 			})
+
+            function koncowa_akceptuj(){
+                let feedback = $("#modalOcenaKoncowaFeedback");
+
+                let json_akceptuj_data = {
+                    "id" : parseInt($("#modalOcenaKoncowaId").html())
+                }
+
+                let conf = confirm("Czy napewno chcesz zaakceptować ocenę? Po akceptacji zmiana oceny nie będzie możliwa.");
+                
+                if(conf){
+                    $.ajax({
+                        url: '/api/ocena/koncowa/akceptuj',
+                        type: "POST",
+                        data: JSON.stringify(json_akceptuj_data),
+                        contentType: "application/json; charset=UTF-8",
+                        success: function (data) {
+                            if (data.status != 200){
+                                if (data.status == 401){
+                                    wyloguj();
+                                } else {
+                                    alert("Wystąpił błąd");
+                                }
+                            } else if (data.status == 200){
+                                window.location.reload(true);
+                            }
+                        }
+                    })
+                }
+            }
 
 		</script>
 		<script src="/js/nav.js"></script>

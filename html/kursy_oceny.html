@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="pl">
+	<head>
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/main.js"></script>
+		<script>
+			setTimeout(function(){$('body').animate({opacity:'1'},500)},400);
+			if (getCookie("token") == null) {
+				document.location.href = "/logowanie.html";
+				document.body.innerHTML = "";
+				window.stop();
+			} else {
+				var userdata = {
+					"id" : parseInt(getCookie("id")),
+					"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
+				}
+
+				if (userdata.id_uprawnien < 1){ // minimalny poziom uprawnień (zabezpieczenie api osobno)
+					document.location.href = "/";
+					document.body.innerHTML = "";
+					window.stop();
+				}
+			}
+		</script>
+		<meta charset="utf-8">
+		<title>System obsługi studentów - oceny z kursów</title>
+		<meta name="description" content="System Obsługi Studentów">
+		<link rel="stylesheet" href="/css/navbar.css">
+		<link rel="stylesheet" href="/css/main.css">
+		<link rel="stylesheet" href="/css/modal.css">
+		<style>
+            #kursy td {
+                padding: 5px;
+                border-bottom: 1px solid rgb(0, 110, 255);
+            }
+			#kursy td:not(:nth-last-child(1)) {
+				border-right: 1px solid rgb(0, 110, 255);
+			}
+            #kursy {
+				padding: 20px;
+				border-radius: 10px;
+				background-color: rgb(0, 73, 168, 0.6);
+			}
+			/*
+            table#kursy td:nth-child(1) { // id_zapisy
+                display: none;
+            }
+			*/
+		</style>
+	</head>
+	<body>
+		<div id="navbar" class="navbar"></div>
+		<div class="content">
+			<div class="header">
+				<h2>Oceny z kursów</h2>
+			</div>
+
+            <button onclick="window.history.back();">Wróć</button></br></br>
+
+            <b><p style="color:red">[Niesprawne] Semestr:
+                <select id="select-zapisy">
+                </select>
+            </p></b>
+
+            <table id="kursy">
+                <tr>
+					<td></td>
+                    <td><b>Kurs</b></td>
+					<td><b>Kod grupy</b></td>
+                    <td><b>Termin zajęć</b></td>
+                    <td><b>Sala</b></td>
+                    <td><b>Ocena końcowa</b></td>
+					<td><b>Szczegóły</b></td>
+                </tr>
+            </table>
+		</div>
+
+		<script>
+			$.ajax({
+				url: '/api/zapisy',
+				type: "POST",
+				contentType: "application/json; charset=UTF-8",
+				success: function (data) {
+					console.log(data.status);
+					console.log(data.result);
+					
+					if(data.status != 200){
+						console.log("Wystąpił błąd!");
+					} else if (data.status == 200){
+						if (data.result.length > 0) {
+						}
+						for(let i = 0; i < data.result.length; i++){
+							$("#select-zapisy").append(
+								"<option value='"+data.result[i]['id']+"'>"+data.result[i]['nazwa']+"</option>"
+							);
+							$("#modalGrupyIdZapisy").append(
+								"<option value='"+data.result[i]['id']+"'>"+data.result[i]['nazwa']+"</option>"
+							);
+						}
+					}
+				}
+			});
+
+			data_uzytkownik_json = {
+				"id_uczestnik" : parseInt(userdata.id)
+			}
+
+			jQuery.when(
+                $.ajax({
+                    url: '/api/uczestnik/grupy',
+                    type: "POST",
+                    data: JSON.stringify(data_uzytkownik_json),
+                    accept: "*/*",
+                    contentType: "application/json; charset=UTF-8",
+                })
+			).done( function(data) {
+				if (data.status != 200){
+					if (data.status == 401){
+						wyloguj();
+					} else {
+						alert("Wystąpił błąd.");
+					}
+				} else if (data.status == 200){
+					if (data.result.length > 0) {
+						for(let i = 0; i < data.result.length; i++){
+							data_grupa_json = {
+								"id" : parseInt(data.result[i]['id_grupa'])
+							}
+							jQuery.when(
+								$.ajax({
+									url: '/api/grupa',
+									type: "POST",
+									data: JSON.stringify(data_grupa_json),
+									accept: "*/*",
+									contentType: "application/json; charset=UTF-8",
+								})
+							).done( function(data2) {
+								if (data2.status != 200){
+									if (data2.status == 401){
+										wyloguj();
+									} else {
+										alert("Wystąpił błąd.");
+									}
+								} else if (data2.status == 200){
+									data_kurs_json = {
+										"id" : parseInt(data2.result[0]['id_kursu'])
+									}
+									jQuery.when(
+										$.ajax({
+											url: '/api/kurs',
+											type: "POST",
+											data: JSON.stringify(data_kurs_json),
+											contentType: "application/json; charset=UTF-8",
+										})
+									).done( function(data3) {
+										if(data3.status != 200){
+											if (data3.status == 401){
+												wyloguj();
+											} else {
+												alert("Wystąpił błąd.");
+											}
+										} else if (data3.status == 200){
+											let data_json_koncowa = {
+												"id_grupa" : parseInt(data2.result[0]['id']),
+												"id_uczestnik" : parseInt(data.result[i]["id"])
+											}
+											console.log(data_json_koncowa);
+											$.ajax({
+												url: '/api/ocena/koncowa',
+												type: "POST",
+												data: JSON.stringify(data_json_koncowa),
+												contentType: "application/json; charset=UTF-8",
+												success: function (data4) {											
+													if(data4.status != 200){
+														if (data4.status == 401){
+															wyloguj();
+														} else {
+															alert("Wystąpił błąd.");
+														}
+													} else if (data4.status == 200){
+														let ocena_koncowa = "-";
+														if ( data4.result.length > 0 ){
+															ocena_koncowa = data4.result[0]['ocena'];
+															if (data4.result[0]['zaakceptowana'] == 0){
+																ocena_koncowa += " <span style='color:red'><b>(niezaakceptowana)</b></span>";
+															}
+														}
+														console.log(data4.result);
+														$("#kursy").append(
+															"<tr>"+
+																"<td>"+data2.result[0]['id_zapisy']+"</td>"+
+																"<td>"+data3.result[0]['nazwa']+"</td>"+
+																"<td>"+data2.result[0]['kod_grupy']+"</td>"+
+																"<td>"+data2.result[0]['termin']+"</td>"+
+																"<td>"+data2.result[0]['sala']+"</td>"+
+																"<td>"+ocena_koncowa+"</td>"+
+																"<td><button onclick='szczegoly("+parseInt(data.result[i]['id_grupa'])+","+parseInt(data.result[i]['id'])+")'>Szczegóły</button></td>"+
+															"</tr>"
+														);
+													}
+												}
+											});
+											
+											
+										}
+									});
+								}
+							});
+						}
+					}
+				}
+			});
+
+			function szczegoly(id_grupa, id_uczestnik){
+				window.location.href = "/kursy_oceny_uczestnik.html?id_grupa="+id_grupa+"&id_uczestnik="+id_uczestnik;
+			}
+
+		</script>
+		<script src="/js/nav.js"></script>
+	</body>
+</html>

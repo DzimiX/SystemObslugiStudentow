@@ -97,7 +97,7 @@ pub fn uczestnicy_grupa(conn: DbConn, uczestnik: Json<UczestnikGrupaId>, cookies
 }
 
 #[post("/uczestnik", format = "application/json", data = "<uczestnik>" )]
-pub fn uczestnik_grupy(conn: DbConn, uczestnik: Json<UczestnikId>, cookies : Cookies) -> Json<Value> {
+pub fn uczestnik_id(conn: DbConn, uczestnik: Json<UczestnikId>, cookies : Cookies) -> Json<Value> {
 
     Json(json!({
         "status" : 200,
@@ -105,14 +105,21 @@ pub fn uczestnik_grupy(conn: DbConn, uczestnik: Json<UczestnikId>, cookies : Coo
     }))
 }
 
-//get_grupy_prowadzacy
-
 #[post("/uczestnik/prowadzone", format = "application/json", data = "<uczestnik>" )]
 pub fn uczestnik_prowadzone(conn: DbConn, uczestnik: Json<UczestnikIdUzytkownik>, cookies : Cookies) -> Json<Value> {
 
     Json(json!({
         "status" : 200,
         "result" : Uczestnik::get_grupy_prowadzacy(uczestnik.into_inner(),&conn),
+    }))
+}
+
+#[post("/uczestnik/grupy", format = "application/json", data = "<uczestnik>" )]
+pub fn uczestnik_grupy(conn: DbConn, uczestnik: Json<UczestnikIdUzytkownik>, cookies : Cookies) -> Json<Value> {
+
+    Json(json!({
+        "status" : 200,
+        "result" : Uczestnik::get_grupy_uczestnik(uczestnik.into_inner(),&conn),
     }))
 }
 
