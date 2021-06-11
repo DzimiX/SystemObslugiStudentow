@@ -194,7 +194,7 @@
 																"<td>"+data2.result[0]['termin']+"</td>"+
 																"<td>"+data2.result[0]['sala']+"</td>"+
 																"<td>"+ocena_koncowa+"</td>"+
-																"<td><button onclick='szczegoly("+data2.result[0]['id']+")'>Szczegóły</button></td>"+
+																"<td><button onclick='szczegoly("+parseInt(data.result[i]['id_grupa'])+","+parseInt(data.result[i]['id'])+")'>Szczegóły</button></td>"+
 															"</tr>"
 														);
 													}
@@ -210,6 +210,10 @@
 					}
 				}
 			});
+
+			function szczegoly(id_grupa, id_uczestnik){
+				window.location.href = "/kursy_oceny_uczestnik.html?id_grupa="+id_grupa+"&id_uczestnik="+id_uczestnik;
+			}
 
 		</script>
 		<script src="/js/nav.js"></script>
