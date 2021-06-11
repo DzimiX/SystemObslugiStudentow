@@ -388,20 +388,29 @@ INSERT INTO `kursy` (`id`, `kod`, `nazwa`, `ects`) VALUES
 INSERT INTO `kursy_grupy` (`id`, `id_kursu`, `id_zapisy`, `kod_grupy`, `termin`, `sala`) VALUES
   (1, 2, 2, 'AM1-02a', 'PN 13:15-15:00', 'Sala wirtualna'),
   (2, 2, 2, 'AM1-02b', 'PN 15:15-17:55', 'Sala wirtualna'),
-  (3, 1, 2, 'AM1-01a', 'PN 9:00-10:45', 'Sala wirtualna');
+  (3, 1, 2, 'AM1-01a', 'PN 9:15-11:00', 'Sala wirtualna'),
+  (4, 1, 2, 'Test1a', 'PN 11:15-13:00', 'Sala wirtualna'),
+  (5, 1, 2, 'Test1b', 'PN 13:15-15:00', 'Sala wirtualna'),
+  (6, 1, 2, 'Test1c', 'PN 15:15-17:00', 'Sala wirtualna');
 
 INSERT INTO `kursy_grupy_uczestnicy` (`id`, `id_grupa`, `id_uczestnik`, `czy_prowadzacy`) VALUES
   (1, 3, 3, 1),
   (2, 3, 5, 0),
   (3, 1, 1, 1),
   (4, 2, 1, 1),
-  (5, 3, 1, 1);
+  (5, 3, 1, 1),
+  (6, 4, 1, 1),
+  (7, 5, 1, 0),
+  (8, 6, 1, 0);
 
 INSERT INTO `kursy_grupy_oceny` (`id`, `id_grupa`, `id_uczestnik`, `ocena`, `waga`, `komentarz`, `data`) VALUES
-  (1, 3, 2, 3.5, 1, 'kartkówka', 1622485561);
+  (1, 3, 2, 3.5, 1, 'kartkówka', 1622485561),
+  (2, 5, 7, 3.5, 1, 'kartkówka 1', 1622485461),
+  (3, 5, 7, 4.5, 2, 'kartkówka 2', 1622485661);
 
 INSERT INTO `kursy_grupy_ocena_koncowa` (`id`, `id_grupa`, `id_uczestnik`, `ocena`, `zaakceptowana`, `data_zaakceptowana`, `data_ocena`) VALUES
-  (1, 3, 2, 4, 0, 0, 1622485675);
+  (1, 3, 2, 4, 0, 0, 1622485675),
+  (2, 5, 7, 4, 0, 0, 1622485875);
 
 INSERT INTO `sprawy` (`id`, `id_uzytkownik`, `temat`, `data`, `status`, `decyzja`) VALUES
   (1, 4, 'Stypendium Rektora', 1621357963, 'Rozpatrzona', 'Zgoda'),

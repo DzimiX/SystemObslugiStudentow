@@ -268,4 +268,12 @@ impl Uczestnik {
             .expect("Problem z wczytaniem uczestników.")
     }
 
+    pub fn get_grupy_uczestnik(uczestnik : UczestnikIdUzytkownik, conn: &MysqlConnection) -> Vec<Uczestnik> {
+        kursy_grupy_uczestnicy::table
+            .filter(kursy_grupy_uczestnicy::id_uczestnik.eq(uczestnik.id_uczestnik))
+            .filter(kursy_grupy_uczestnicy::czy_prowadzacy.eq(false))
+            .load::<Uczestnik>(conn)
+            .expect("Problem z wczytaniem uczestników.")
+    }
+
 }

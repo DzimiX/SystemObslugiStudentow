@@ -114,13 +114,14 @@ fn rocket() {
             router_groups::grupy_aktualizuj,
             router_groups::grupy_nowe,
 
-            router_groups::uczestnik_grupy,
+            router_groups::uczestnik_id,
             router_groups::uczestnicy_grupa,
             router_groups::uczestnicy_nowe,
             router_groups::uczestnicy_aktualizuj,
             router_groups::uczestnik_usun,
             router_groups::uczestnik_grupa_usun,
             router_groups::uczestnik_prowadzone,
+            router_groups::uczestnik_grupy,
 
             router_scores::ocena_grupa_uczestnik,
             router_scores::ocena_nowa,
