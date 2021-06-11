@@ -1,4 +1,4 @@
-userdata.id_uprawnien = 3; // nadpisanie widoku
+userdata.id_uprawnien = 2; // nadpisanie widoku
 $.get("navbar.html", function(data){
     $("#navbar").html(data);
    
@@ -12,7 +12,7 @@ $.get("navbar.html", function(data){
             $("#dropdown-uzytkownicy").hide();
             $("#menu-zarzadzanie-zapisy").hide();
             $("#menu-rekrutacja").show();
-            $("#menu-zapisy").hide();
+            $("#menu-zapisy").show();
             $("#menu-zarzadzanie-kursy").hide();
             $("#dropdown-kursy").hide();
             $("#menu-kursy-prowadzacy").hide();
@@ -28,11 +28,11 @@ $.get("navbar.html", function(data){
             $("#dropdown-uzytkownicy").hide();
             $("#menu-zarzadzanie-zapisy").hide();
             $("#menu-rekrutacja").hide();
-            $("#menu-zapisy").show();
+            $("#menu-zapisy").hide();
             $("#menu-zarzadzanie-kursy").hide();
             $("#dropdown-kursy").show();
             $("#menu-kursy-prowadzacy").hide();
-            $("#menu-indeks").hide();
+            $("#menu-indeks").show();
             $("#dropdown-sprawy").show();
             $("#dropdown-sprawy-pracownik").hide();
             $("#dropdown-sprawyz").hide();  
