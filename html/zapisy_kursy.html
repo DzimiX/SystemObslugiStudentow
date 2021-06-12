@@ -57,7 +57,8 @@
             <table id="zapisy">
                 <tr>
                     <td><b>Nazwa kursu</b></td>
-                    <td></td>
+                    <td><b>ECTS</b></td>
+					<td></td>
                 </tr>
             </table>
 		</div>
@@ -113,14 +114,44 @@
 						alert("Wystąpił błąd.");
 					}
 				} else if (data.status == 200){
-					$("#zapisy").append(
-                                    "<tr>"+
-                                        "<td>"+data.result[i]['nazwa']+"</td>"+
-                                        "<td><button onclick='zapisy("+data.result[i]['id']+")'>Otwórz zapisy</button></td>"+
-                                    "</tr>"
-                                );
+					for(let i = 0; i < data.result.length; i++){
+						data_json_kurs_id = {
+							"id" : parseInt(data.result[i]['id_kursu'])
+						}
+						
+						$.ajax({
+							url: '/api/kurs',
+							type: "POST",
+							data: JSON.stringify(data_json_kurs_id),
+							contentType: "application/json; charset=UTF-8",
+							success: function (data2) {
+								if(data2.status != 200){
+									if (data2.status == 401){
+										wyloguj();
+									} else {
+										alert("Wystąpił błąd.");
+									}
+								} else if (data2.status == 200){
+									if(data2.result.length > 0){
+										$("#zapisy").append(
+											"<tr>"+
+												"<td>"+data2.result[0]['nazwa']+"</td>"+
+												"<td>"+data2.result[0]['ects']+"</td>"+
+												"<td><button onclick='grupy("+data2.result[0]['id']+")''>Dostępne grupy</button></td>"+
+											"</tr>"
+										);
+									}
+								}
+							}
+						});
+					}
 				}
 			});
+
+			function grupy(id_kursu){
+				let id_zapisy = parseInt(getUrlParameter('id_zapisy'));
+				window.location.href = "/zapisy_kursy_grupy.html?id_zapisy="+id_zapisy+"&id_kursu="+id_kursu;
+			}
 
 		</script>
 		<script src="/js/nav.js"></script>
