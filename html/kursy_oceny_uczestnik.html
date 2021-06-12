@@ -308,7 +308,7 @@
 			})
 
             function koncowa_akceptuj(){
-                let feedback = $("#modalOcenaKoncowaFeedback");
+                let feedback = $("#modalOcenaKoncowaFeedback").val();
 
                 let json_akceptuj_data = {
                     "id" : parseInt($("#modalOcenaKoncowaId").html())
@@ -317,23 +317,45 @@
                 let conf = confirm("Czy napewno chcesz zaakceptować ocenę? Po akceptacji zmiana oceny nie będzie możliwa.");
                 
                 if(conf){
-                    $.ajax({
-                        url: '/api/ocena/koncowa/akceptuj',
-                        type: "POST",
-                        data: JSON.stringify(json_akceptuj_data),
-                        contentType: "application/json; charset=UTF-8",
-                        success: function (data) {
-                            if (data.status != 200){
-                                if (data.status == 401){
-                                    wyloguj();
-                                } else {
-                                    alert("Wystąpił błąd");
-                                }
-                            } else if (data.status == 200){
-                                window.location.reload(true);
-                            }
-                        }
-                    })
+					json_feedback = {
+						"id_ocena" : parseInt($("#modalOcenaKoncowaId").html()),
+						"feedback" : feedback
+					}
+					jQuery.when(
+						$.ajax({
+							url: '/api/ocena/koncowa/feedback',
+							type: "POST",
+							data: JSON.stringify(data_json_uczestnicy),
+							accept: "*/*",
+							contentType: "application/json; charset=UTF-8",
+						})
+					).done( function(data) {
+						if (data.status != 200){
+							if (data.status == 401){
+								wyloguj();
+							} else {
+								alert("Wystąpił błąd.");
+							}
+						} else if (data.status == 200){
+							$.ajax({
+								url: '/api/ocena/koncowa/akceptuj',
+								type: "POST",
+								data: JSON.stringify(json_akceptuj_data),
+								contentType: "application/json; charset=UTF-8",
+								success: function (data2) {
+									if (data2.status != 200){
+										if (data2.status == 401){
+											wyloguj();
+										} else {
+											alert("Wystąpił błąd");
+										}
+									} else if (data2.status == 200){
+										window.location.reload(true);
+									}
+								}
+							})
+						}
+					});
                 }
             }
 

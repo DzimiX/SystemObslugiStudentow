@@ -37,6 +37,7 @@ impl Sprawy {
             .execute(conn)
             .is_ok()
     }
+
     pub fn get(id_uzytkownik: i32, conn: &MysqlConnection) -> Vec<Sprawy> {
         sprawy::table
             .find(id_uzytkownik)
@@ -44,13 +45,13 @@ impl Sprawy {
             .expect("Problem z wczytaniem spraw.")
     }
 
-
     pub fn all(conn: &MysqlConnection) -> Vec<Sprawy> {
         sprawy::table
             .order(sprawy::id.desc())
             .load::<Sprawy>(conn)
             .expect("Problem z wczytaniem spraw.")
     }
+
     pub fn delete(id_uzytkownik: i32, conn: &MysqlConnection) -> bool {
         diesel::delete(sprawy::table
             .filter(sprawy::id_uzytkownik.eq(id_uzytkownik))
@@ -60,6 +61,7 @@ impl Sprawy {
     
         return true
     }
+    
     pub fn update(sprawy: Sprawy, conn: &MysqlConnection) -> bool {
        
         let id_uzytkownik = sprawy.id_uzytkownik;

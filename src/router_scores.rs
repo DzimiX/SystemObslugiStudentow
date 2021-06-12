@@ -8,6 +8,7 @@ use super::OCENY;
 
 use crate::models_scores::{Ocena, OcenaNowa, OcenaId, OcenaGrupaUczestnikId};
 use crate::models_scores::{OcenaKoncowa, OcenaKoncowaNowa, OcenaKoncowaId, OcenaKoncowaUczestnikId, OcenaKoncowaGrupaUczestnikId};
+use crate::models_scores::{Ankieta, AnkietaNowa, AnkietaIdGrupa};
 
 #[post("/ocena", format = "application/json", data = "<uczestnik>")]
 pub fn ocena_grupa_uczestnik(conn: DbConn, uczestnik : Json<OcenaGrupaUczestnikId>, cookies : Cookies) -> Json<Value> { 
@@ -124,6 +125,16 @@ pub fn ocena_koncowa_grupa_uczestnik(conn: DbConn, uczestnik : Json<OcenaKoncowa
     }))
 }
 
+#[post("/ocena/koncowa/id", format = "application/json", data = "<ocena>")]
+pub fn ocena_koncowa_id(conn: DbConn, ocena : Json<OcenaKoncowaId>, cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    Json(json!({
+        "status" : 200,
+        "result" : OcenaKoncowa::get_by_id(ocena.into_inner(),&conn),
+    }))
+}
+
 #[post("/ocena/koncowa/akceptuj", format = "application/json", data = "<ocena>")]
 pub fn ocena_koncowa_akceptuj(conn: DbConn, ocena : Json<OcenaKoncowaId>, cookies : Cookies) -> Json<Value> { 
     // niebezpieczne
@@ -188,5 +199,38 @@ pub fn ocena_koncowa_usun(conn: DbConn, ocena: Json<OcenaKoncowaId>, cookies : C
     Json(json!({
         "status" : status,
         "result" : "OK",
+    }))
+}
+
+// /api/ocena/koncowa/feedback
+
+#[post("/ocena/koncowa/feedback", format = "application/json", data = "<ankieta>")]
+pub fn ocena_koncowa_feedback(conn: DbConn, ankieta: Json<AnkietaNowa>, cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+    let tempId = OcenaKoncowaId {
+        id : ankieta.id_ocena_koncowa
+    };
+    let verify = OcenaKoncowa::get_by_id(tempId, &conn);
+
+    if verify.id == ankieta.id_ocena_koncowa && verify.id_grupa == ankieta.id_grupa {
+        Json(json!({
+            "status" : 200,
+            "result" : Ankieta::new_feedback(ankieta.into_inner(), &conn),
+        }))
+    } else {
+        Json(json!({
+            "status" : 400,
+            "result" : "OK",
+        }))
+    }
+}
+
+#[post("/ocena/koncowa/feedback/grupa", format = "application/json", data = "<grupa>")]
+pub fn ocena_koncowa_feedback_grupa(conn: DbConn, grupa: Json<AnkietaIdGrupa>, cookies : Cookies) -> Json<Value> { 
+    //niebezpiecznie
+
+    Json(json!({
+        "status" : 200,
+        "result" : Ankieta::group_feedback(grupa.into_inner(), &conn),
     }))
 }

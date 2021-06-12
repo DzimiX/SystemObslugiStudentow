@@ -134,11 +134,15 @@ fn rocket() {
             router_scores::ocena_uczestnik_srednia,
 
             router_scores::ocena_koncowa_akceptuj,
+            router_scores::ocena_koncowa_id,
             router_scores::ocena_koncowa_grupa_uczestnik,
             router_scores::ocena_koncowa_uczestnik,
             router_scores::ocena_koncowa_nowa,
             router_scores::ocena_koncowa_aktualizuj,
             router_scores::ocena_koncowa_usun,
+
+            router_scores::ocena_koncowa_feedback,
+            router_scores::ocena_koncowa_feedback_grupa,
 
             router_applications::sprawy,
             router_applications::sprawy_nowe,
