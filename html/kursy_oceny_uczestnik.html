@@ -154,7 +154,6 @@
 							if ( data.result.length > 0 ){
 								ocena_koncowa = data.result[0]['ocena'];
 							}
-							//$("#ocenaKoncowa").html(ocena_koncowa);
 							if (ocena_koncowa != "-"){
 								$("#modalOcenaKoncowaEdytuj").prop("disabled", false);
 								let zaakceptowana = "Nie";
@@ -208,8 +207,6 @@
                             alert("Wystąpił błąd");
                         }
 					} else if (data.status == 200){
-						if (data.result.length > 0) {
-						}
 						for(let i = 0; i < data.result.length; i++){
 							$("#grupa").append(""+data.result[i]['kod_grupy']+"");
 						}
@@ -221,7 +218,7 @@
 				"id_grupa" : parseInt(getUrlParameter('id_grupa')),
 				"id_uczestnik" : parseInt(getUrlParameter('id_uczestnik'))
 			}
-
+			
 			$.ajax({
 				url: '/api/ocena',
 				type: "POST",
@@ -235,8 +232,6 @@
                             alert("Wystąpił błąd");
                         }
 					} else if (data.status == 200){
-						if (data.result.length > 0) {
-						}
 						for(let i = 0; i < data.result.length; i++){
 							
 							let date = new Date(data.result[i]['data'] * 1000);

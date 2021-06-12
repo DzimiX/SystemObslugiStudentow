@@ -199,7 +199,7 @@
 
 								jQuery.when(
 									$.ajax({
-										url: '/api/uzytkownik',
+										url: '/api/uzytkownik/publiczne',
 										type: "POST",
 										data: JSON.stringify(data_json_id_uzytkownik),
 										contentType: "application/json; charset=UTF-8",
@@ -217,11 +217,11 @@
 										data: JSON.stringify(data_json_koncowa),
 										contentType: "application/json; charset=UTF-8",
 										success: function (data3) {
-											if (data2.status != 200){
-												if (data2.status == 401){
+											if (data3.status != 200){
+												if (data3.status == 401){
 													wyloguj();
 												}
-											} else if (data2.status == 200){
+											} else if (data3.status == 200){
 												id_user = data2.result['id'];
 												imie = data2.result['imie'];
 												nazwisko = data2.result['nazwisko'];

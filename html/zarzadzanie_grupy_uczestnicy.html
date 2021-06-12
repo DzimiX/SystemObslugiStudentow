@@ -202,13 +202,12 @@
 
 								jQuery.when(
 									$.ajax({
-										url: '/api/uzytkownik',
+										url: '/api/uzytkownik/publiczne',
 										type: "POST",
 										data: JSON.stringify(data_json_id_uzytkownik),
 										contentType: "application/json; charset=UTF-8",
 									})
 								).done( function(data2) {
-									
 									let data_json_koncowa = {
 										"id_grupa" : parseInt(id),
     									"id_uczestnik" : parseInt(data.result[i]["id"])
@@ -220,11 +219,11 @@
 										data: JSON.stringify(data_json_koncowa),
 										contentType: "application/json; charset=UTF-8",
 										success: function (data3) {
-											if (data2.status != 200){
-												if (data2.status == 401){
+											if (data3.status != 200){
+												if (data3.status == 401){
 													wyloguj();
 												}
-											} else if (data2.status == 200){
+											} else if (data3.status == 200){
 												id_user = data2.result['id'];
 												imie = data2.result['imie'];
 												nazwisko = data2.result['nazwisko'];
@@ -241,7 +240,7 @@
 												if ( data3.result.length > 0 ){
 													ocena_koncowa = data3.result[0]['ocena'];
 												}
-
+												
 												$("#kursy").append(
 													"<tr style='background-color:"+backgroundColor+"'>"+
 														"<td>"+imie+" "+nazwisko+"</td>"+
