@@ -201,3 +201,12 @@ pub fn uczestnik_grupa_usun(conn: DbConn, uczestnik: Json<UczestnikGrupaUczestni
         "result" : "OK",
     }))
 }
+
+#[post("/uczestnik/grupa/zapisy", format = "application/json", data = "<uczestnik>" )]
+pub fn uczestnik_grupa_zapisy(conn: DbConn, uczestnik: Json<UczestnikGrupaUczestnikId>, cookies : Cookies) -> Json<Value> {
+
+    Json(json!({
+        "status" : 200,
+        "result" : Uczestnik::get_id_from_grupa_uczestnik(uczestnik.into_inner(),&conn),
+    }))
+}

@@ -124,6 +124,7 @@ fn rocket() {
             router_groups::uczestnik_grupa_usun,
             router_groups::uczestnik_prowadzone,
             router_groups::uczestnik_grupy,
+            router_groups::uczestnik_grupa_zapisy,
 
             router_scores::ocena_grupa_uczestnik,
             router_scores::ocena_nowa,

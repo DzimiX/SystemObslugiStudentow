@@ -219,8 +219,7 @@ impl Uczestnik {
         diesel::delete(kursy_grupy_uczestnicy::table
             .filter(kursy_grupy_uczestnicy::id.eq(id))
         )
-        .execute(conn)
-        .expect("Błąd.");
+        .execute(conn);
     
         return true
     }
@@ -230,8 +229,7 @@ impl Uczestnik {
             .filter(kursy_grupy_uczestnicy::id_grupa.eq(uczestnik.id_grupa))
             .filter(kursy_grupy_uczestnicy::id_uczestnik.eq(uczestnik.id_uczestnik))
         )
-        .execute(conn)
-        .expect("Błąd.");
+        .execute(conn);
     
         return true
     }
