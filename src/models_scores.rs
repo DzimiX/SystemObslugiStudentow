@@ -6,6 +6,7 @@ use chrono::{Local};
 
 use crate::schema::kursy_grupy_oceny;
 use crate::schema::kursy_grupy_ocena_koncowa;
+use crate::schema::kursy_grupy_ankiety;
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
 #[table_name = "kursy_grupy_oceny"]
@@ -89,6 +90,35 @@ pub struct OcenaKoncowaUczestnikId {
 pub struct OcenaKoncowaGrupaUczestnikId {
     pub id_grupa: i32,
     pub id_uczestnik: i32,
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize, Clone)]
+#[table_name = "kursy_grupy_ankiety"]
+pub struct Ankieta {
+    pub id: i32,
+    pub id_grupa: i32,
+    pub id_ocena_koncowa: i32,
+    pub feedback: String
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize, Clone)]
+#[table_name = "kursy_grupy_ankiety"]
+pub struct AnkietaNowa {
+    pub id_grupa: i32,
+    pub id_ocena_koncowa: i32,
+    pub feedback: String
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize, Clone)]
+#[table_name = "kursy_grupy_ankiety"]
+pub struct AnkietaTekst {
+    pub feedback: String
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize, Clone)]
+#[table_name = "kursy_grupy_ankiety"]
+pub struct AnkietaIdGrupa {
+    pub id_grupa: i32
 }
 
 impl Ocena {
@@ -203,6 +233,29 @@ impl OcenaKoncowa {
             .is_ok()
     }
 
+    pub fn get_by_id(ocena: OcenaKoncowaId, conn: &MysqlConnection) -> OcenaKoncowa {
+        let data : Result<OcenaKoncowa,diesel::result::Error> = kursy_grupy_ocena_koncowa::table
+            .find(ocena.id)
+            .first(conn);
+
+        let error_data = OcenaKoncowa {
+            id: -1,
+            id_grupa : -1,
+            id_uczestnik : -1,
+            ocena : -1.0,
+            zaakceptowana : false,
+            data_zaakceptowana : -1,
+            data_ocena : -1
+        };
+
+        match data {
+            Ok(data) => {
+                return data;
+            },
+            Err(_error) => return error_data,
+        };
+    }
+
     pub fn update(ocena: OcenaKoncowa, conn: &MysqlConnection) -> bool {
         
         let zaakceptowana = OcenaKoncowa::get(ocena.id, &conn);
@@ -290,4 +343,22 @@ impl OcenaKoncowa {
             .load::<OcenaKoncowa>(conn)
             .expect("Problem z wczytaniem ocen.")
     }
+}
+
+impl Ankieta {
+
+    pub fn new_feedback(feedback: AnkietaNowa, conn: &MysqlConnection) -> bool {       
+        diesel::insert_into(kursy_grupy_ankiety::table)
+            .values(&feedback)
+            .execute(conn)
+            .is_ok()
+    }
+
+    pub fn group_feedback(group: AnkietaIdGrupa, conn: &MysqlConnection) -> Vec<Ankieta> {
+        kursy_grupy_ankiety::table
+            .filter(kursy_grupy_ankiety::id_grupa.eq(group.id_grupa))
+            .load::<Ankieta>(conn)
+            .expect("Problem z wczytaniem ankiet.")
+    }
+
 }

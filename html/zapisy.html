@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pl">
+	<head>
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/main.js"></script>
+		<script>
+			setTimeout(function(){$('body').animate({opacity:'1'},500)},400);
+			if (getCookie("token") == null) {
+				document.location.href = "/logowanie.html";
+				document.body.innerHTML = "";
+				window.stop();
+			} else {
+				var userdata = {
+					"id" : parseInt(getCookie("id")),
+					"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
+				}
+
+				if (userdata.id_uprawnien < 1){ // minimalny poziom uprawnień (zabezpieczenie api osobno)
+					document.location.href = "/";
+					document.body.innerHTML = "";
+					window.stop();
+				}
+			}
+		</script>
+        <link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico'/>
+		<meta charset="utf-8">
+		<title>System obsługi studentów - zarządzanie grupami</title>
+		<meta name="description" content="System Obsługi Studentów">
+		<link rel="stylesheet" href="/css/navbar.css">
+		<link rel="stylesheet" href="/css/main.css">
+		<link rel="stylesheet" href="/css/modal.css">
+		<style>
+            #zapisy td {
+                padding: 5px;
+                border-bottom: 1px solid rgb(0, 110, 255);
+            }
+			#zapisy td:not(:nth-last-child(1)) {
+				border-right: 1px solid rgb(0, 110, 255);
+			}
+            #zapisy {
+				padding: 20px;
+				border-radius: 10px;
+				background-color: rgb(0, 73, 168, 0.6);
+			}
+
+		</style>
+	</head>
+	<body>
+		<div id="navbar" class="navbar"></div>
+		<div class="content">
+			<div class="header">
+				<h2>Dostępne zapisy</h2>
+			</div>
+
+            <button onclick="window.history.back();">Wróć</button></br></br>
+
+            <table id="zapisy">
+                <tr>
+                    <td><b>Nazwa zapisów</b></td>
+                    <td></td>
+                </tr>
+            </table>
+		</div>
+
+        <script>
+            $.ajax({
+                url: '/api/zapisy',
+                type: "POST",
+                contentType: "application/json; charset=UTF-8",
+                success: function (data) {
+                    console.log(data.status);
+                    console.log(data.result);
+                    
+                    if(data.status != 200){
+                        console.log("Wystąpił błąd!");
+                    } else if (data.status == 200){
+                        if (data.result.length > 0) {
+                        }
+                        for(let i = 0; i < data.result.length; i++){
+                            if(data.result[i]['czy_publiczne']){
+                                $("#zapisy").append(
+                                    "<tr>"+
+                                        "<td>"+data.result[i]['nazwa']+"</td>"+
+                                        "<td><button onclick='zapisy("+data.result[i]['id']+")'>Otwórz zapisy</button></td>"+
+                                    "</tr>"
+                                );
+                            }
+                        }
+                    }
+                }
+            });
+
+            function zapisy(id){
+                window.location.href = "/zapisy_kursy.html?id_zapisy="+id;
+            }
+		</script>
+		<script src="/js/nav.js"></script>
+	</body>
+</html>

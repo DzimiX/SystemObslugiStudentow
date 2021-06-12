@@ -22,6 +22,7 @@
 				}
 			}
 		</script>
+		<link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico'/>
 		<meta charset="utf-8">
 		<title>System obsługi studentów - zarządzanie grupami</title>
 		<meta name="description" content="System Obsługi Studentów">
@@ -71,7 +72,8 @@
                     <td><b>Sala</b></td>
                     <td><b>Szczegóły</b></td>
                     <td><b>Uczestnicy</b></td>
-					<tD><b>Terminy</b></tD>
+					<td><b>Terminy</b></td>
+					<td><b>Ankiety</b></td>
                 </tr>
             </table>
 		</div>
@@ -127,7 +129,7 @@
                 $('label[for="modalGrupyId"]').hide();
 			});
 
-            var id = getUrlParameter('id_grupa');
+            var id = getUrlParameter('id_kurs');
 
             if(id < 1){
                 window.location.replace("/zarzadzanie_kursy.html");
@@ -218,6 +220,7 @@
                                         "<td><button onclick=\"pokaz_szczegoly("+data.result[i]['id']+",\'"+data.result[i]['id_zapisy']+"\',\'"+data.result[i]['kod_grupy']+"\',\'"+data.result[i]['termin']+"\',\'"+data.result[i]['sala']+"\')\">SZCZEGÓŁY</button></td>"+
                                         "<td><button onclick='pokaz_uczestnikow("+data.result[i]['id']+")'>UCZESTNICY</button></td>"+
 										"<td><button onclick='terminy("+data.result[i]['id']+")'>TERMINY</button></td>"+
+										"<td><button onclick='ankiety("+data.result[i]['id']+")'>ANKIETY</button></td>"+
 									"</tr>"
 								);
                         	}
@@ -260,6 +263,10 @@
 
 			function terminy(id){
 				window.location.href = "/zarzadzanie_grupy_terminy.html?id_grupa="+id;
+			}
+
+			function ankiety(id){
+				window.location.href = "/grupy_ankiety.html?id_grupa="+id;
 			}
 
             function pokaz_szczegoly(id, id_zapisy, kod, termin, sala){

@@ -137,6 +137,13 @@ CREATE TABLE `kursy_grupy_terminy_obecnosc` (
   `obecnosc` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `kursy_grupy_ankiety` (
+  `id` int(11) NOT NULL,
+  `id_grupa` int(11) NOT NULL,
+  `id_ocena_koncowa` int(11) NOT NULL,
+  `feedback` mediumtext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- --------------------------------------------------------
 --
 -- Indexes for dumped tables
@@ -149,6 +156,11 @@ ALTER TABLE `kursy_grupy`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_kursu` (`id_kursu`),
   ADD KEY `id_zapisy` (`id_zapisy`);
+
+ALTER TABLE `kursy_grupy_ankiety`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id_grupa` (`id_grupa`,`id_ocena_koncowa`),
+  ADD KEY `id_ocena_koncowa` (`id_ocena_koncowa`);
 
 ALTER TABLE `kursy_grupy_oceny`
   ADD PRIMARY KEY (`id`),
@@ -227,6 +239,9 @@ ALTER TABLE `kursy`
 ALTER TABLE `kursy_grupy`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
+ALTER TABLE `kursy_grupy_ankiety`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `kursy_grupy_oceny`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
@@ -279,6 +294,10 @@ ALTER TABLE `kursy_grupy_terminy_obecnosc`
 ALTER TABLE `kursy_grupy`
   ADD CONSTRAINT `kursy_grupy_ibfk_1` FOREIGN KEY (`id_kursu`) REFERENCES `kursy` (`id`),
   ADD CONSTRAINT `kursy_grupy_ibfk_2` FOREIGN KEY (`id_zapisy`) REFERENCES `zapisy` (`id`);
+
+ALTER TABLE `kursy_grupy_ankiety`
+  ADD CONSTRAINT `kursy_grupy_ankiety_ibfk_1` FOREIGN KEY (`id_grupa`) REFERENCES `kursy_grupy` (`id`),
+  ADD CONSTRAINT `kursy_grupy_ankiety_ibfk_2` FOREIGN KEY (`id_ocena_koncowa`) REFERENCES `kursy_grupy_ocena_koncowa` (`id`);
 
 ALTER TABLE `kursy_grupy_oceny`
   ADD CONSTRAINT `kursy_grupy_oceny_ibfk_1` FOREIGN KEY (`id_uczestnik`) REFERENCES `kursy_grupy_uczestnicy` (`id`),

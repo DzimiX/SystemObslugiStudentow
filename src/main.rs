@@ -92,6 +92,7 @@ fn rocket() {
             router_announcements::ogloszenia_usun,
 
             router_enrollment::zapisy,
+            router_enrollment::zapisy_id,
             router_enrollment::zapisy_nowe,
             router_enrollment::zapisy_aktualizuj,
             router_enrollment::zapisy_usun,
@@ -105,6 +106,7 @@ fn rocket() {
             router_courses::kursy,
             router_courses::kursy_usun,
             router_courses::kursy_aktualizuj,
+            router_courses::kursy_zapisy,
             router_courses::kursy_nowe,
 
             router_groups::grupa,
@@ -122,6 +124,7 @@ fn rocket() {
             router_groups::uczestnik_grupa_usun,
             router_groups::uczestnik_prowadzone,
             router_groups::uczestnik_grupy,
+            router_groups::uczestnik_grupa_zapisy,
 
             router_scores::ocena_grupa_uczestnik,
             router_scores::ocena_nowa,
@@ -131,11 +134,15 @@ fn rocket() {
             router_scores::ocena_uczestnik_srednia,
 
             router_scores::ocena_koncowa_akceptuj,
+            router_scores::ocena_koncowa_id,
             router_scores::ocena_koncowa_grupa_uczestnik,
             router_scores::ocena_koncowa_uczestnik,
             router_scores::ocena_koncowa_nowa,
             router_scores::ocena_koncowa_aktualizuj,
             router_scores::ocena_koncowa_usun,
+
+            router_scores::ocena_koncowa_feedback,
+            router_scores::ocena_koncowa_feedback_grupa,
 
             router_applications::sprawy,
             router_applications::sprawy_nowe,

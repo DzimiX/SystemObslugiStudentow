@@ -22,6 +22,7 @@
 				}
 			}
 		</script>
+		<link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico'/>
 		<meta charset="utf-8">
 		<title>System obsługi studentów - zarządzanie kursami</title>
 		<meta name="description" content="System Obsługi Studentów">
@@ -128,7 +129,7 @@
 										"<td>"+data.result[i]['nazwa']+"</td>"+
                                         "<td>"+data.result[i]['ects']+"</td>"+
                                         "<td><button onclick=\"pokaz_szczegoly("+data.result[i]['id']+",\'"+data.result[i]['kod']+"\',\'"+data.result[i]['nazwa']+"\',\'"+data.result[i]['ects']+"\')\">SZCZEGÓŁY</button></td>"+
-                                        "<td><button onclick='otworz_grupe("+data.result[i]['id']+")'>GRUPY</button></td>"+
+                                        "<td><button onclick='otworz_kurs("+data.result[i]['id']+")'>GRUPY</button></td>"+
 									"</tr>"
 								);
                         	}
@@ -149,8 +150,8 @@
 				$("#modalKursUsun").show();
             }
 
-            function otworz_grupe(id){
-                window.location.href = "/zarzadzanie_grupy.html?id_grupa="+id;
+            function otworz_kurs(id){
+                window.location.href = "/zarzadzanie_grupy.html?id_kurs="+id;
             }    
 
 			function nowe_zatwierdz(){

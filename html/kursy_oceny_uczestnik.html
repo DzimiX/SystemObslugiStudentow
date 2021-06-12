@@ -23,6 +23,7 @@
 				}
 			}
 		</script>
+		<link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico'/>
 		<meta charset="utf-8">
 		<title>System obsługi studentów - oceny w kursie</title>
 		<meta name="description" content="System Obsługi Studentów">
@@ -153,7 +154,6 @@
 							if ( data.result.length > 0 ){
 								ocena_koncowa = data.result[0]['ocena'];
 							}
-							//$("#ocenaKoncowa").html(ocena_koncowa);
 							if (ocena_koncowa != "-"){
 								$("#modalOcenaKoncowaEdytuj").prop("disabled", false);
 								let zaakceptowana = "Nie";
@@ -207,8 +207,6 @@
                             alert("Wystąpił błąd");
                         }
 					} else if (data.status == 200){
-						if (data.result.length > 0) {
-						}
 						for(let i = 0; i < data.result.length; i++){
 							$("#grupa").append(""+data.result[i]['kod_grupy']+"");
 						}
@@ -220,7 +218,7 @@
 				"id_grupa" : parseInt(getUrlParameter('id_grupa')),
 				"id_uczestnik" : parseInt(getUrlParameter('id_uczestnik'))
 			}
-
+			
 			$.ajax({
 				url: '/api/ocena',
 				type: "POST",
@@ -234,8 +232,6 @@
                             alert("Wystąpił błąd");
                         }
 					} else if (data.status == 200){
-						if (data.result.length > 0) {
-						}
 						for(let i = 0; i < data.result.length; i++){
 							
 							let date = new Date(data.result[i]['data'] * 1000);
@@ -312,7 +308,7 @@
 			})
 
             function koncowa_akceptuj(){
-                let feedback = $("#modalOcenaKoncowaFeedback");
+                let feedback = $("#modalOcenaKoncowaFeedback").val();
 
                 let json_akceptuj_data = {
                     "id" : parseInt($("#modalOcenaKoncowaId").html())
@@ -321,23 +317,46 @@
                 let conf = confirm("Czy napewno chcesz zaakceptować ocenę? Po akceptacji zmiana oceny nie będzie możliwa.");
                 
                 if(conf){
-                    $.ajax({
-                        url: '/api/ocena/koncowa/akceptuj',
-                        type: "POST",
-                        data: JSON.stringify(json_akceptuj_data),
-                        contentType: "application/json; charset=UTF-8",
-                        success: function (data) {
-                            if (data.status != 200){
-                                if (data.status == 401){
-                                    wyloguj();
-                                } else {
-                                    alert("Wystąpił błąd");
-                                }
-                            } else if (data.status == 200){
-                                window.location.reload(true);
-                            }
-                        }
-                    })
+					json_feedback = {
+						"id_grupa" : parseInt(getUrlParameter('id_grupa')),
+						"id_ocena_koncowa" : parseInt($("#modalOcenaKoncowaId").html()),
+						"feedback" : feedback
+					}
+					jQuery.when(
+						$.ajax({
+							url: '/api/ocena/koncowa/feedback',
+							type: "POST",
+							data: JSON.stringify(json_feedback),
+							accept: "*/*",
+							contentType: "application/json; charset=UTF-8",
+						})
+					).done( function(data) {
+						if (data.status != 200){
+							if (data.status == 401){
+								wyloguj();
+							} else {
+								alert("Wystąpił błąd feedbacku.");
+							}
+						} else if (data.status == 200){
+							$.ajax({
+								url: '/api/ocena/koncowa/akceptuj',
+								type: "POST",
+								data: JSON.stringify(json_akceptuj_data),
+								contentType: "application/json; charset=UTF-8",
+								success: function (data2) {
+									if (data2.status != 200){
+										if (data2.status == 401){
+											wyloguj();
+										} else {
+											alert("Wystąpił błąd");
+										}
+									} else if (data2.status == 200){
+										window.location.reload(true);
+									}
+								}
+							})
+						}
+					});
                 }
             }
 
