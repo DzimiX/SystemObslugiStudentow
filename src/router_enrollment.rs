@@ -15,6 +15,18 @@ pub fn zapisy(conn: DbConn, cookies : Cookies) -> Json<Value> {
     }))
 }
 
+#[post("/zapisy/id", format = "application/json", data = "<id_zapisy>")]
+pub fn zapisy_id(conn: DbConn, id_zapisy: Json<ZapisyId>, cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    let id : i32 = format!("{}",id_zapisy.id).parse::<i32>().unwrap();
+
+    Json(json!({
+        "status" : 200,
+        "result" : Zapisy::get(id, &conn),
+    }))
+}
+
 #[post("/zapisy/nowe", format = "application/json", data = "<zapisy>")]
 pub fn zapisy_nowe(conn: DbConn, zapisy: Json<ZapisyNowe>, cookies : Cookies) -> Json<Value> { 
     // niebezpieczne

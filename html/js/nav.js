@@ -1,4 +1,4 @@
-//userdata.id_uprawnien = 2; // nadpisanie widoku
+userdata.id_uprawnien = 2; // nadpisanie widoku
 $.get("navbar.html", function(data){
     $("#navbar").html(data);
    
@@ -28,7 +28,7 @@ $.get("navbar.html", function(data){
             $("#dropdown-uzytkownicy").hide();
             $("#menu-zarzadzanie-zapisy").hide();
             $("#menu-rekrutacja").hide();
-            $("#menu-zapisy").hide();
+            $("#menu-zapisy").show();
             $("#menu-zarzadzanie-kursy").hide();
             $("#dropdown-kursy").show();
             $("#menu-kursy-prowadzacy").hide();

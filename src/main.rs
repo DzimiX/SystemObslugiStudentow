@@ -92,6 +92,7 @@ fn rocket() {
             router_announcements::ogloszenia_usun,
 
             router_enrollment::zapisy,
+            router_enrollment::zapisy_id,
             router_enrollment::zapisy_nowe,
             router_enrollment::zapisy_aktualizuj,
             router_enrollment::zapisy_usun,

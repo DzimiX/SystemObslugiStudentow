@@ -411,7 +411,6 @@
 								if(data.status != 200){
 									alert("Wystąpił błąd!");
 								} else if (data.status == 200){
-									//console.log(data.result['imie']);
 									nazwaUzytkownika = data.result['imie']+" "+data.result['nazwisko'];
 									$("#uzytkownik").html(nazwaUzytkownika);
 								}
@@ -453,9 +452,6 @@
 				data: JSON.stringify(data_json_ocena_uczestnik),
 				contentType: "application/json; charset=UTF-8",
 				success: function (data) {
-					//console.log(data.status);
-					//console.log(data.result);
-					
 					if(data.status != 200){
 						alert("Wystąpił błąd!");
 					} else if (data.status == 200){
