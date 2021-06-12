@@ -34,6 +34,12 @@ pub struct GrupaId {
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
 #[table_name = "kursy_grupy"]
+pub struct ZapisyId {
+    pub id_zapisy: i32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "kursy_grupy"]
 pub struct GrupaKursId {
     pub id_kursu: i32
 }
@@ -160,8 +166,15 @@ impl Grupa {
         if updated_row == false {
             return false
         }
-
         return true
+    }
+
+    pub fn get_all_kurs_zapisy(zapisy: ZapisyId, conn: &MysqlConnection) -> Vec<Grupa>{
+        kursy_grupy::table
+            .filter(kursy_grupy::id_zapisy.eq(zapisy.id_zapisy))
+            .group_by(kursy_grupy::id_kursu)
+            .load::<Grupa>(conn)
+            .expect("Problem z wczytaniem kursów.")
     }
 }
 

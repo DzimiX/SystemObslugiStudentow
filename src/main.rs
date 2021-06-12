@@ -106,6 +106,7 @@ fn rocket() {
             router_courses::kursy,
             router_courses::kursy_usun,
             router_courses::kursy_aktualizuj,
+            router_courses::kursy_zapisy,
             router_courses::kursy_nowe,
 
             router_groups::grupa,

@@ -63,19 +63,22 @@
 		</div>
 
         <script>
-            json_zapisy_id = {
+            data_json_zapisy_id = {
                 "id" : parseInt(getUrlParameter('id_zapisy'))
             }
 
             $.ajax({
                 url: '/api/zapisy/id',
                 type: "POST",
-                data: JSON.stringify(json_zapisy_id),
+                data: JSON.stringify(data_json_zapisy_id),
                 contentType: "application/json; charset=UTF-8",
                 success: function (data) {
-                    
                     if(data.status != 200){
-                        console.log("Wystąpił błąd!");
+                        if (data.status == 401){
+							wyloguj();
+						} else {
+							alert("Wystąpił błąd.");
+						}
                     } else if (data.status == 200){
                         if (data.result.length > 0) {
                         }
@@ -90,7 +93,34 @@
                 }
             });
 
-            
+			data_json_zapisy_kursy = {
+				"id_zapisy" : parseInt(getUrlParameter('id_zapisy'))
+			}
+
+            jQuery.when(
+				$.ajax({
+					url: '/api/kursy/zapisy',
+					type: "POST",
+					data: JSON.stringify(data_json_zapisy_kursy),
+					accept: "*/*",
+					contentType: "application/json; charset=UTF-8",
+				})
+			).done( function(data) {
+				if (data.status != 200){
+					if (data.status == 401){
+						wyloguj();
+					} else {
+						alert("Wystąpił błąd.");
+					}
+				} else if (data.status == 200){
+					$("#zapisy").append(
+                                    "<tr>"+
+                                        "<td>"+data.result[i]['nazwa']+"</td>"+
+                                        "<td><button onclick='zapisy("+data.result[i]['id']+")'>Otwórz zapisy</button></td>"+
+                                    "</tr>"
+                                );
+				}
+			});
 
 		</script>
 		<script src="/js/nav.js"></script>

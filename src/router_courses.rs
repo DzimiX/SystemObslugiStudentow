@@ -4,6 +4,7 @@ use serde_json::Value;
 use rocket::http::Cookies;
 
 use crate::models_courses::{Kurs, KursNowy, KursId};
+use crate::models_groups::{Grupa, ZapisyId};
 
 #[post("/kurs", format = "application/json", data = "<kurs>")]
 pub fn kurs(conn: DbConn, kurs : Json<KursId>, cookies : Cookies) -> Json<Value> { 
@@ -16,6 +17,20 @@ pub fn kurs(conn: DbConn, kurs : Json<KursId>, cookies : Cookies) -> Json<Value>
         "result" : Kurs::get(id, &conn),
     }))
 }
+
+#[post("/kursy/zapisy", format = "application/json", data = "<zapisy>")]
+pub fn kursy_zapisy(conn: DbConn, zapisy : Json<ZapisyId>, cookies : Cookies) -> Json<Value> { 
+    // niebezpieczne
+
+    let kursy = Grupa::get_all_kurs_zapisy(zapisy.into_inner(), &conn);
+    // usunąć zbędne rzeczy (opcjonalnie), wybrać tylko id_kursu (grupowane)
+
+    Json(json!({
+        "status" : 200,
+        "result" : kursy,
+    }))
+}
+
 
 #[post("/kursy", format = "application/json")]
 pub fn kursy(conn: DbConn, cookies : Cookies) -> Json<Value> { 
