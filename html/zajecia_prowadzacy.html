@@ -140,6 +140,7 @@
 														"<td>"+data3.result[0]['nazwa']+"</td>"+
 														"<td>"+data2.result[0]['kod_grupy']+"</td>"+
 														"<td><button onclick='uczestnicy("+data2.result[0]['id']+")'>Uczestnicy</button></td>"+
+														"<td><button onclick='ankiety("+data2.result[0]['id']+")'>Ankiety</button></td>"+
 													"</tr>"
 												);
 											}
@@ -154,6 +155,10 @@
 
 			function uczestnicy(id){
 				window.location.href = "/zajecia_prowadzacy_uczestnicy.html?id_grupa="+id;
+			}
+
+			function ankiety(id){
+				window.location.href = "/grupy_ankiety.html?id_grupa="+id;
 			}
 
 		</script> 

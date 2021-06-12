@@ -318,14 +318,15 @@
                 
                 if(conf){
 					json_feedback = {
-						"id_ocena" : parseInt($("#modalOcenaKoncowaId").html()),
+						"id_grupa" : parseInt(getUrlParameter('id_grupa')),
+						"id_ocena_koncowa" : parseInt($("#modalOcenaKoncowaId").html()),
 						"feedback" : feedback
 					}
 					jQuery.when(
 						$.ajax({
 							url: '/api/ocena/koncowa/feedback',
 							type: "POST",
-							data: JSON.stringify(data_json_uczestnicy),
+							data: JSON.stringify(json_feedback),
 							accept: "*/*",
 							contentType: "application/json; charset=UTF-8",
 						})
@@ -334,7 +335,7 @@
 							if (data.status == 401){
 								wyloguj();
 							} else {
-								alert("Wystąpił błąd.");
+								alert("Wystąpił błąd feedbacku.");
 							}
 						} else if (data.status == 200){
 							$.ajax({
