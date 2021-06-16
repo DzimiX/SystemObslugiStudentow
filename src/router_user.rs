@@ -279,34 +279,33 @@ pub fn uzytkownik_nowe_haslo(conn: DbConn, nowe_haslo: Json<NoweHaslo>, cookies:
         if (auth.token != "False" && now_timestamp < auth.data) && (
             auth.id_uprawnienie == ADMINISTRATOR ||
             auth.id_uzytkownik == nowe_haslo.id_uzytkownik
-        ) {
+        ){
             
             let wynik = Uzytkownik::set_password(nowe_haslo.into_inner(), &conn);
             
             if wynik {
-                return Json(json!({
+                return Json(json!({ // udało się
                     "status" : 200,
                     "result" : "OK",
                 }))
             } else {
-                return Json(json!({
+                return Json(json!({ // nie udało się
                     "status" : 400,
                     "result" : "Error",
                 }))
             }
         } else {
-            return Json(json!({
+            return Json(json!({ // zabronione (brak uprawnień)
                 "status" : 403,
                 "result" : "Forbidden",
             }))
         }
+    } else {
+        return Json(json!({ // zabronione (brak autoryzacji)
+            "status" : 401,
+            "result" : "Unauthorized",
+        }))
     }
-
-    return Json(json!({
-        "status" : 401,
-        "result" : "Unauthorized",
-    }))
-    
 }
 
 #[post("/uzytkownik/usunhaslo", format = "application/json", data = "<id>")]
@@ -383,7 +382,7 @@ pub fn dane_osobowe_usun(conn: DbConn, id_dane_osobowe: Json<DaneOsoboweId>, coo
 
 #[post("/uzytkownik/nowy/rejestracja", format = "application/json", data = "<nowy_uzytkownik>")]
 pub fn uzytkownicy_nowy_rejestracja(conn: DbConn, nowy_uzytkownik: Json<NowyUzytkownik>) -> Json<Value> { 
-    // niebezpieczne
+    // teoretycznie niebezpieczne 
     
     let result = Uzytkownik::add(nowy_uzytkownik.into_inner(), &conn);
     if result == true {
@@ -400,7 +399,7 @@ pub fn uzytkownicy_nowy_rejestracja(conn: DbConn, nowy_uzytkownik: Json<NowyUzyt
 }
 #[post("/dane_osobowe/nowe/rejestracja", format = "application/json", data = "<dane_osobowe>")]
 pub fn dane_osobowe_nowe_rejestracja(conn: DbConn, dane_osobowe: Json<DaneOsobowe>) -> Json<Value> { 
-    // niebezpieczne
+    // teoretycznie niebezpieczne 
 
     let mut status = 400;
     if DaneOsobowe::add(dane_osobowe.into_inner(), &conn) == true {
@@ -414,7 +413,7 @@ pub fn dane_osobowe_nowe_rejestracja(conn: DbConn, dane_osobowe: Json<DaneOsobow
 }
 #[post("/uzytkownik/nowehaslo/rejestracja", format = "application/json", data = "<nowe_haslo>")]
 pub fn uzytkownik_nowe_haslo_rejestracja(conn: DbConn, nowe_haslo: Json<NoweHaslo>) -> Json<Value> {
-            
+    // teoretycznie niebezpieczne 
     Uzytkownik::set_password(nowe_haslo.into_inner(), &conn);
             
     return Json(json!({
