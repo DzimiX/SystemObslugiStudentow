@@ -49,3 +49,28 @@ function wyloguj(){
     deleteAllCookies();
     document.location.href = "/logowanie.html";
 }
+
+//https://www.w3schools.com/howto/howto_js_sort_table.asp
+function sortTable(tbname,collumn) {
+    var table, rows, switching, i, x, y, shouldSwitch;
+    table = document.getElementById(tbname);
+    switching = true;
+
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i+1].getElementsByTagName("TD")[collumn];
+            y = rows[i].getElementsByTagName("TD")[collumn];
+            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                shouldSwitch = true;
+                break;
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+        }
+    }
+}
