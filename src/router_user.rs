@@ -221,15 +221,11 @@ pub fn uprawnienie(conn: DbConn, id: Json<UzytkownikID>, cookies: Cookies) -> Js
 
 #[post("/uzytkownik/publiczne", format = "application/json", data = "<id>")]
 pub fn uzytkownik_publiczne(conn: DbConn, id: Json<UzytkownikID>, cookies: Cookies) -> Json<Value> {
-
     let cookie_temp = Cookie::new("token", "False");
     let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
-
     if &token != "False" {
-    
         let now_timestamp = Local::now().timestamp();
         let auth : Auth = AuthLogin::check_token(&token, &conn);
-        
         if auth.token != "False" && now_timestamp < auth.data {
             
             let result = Uzytkownik::get(id.id, &conn);
@@ -267,15 +263,11 @@ pub fn uzytkownik_publiczne(conn: DbConn, id: Json<UzytkownikID>, cookies: Cooki
 
 #[post("/uzytkownik/nowehaslo", format = "application/json", data = "<nowe_haslo>")]
 pub fn uzytkownik_nowe_haslo(conn: DbConn, nowe_haslo: Json<NoweHaslo>, cookies: Cookies) -> Json<Value> {
-
     let cookie_temp = Cookie::new("token", "False");
     let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
-
     if &token != "False" {
-    
         let now_timestamp = Local::now().timestamp();
         let auth : Auth = AuthLogin::check_token(&token, &conn);
-
         if (auth.token != "False" && now_timestamp < auth.data) && (
             auth.id_uprawnienie == ADMINISTRATOR ||
             auth.id_uzytkownik == nowe_haslo.id_uzytkownik
