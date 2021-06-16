@@ -20,6 +20,9 @@ pub struct Sprawy {
 pub struct SprawyNowe {
     pub id_uzytkownik: i32,
     pub temat: String,
+    pub data: i64,
+    pub status: String,
+    pub decyzja: String
 }
 
 #[derive(Insertable, Queryable, Serialize, Deserialize)]
