@@ -380,3 +380,45 @@ pub fn dane_osobowe_usun(conn: DbConn, id_dane_osobowe: Json<DaneOsoboweId>, coo
         "result" : "OK",
     }))
 }
+
+#[post("/uzytkownik/nowy/rejestracja", format = "application/json", data = "<nowy_uzytkownik>")]
+pub fn uzytkownicy_nowy_rejestracja(conn: DbConn, nowy_uzytkownik: Json<NowyUzytkownik>) -> Json<Value> { 
+    // niebezpieczne
+    
+    let result = Uzytkownik::add(nowy_uzytkownik.into_inner(), &conn);
+    if result == true {
+        return Json(json!({
+            "status" : 200,
+            "result" : Uzytkownik::all(&conn).first(),
+        }));
+    } else {
+        return Json(json!({
+            "status" : 400,
+            "result" : result,
+        }));
+    }
+}
+#[post("/dane_osobowe/nowe/rejestracja", format = "application/json", data = "<dane_osobowe>")]
+pub fn dane_osobowe_nowe_rejestracja(conn: DbConn, dane_osobowe: Json<DaneOsobowe>) -> Json<Value> { 
+    // niebezpieczne
+
+    let mut status = 400;
+    if DaneOsobowe::add(dane_osobowe.into_inner(), &conn) == true {
+        status = 200;
+    }
+
+    Json(json!({
+        "status" : status,
+        "result" : "OK",
+    }))
+}
+#[post("/uzytkownik/nowehaslo/rejestracja", format = "application/json", data = "<nowe_haslo>")]
+pub fn uzytkownik_nowe_haslo_rejestracja(conn: DbConn, nowe_haslo: Json<NoweHaslo>) -> Json<Value> {
+            
+    Uzytkownik::set_password(nowe_haslo.into_inner(), &conn);
+            
+    return Json(json!({
+        "status" : 200,
+        "result" : "OK",
+    }))
+}

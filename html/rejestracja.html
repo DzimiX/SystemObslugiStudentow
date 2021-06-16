@@ -63,57 +63,133 @@
                 <p style="color:red">BETA tylko na: <a style="color:yellow" href="http://localhost.:9090/">http://localhost.:9090/</a></p>
                 <h1>System Obsługi Studentów</h1>
                 <h2>Zarejestruj się:</h5>
-                <h1 style="color:red">REJESTRACJA WYŁĄCZONA</h1>
             </div>
             <div class="login-box">
                 <label for="form-imie">Imię:</label>
-                <input id="form-imie" name="imie"></input></br>
+                <input onchange="generate_login()" id="imie" placeholder="Imię"></input></br>
                 <label for="form-nazwisko">Nazwisko:</label>
-                <input id="form-nazwisko" name="nazwisko"></input></br>
-                <label for="form-email">Email:</label>
-                <input id="form-email" name="email"></input></br>
-                <button id="register-button">Utwórz konto</button> lub
+                <input onchange="generate_login()" id="nazwisko" placeholder="Nazwisko"></input></br>
+                <label for="form-login">Login:</label>
+                <input id="login" placeholder="Login"></input></br>
+                <button onclick='stworz_uzytkownika()' id="register-button">Utwórz konto</button> lub
                 <a href="/logowanie.html">Zaloguj się</a>
                 <div id='info' style='color:yellow;margin:20px'></div>
+                <div id="haslo_wygenerowane"></div>
             </div>
         </div>
 
         <script>
-            $("#info").hide();
-            if (getCookie("token") != null) {
-				document.location.href = "/";
+
+			function generate_login(){
+				let temp_login = "";
+				temp_login += $("#imie").val().charAt(0).toLowerCase();
+				temp_login += $("#nazwisko").val().toLowerCase();
+				$("#login").val(temp_login)
+			}
+            
+			function stworz_uzytkownika(){
+
+				let imie = $("#imie").val();
+				let nazwisko = $("#nazwisko").val();
+				let login = $("#login").val();
+
+				if (imie != "" && nazwisko != "" && login != ""){
+					
+					data_json = {
+						"login" : login,
+						"imie" : imie,
+						"nazwisko" : nazwisko,
+					}
+
+					jQuery.when(
+						$.ajax({
+							url: '/api/uzytkownik/nowy/rejestracja',
+							type: "POST",
+							data: JSON.stringify(data_json),
+							accept: "*/*",
+							contentType: "application/json; charset=UTF-8",
+						})
+					).done( function(data) {
+
+						if (data.status != 200) {
+							if (data.status == 401){
+								wyloguj();
+							} else {
+								alert("wystąpił błąd!");
+							}
+						} else if (data.status == 200){
+
+							let haslo_startowe = Math.random().toString(36).slice(-8);
+
+							data_json_dane = {
+								"id_uzytkownik" : parseInt(data.result['id']),
+								"miasto" : "",
+								"ulica" : "",
+								"nr_domu" : "",
+								"kod_pocztowy" : "",
+								"pesel" : "",
+								"nr_dowodu" : ""
+							}
+
+							$.ajax({
+								url: '/api/dane_osobowe/nowe/rejestracja',
+								type: "POST",
+								data: JSON.stringify(data_json_dane),
+								accept: "*/*",
+								contentType: "application/json; charset=UTF-8",
+								success: function (data2) {
+									if (data2.status != 200){
+										if (data2.status == 401){
+											wyloguj();
+										} else {
+											alert("Wystąpił błąd wprowadzenia danych osobowych.")
+										}
+									}
+								}
+							})
+
+							dane_json_haslo = {
+								"id_uzytkownik" : parseInt(data.result['id']),
+								"haslo" : haslo_startowe
+							}
+
+							$.ajax({
+								url: '/api/uzytkownik/nowehaslo/rejestracja',
+								type: "POST",
+								data: JSON.stringify(dane_json_haslo),
+								accept: "*/*",
+								contentType: "application/json; charset=UTF-8",
+								success: function (data3) {
+									if (data3.status != 200){
+										if (data3.status == 401){
+											wyloguj();
+										} else {
+											alert("Wystąpił błąd w trakcie dodawania hasła.")
+										}
+									} else if (data3.status == 200){
+										$("#stworz_uzytkownika").hide();
+										$("#imie").prop("disabled",true);
+										$("#nazwisko").prop("disabled",true);
+										$("#login").prop("disabled",true);
+										$("#haslo_wygenerowane").html("<b>Wygenerowane hasło dla użytkownika to: "+haslo_startowe);
+										$("#haslo_wygenerowane").append("</br></br><button style='width:500px' onclick='reload(\""+haslo_startowe+"\")'>Wciśnij przycisk aby kontynuować...</button></b>");
+										alert("Wygenerowane hasło to: "+haslo_startowe);
+									}
+								}
+							})
+						}
+					})
+				} else {
+					alert("Błąd wprowadzonych danych!");
+				}
 			}
 
-            $("#register-button").click(function() {              
-				data_json_register = {
-					"imie" : $("#form-imie").val(),
-					"nazwisko" : $("#form-nazwisko").val(),
-                    "email" : $("#form-email").val()
+			function reload(pass){
+				if(confirm("Hasło użytkownika: "+pass+"\nPo potwierdzeniu nastąpi przeładowanie strony...")){
+                    document.location.href = "/logowanie.html";
 				}
-                
-				$.ajax({
-					url: '/api/rejestracja',
-					type: "POST",
-					data: JSON.stringify(data_json_register),
-					contentType: "application/json; charset=UTF-8",
-					success: function (data) {					
-						if(data.status != 200){
-							console.log("Wystąpił błąd!");
-						} else if (data.status == 200){
-							alert("Po aktywacji konta na podany email otrzymasz dane dotyczące logowania.");
-                            let login = "login";
-                            let haslo = "haslo"
-                            $("#form-imie").prop("disabled",true);
-                            $("#form-nazwisko").prop("disabled",true);
-                            $("#form-email").prop("disabled",true);
-                            $("#info").append("<b>Dane dotyczące logowania:</b></br>");
-                            $("#info").append(login+" : "+haslo);
-                            $("#info").show();
-						}
-					}
-				});
-			});
+			}
 
-        </script>
+		</script>
 	</body>
 </html>
