@@ -99,6 +99,39 @@
 			</table>
 		</div>
 		
-		<script src="/js/nav.js"></script>
+		<script src="/js/nav.js">
+	
+	$.ajax({
+					url: '/api/sprawy',
+					type: "POST",
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						console.log(data.status);
+						console.log(data.result);
+						
+						if(data.status != 200){
+							console.log("Wystąpił błąd!");
+						} else if (data.status == 200){
+							if (data.result.length > 0) {
+							}
+							for(let i = 0; i < data.result.length; i++){
+								$("#odpowiedzAJAX").append(
+									"<tr>"+
+										"<td>"+data.result[i]['id']+"</td>"+
+										"<td>"+data.result[i]['id_uzytkownik']+"</td>"+
+                                        "<td>"+data.result[i]['data']+"</td>"+
+                                        "<td>"+data.result[i]['temat']+"</td>"+
+										"<td>"+data.result[i]['status']+"</td>"+
+										"<td>"+data.result[i]['decuzja']+"</td>"+
+									"</tr>"
+								);
+                        	}
+						
+						}
+					}
+			});
+		
+		
+		</script>
 	</body>
 </html>
