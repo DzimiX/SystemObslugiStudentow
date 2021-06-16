@@ -14,7 +14,7 @@ ZAMIAST http:://127.0.0.1:9090/ KORZYSTAĆ Z http://localhost.:9090/ (związane 
 ## Do testowania api
 * Postman
 	* https://www.postman.com/
-	* eit-pa-sos, invite: https://app.getpostman.com/join-team?invite_code=631ae24d11a891b8cdf23269d6fbe396&ws=08dea26f-2149-4142-8872-973fd783a4cd
+	* eit-pa-sos, invite: https://app.getpostman.com/join-team?invite_code=25c3622409e03b3421a746ff1c739f8c&ws=08dea26f-2149-4142-8872-973fd783a4cd
 
 ## Diesel:
 * Zainstalować: cargo install diesel_cli --no-default-features --features mysql
