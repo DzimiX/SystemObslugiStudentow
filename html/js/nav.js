@@ -1,4 +1,4 @@
-userdata.id_uprawnien = 2; // nadpisanie widoku
+//userdata.id_uprawnien = 2; // nadpisanie widoku
 $.get("navbar.html", function(data){
     $("#navbar").html(data);
    
