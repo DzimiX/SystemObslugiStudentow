@@ -124,10 +124,10 @@ CREATE TABLE `sprawy` (
 CREATE TABLE `kursy_grupy_terminy` (
   `id` int(11) NOT NULL,
   `id_grupa` int(11) NOT NULL,
+  `temat_zajec` varchar(255) NOT NULL,
+  `komentarz` varchar(512) NOT NULL,
   `data_start` bigint(8) NOT NULL,
-  `data_koniec` bigint(8) NOT NULL,
-  `temat_zajec` varchar(255) DEFAULT NULL,
-  `komentarz` varchar(512) DEFAULT NULL
+  `data_koniec` bigint(8) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `kursy_grupy_terminy_obecnosc` (
@@ -379,10 +379,6 @@ INSERT INTO `uzytkownicy_dane` (`id_uzytkownik`, `miasto`, `ulica`, `nr_domu`, `
 
 INSERT INTO `ogloszenia` (`id`, `nadawca`, `temat`, `dane`, `widok_od`, `widok_do`) VALUES
   (1, 'Administracja Systemu', 'Konserwacja', 'Trwa konserwacja...', 1620242061, 1731242061);
-
-INSERT INTO `tokeny` (`id`, `id_uzytkownik`, `id_uprawnienie`, `token`) VALUES
-  (1, 2, 4, '5ybvJkeimJ%&g((po#ajfArJ1nmcHhfTGQReEn#f)%l0Wn&9flXUXj7QzXjPx@nRN@(CWh3N4zIguw%I2AodFY9l8XGx^sP&DXUENeHLkfXeHz7v2KD&bGzr16n&e~RjhxOk&5sbO5HPwfOAskdU$yDhoOW&%dALe(3em)HQ#LfDhd1Mv7yAytD08OYT&!ZE)%b3pjMDzuL&o3KZuf)N^j7l3ln0&MaIu12xL9p%vk8Aj)!NA8^Oj0OP%TU$ibPmIAbX#un^nnt56RC7fuA@9az%SyvwnoSHYW!kiNPiedUJI!E3S~e0(99Rq!wh0m!7f#^WTL%BA*^WoxU0hIytQGsrYVh#ml*8yz!F8KlNycT3ywp~uU4BER^ZqpjUSYegxFdTK^WWNJ(oHi&^mlmwAWuGN^HdlZ(DQTcDC4&0YIkHAazG*lJJHchhHZaNCK56snsR5J8jk4cVA#)Np%mvv6P*rO9IVM!dmVaw~6hLc(DKu46U@Xe5epK3xy*@WEi^'),
-  (2, 1, 5, 'f6*E%E^%L%GpJ45OW$#e~*3VBto~o^psc%utIKQqD&z$HQq)qMLQ%m8CKbt66tY%ofgavySw)~7Hdcajk32I6&M7wS&50mKQGOa^jR~^YWJDf4aUxtqj~1DDdtuqVCo(ZC&6BkQKo0@gurdu(3*C6lCeyO~yKRj*hBs1H1waa@uh4zgi9W#HFGgDyjx~)(fW%h(!%GvokZ(E)qVT1%*FvAY98i1##Kgbc8y6rrAwL*u5s$honqyo!J6H3bgrQGl)JjIw1nt^hKTQV8qq^FxCiH*rGcS^6SvH&&je&)UMGfDGLv9@B#7D**yzEnl43l)qgYMcNQH#kga(U@tj~V6a$t(smOib92fLb8JiZ3RoR8Lz^^3G~wh9J^G2nm*2@%cOs^w*&YveGQM1Nmem2ls2I5d~h18#40dcm7FgSI#M@AIwUc4Ii$dqcm0U76SA2P(#Iva)lQXhrRa*Zvc!aMcvUHN#*2nGRfj9cXCLd815a^q^qiNTzxFKo)IV@QcH4)Zf');
   
 INSERT INTO `wiadomosci` (`id`, `id_uzytkownik`, `temat`, `data`, `dane`) VALUES
   (1, 2, 'Test tematu', 1620198119, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
@@ -398,10 +394,10 @@ INSERT INTO `zapisy` (`id`, `nazwa`, `czy_publiczne`) VALUES
   (2, 'Semestr zimowy 2021/2022', 0);
 
 INSERT INTO `kursy` (`id`, `kod`, `nazwa`, `ects`) VALUES
-  (1, 'MAT001412W', 'Analiza matematyczna 1.1 A', 5),
-  (2, 'MAT001412C', 'Analiza matematyczna 1.1 A ', 3),
-  (3, 'MAT001424C', 'Analiza matematyczna 2.2 A ', 3),
-  (4, 'MAT001424W', 'Analiza matematyczna 2.2 A ', 5),
+  (1, 'MAT001412W', 'Analiza matematyczna 1.1 A Wykład', 5),
+  (2, 'MAT001412C', 'Analiza matematyczna 1.1 A Ćwiczenia', 3),
+  (3, 'MAT001424C', 'Analiza matematyczna 2.2 A Ćwiczenia', 3),
+  (4, 'MAT001424W', 'Analiza matematyczna 2.2 A Wykład', 5),
   (5, 'FLH121611W', 'Etyka w biznesie', 2);
 
 INSERT INTO `kursy_grupy` (`id`, `id_kursu`, `id_zapisy`, `kod_grupy`, `termin`, `sala`) VALUES

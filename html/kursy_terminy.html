@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pl">
+	<head>
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/main.js"></script>
+		<script>
+			setTimeout(function(){$('body').animate({opacity:'1'},500)},400);
+			if (getCookie("token") == null) {
+				document.location.href = "/logowanie.html";
+				document.body.innerHTML = "";
+				window.stop();
+			} else {
+				var userdata = {
+					"id" : parseInt(getCookie("id")),
+					"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
+				}
+
+				if (userdata.id_uprawnien < 1){ // minimalny poziom uprawnień (zabezpieczenie api osobno)
+					document.location.href = "/";
+					document.body.innerHTML = "";
+					window.stop();
+				}
+			}
+		</script>
+		<link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico'/>
+		<meta charset="utf-8">
+		<title>System obsługi studentów</title>
+		<meta name="description" content="System Obsługi Studentów">
+		<link rel="stylesheet" href="/css/navbar.css">
+		<link rel="stylesheet" href="/css/modal.css">
+		<link rel="stylesheet" href="/css/main.css">
+		<style>
+			#terminy {
+				padding: 20px;
+				border-radius: 10px;
+				background-color: rgb(0, 73, 168, 0.6);
+			}
+
+			#terminy td {
+                padding: 5px;
+                border-bottom: 1px solid rgb(0, 110, 255);
+            }
+			#terminy td:not(:nth-last-child(1)) {
+				border-right: 1px solid rgb(0, 110, 255);
+			}
+            #terminy {
+				padding: 20px;
+				border-radius: 10px;
+				background-color: rgb(0, 73, 168, 0.6);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="navbar" class="navbar"></div>
+		<div class="content">
+			<div class="header">
+				<h2>Terminy grupy zajęciowej "<span id="kodgrupy"></span>"</h2>
+                <button onclick="window.history.back();">Wróć</button></br></br>
+			</div>
+			<table id="terminy">
+				<tr>
+					<td><b>Data początku zajęć</b></td>
+					<td><b>Data końca zajęć</b></td>
+					<td><b>Temat</b></td>
+                    <td><b>Komentarz</b></td>
+				</tr>
+			</table>
+		</div>
+		
+		<script src="/js/nav.js"></script>
+		<script>
+			
+            var id_grupa = getUrlParameter('id_grupa');
+
+            if(id_grupa < 1){
+                window.location.replace("/zarzadzanie_kursy.html");
+            } else {
+
+                data_json_grupa = {
+                    "id" : parseInt(id_grupa)
+                }
+
+                $.ajax({
+                    url: '/api/grupa',
+                    type: "POST",
+                    data: JSON.stringify(data_json_grupa),
+                    contentType: "application/json; charset=UTF-8",
+                    success: function (data) {
+                        if(data.status != 200){
+                            if (data.status == 401){
+                                wyloguj();
+                            } else {
+                                alert("Wystąpił błąd.");
+                            }
+                        } else if (data.status == 200){
+                            for(let i = 0; i < data.result.length; i++){
+                                $("#kodgrupy").append(""+data.result[i]['kod_grupy']+"");
+                            }
+                        }
+                    }
+                });
+
+                data_json_grupa_terminy = {
+                    "id_grupa" : parseInt(id_grupa)
+                }
+
+                $.ajax({
+                    url: '/api/grupa/terminy',
+                    type: "POST",
+                    data: JSON.stringify(data_json_grupa_terminy),
+                    contentType: "application/json; charset=UTF-8",
+                    success: function (data) {
+                        if (data.status != 200){
+                            if (data.status == 401){
+                                wyloguj();
+                            } else {
+                                alert("Wystąpił błąd.");
+                            }
+                        } else if (data.status == 200){
+                            for(let i = 0; i < data.result.length; i++){
+
+                                let date = new Date(data.result[i]['data_start'] * 1000);
+								if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
+								if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
+								if(date.getHours() < 10){ hours_append = 0; } else { hours_append = ""; }
+								if(date.getMinutes() < 10){ minutes_append = 0; } else { minutes_append = ""; }
+								if(date.getSeconds() < 10){ seconds_append = 0; } else { seconds_append = ""; }
+                   				let datestring_start = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate()+" "+hours_append+date.getHours()+":"+minutes_append+date.getMinutes()+":"+seconds_append+date.getSeconds();
+
+                                date = new Date(data.result[i]['data_koniec'] * 1000);
+								if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
+								if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
+								if(date.getHours() < 10){ hours_append = 0; } else { hours_append = ""; }
+								if(date.getMinutes() < 10){ minutes_append = 0; } else { minutes_append = ""; }
+								if(date.getSeconds() < 10){ seconds_append = 0; } else { seconds_append = ""; }
+                   				datestring_koniec = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate()+" "+hours_append+date.getHours()+":"+minutes_append+date.getMinutes()+":"+seconds_append+date.getSeconds();
+
+                                $("#terminy").append(
+                                    "<tr>"+
+                                        "<td>"+datestring_start+"</td>"+
+                                        "<td>"+datestring_koniec+"</td>"+
+                                        "<td>"+data.result[i]['temat_zajec']+"</td>"+
+                                        "<td>"+data.result[i]['komentarz']+"</td>"+
+                                    "</tr>"
+                                );
+                                sortTable("terminy",0,0);
+                            }
+                        }
+                    }
+                })
+
+            }
+		</script>
+	</body>
+</html>

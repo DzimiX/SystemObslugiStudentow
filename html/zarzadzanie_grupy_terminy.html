@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="pl">
+	<head>
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/main.js"></script>
+		<script>
+			setTimeout(function(){$('body').animate({opacity:'1'},500)},400);
+			if (getCookie("token") == null) {
+				document.location.href = "/logowanie.html";
+				document.body.innerHTML = "";
+				window.stop();
+			} else {
+				var userdata = {
+					"id" : parseInt(getCookie("id")),
+					"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
+				}
+
+				if (userdata.id_uprawnien < 1){ // minimalny poziom uprawnień (zabezpieczenie api osobno)
+					document.location.href = "/";
+					document.body.innerHTML = "";
+					window.stop();
+				}
+			}
+		</script>
+		<link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico'/>
+		<meta charset="utf-8">
+		<title>System obsługi studentów</title>
+		<meta name="description" content="System Obsługi Studentów">
+		<link rel="stylesheet" href="/css/navbar.css">
+		<link rel="stylesheet" href="/css/modal.css">
+		<link rel="stylesheet" href="/css/main.css">
+		<style>
+			#terminy {
+				padding: 20px;
+				border-radius: 10px;
+				background-color: rgb(0, 73, 168, 0.6);
+			}
+
+			#terminy td {
+                padding: 5px;
+                border-bottom: 1px solid rgb(0, 110, 255);
+            }
+			#terminy td:not(:nth-last-child(1)) {
+				border-right: 1px solid rgb(0, 110, 255);
+			}
+            #terminy {
+				padding: 20px;
+				border-radius: 10px;
+				background-color: rgb(0, 73, 168, 0.6);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="navbar" class="navbar"></div>
+		<div class="content">
+			<div class="header">
+				<h2>Terminy grupy zajęciowej "<span id="kodgrupy"></span>"</h2>
+                <button onclick="window.history.back();">Wróć</button>
+				<button id='nowe'>Nowy termin</button></br></br>
+			</div>
+			<table id="terminy">
+				<tr>
+					<td><b>Data początku zajęć</b></td>
+					<td><b>Data końca zajęć</b></td>
+					<td><b>Temat</b></td>
+                    <td><b>Komentarz</b></td>
+				</tr>
+			</table>
+		</div>
+
+		<div id="modalTermin" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<span id="modalZamknij" class="close">&times;</span>
+					<h2 disabled id='modalOgloszenieTytul'>Termin zajęć</h2>
+				</div>
+				<div class="modal-body">
+                    <label for="modalTerminDzienZajec">Dzień zajęć:</label>
+                    <input id="modalTerminDzienZajec" type="date"></input></br>
+
+                    <label for="modalTerminGodzinaStart">Czas rozpoczęcia:</label>
+                    <input id="modalTerminGodzinaStart" placeholder="9:15"></input></br>
+
+                    <label for="modalTerminGodzinaKoniec">Czas zakończenia:</label>
+                    <input id="modalTerminGodzinaKoniec" placeholder="11:00"></input></br>
+                    
+                    <label for="modalTerminTemat">Temat:</label>
+					<input id="modalTerminTemat"></input>
+
+                    <label for="modalTerminKomentarz">Komentarz:</label>
+					<input id="modalTerminKomentarz"></input>
+
+                    <button id="modalTerminDodaj" onclick="nowe_zatwierdz()">Dodaj termin</button>
+				</div>
+			</div>
+		</div>
+		
+		<script src="/js/nav.js"></script>
+		<script>
+
+            $("#modalTerminEdytuj").hide();
+            $("#modalTerminDodaj").hide();
+			$("#modalTerminUsun").hide();
+
+			$("#modalZamknij").click(function() {
+				$("#modalTermin").hide();
+				$("#modalTerminId").val("");
+                $("#modalTerminIdSelect").val("");
+                $("#modalTerminProwadzacy").val("");
+                $("#modalTerminEdytuj").hide();
+                $("#modalTerminDodaj").hide();
+				$("#modalTerminUsun").hide();
+			});
+
+			$("#nowe").click(function() {
+				$("#modalTermin").show();
+                $("#modalTerminDodaj").show();
+				$("#modalTerminId").hide();
+				$("#modalTerminIdNazwa").hide();
+                $('label[for="modalTerminId"]').hide();
+			});
+			
+            var id_grupa = getUrlParameter('id_grupa');
+
+            if(id_grupa < 1){
+                window.location.replace("/zarzadzanie_kursy.html");
+            } else {
+
+                data_json_grupa = {
+                    "id" : parseInt(id_grupa)
+                }
+
+                $.ajax({
+                    url: '/api/grupa',
+                    type: "POST",
+                    data: JSON.stringify(data_json_grupa),
+                    contentType: "application/json; charset=UTF-8",
+                    success: function (data) {
+                        if(data.status != 200){
+                            if (data.status == 401){
+                                wyloguj();
+                            } else {
+                                alert("Wystąpił błąd.");
+                            }
+                        } else if (data.status == 200){
+                            for(let i = 0; i < data.result.length; i++){
+                                $("#kodgrupy").append(""+data.result[i]['kod_grupy']+"");
+                            }
+                        }
+                    }
+                });
+
+                data_json_grupa_terminy = {
+                    "id_grupa" : parseInt(id_grupa)
+                }
+
+                $.ajax({
+                    url: '/api/grupa/terminy',
+                    type: "POST",
+                    data: JSON.stringify(data_json_grupa_terminy),
+                    contentType: "application/json; charset=UTF-8",
+                    success: function (data) {
+                        if (data.status != 200){
+                            if (data.status == 401){
+                                wyloguj();
+                            } else {
+                                alert("Wystąpił błąd.");
+                            }
+                        } else if (data.status == 200){
+                            for(let i = 0; i < data.result.length; i++){
+
+                                let date = new Date(data.result[i]['data_start'] * 1000);
+								if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
+								if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
+								if(date.getHours() < 10){ hours_append = 0; } else { hours_append = ""; }
+								if(date.getMinutes() < 10){ minutes_append = 0; } else { minutes_append = ""; }
+								if(date.getSeconds() < 10){ seconds_append = 0; } else { seconds_append = ""; }
+                   				let datestring_start = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate()+" "+hours_append+date.getHours()+":"+minutes_append+date.getMinutes()+":"+seconds_append+date.getSeconds();
+
+                                date = new Date(data.result[i]['data_koniec'] * 1000);
+								if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
+								if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
+								if(date.getHours() < 10){ hours_append = 0; } else { hours_append = ""; }
+								if(date.getMinutes() < 10){ minutes_append = 0; } else { minutes_append = ""; }
+								if(date.getSeconds() < 10){ seconds_append = 0; } else { seconds_append = ""; }
+                   				datestring_koniec = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate()+" "+hours_append+date.getHours()+":"+minutes_append+date.getMinutes()+":"+seconds_append+date.getSeconds();
+
+                                $("#terminy").append(
+                                    "<tr>"+
+                                    "<td>"+datestring_start+"</td>"+
+                                    "<td>"+datestring_koniec+"</td>"+
+                                    "<td>"+data.result[i]['temat_zajec']+"</td>"+
+                                    "<td>"+data.result[i]['komentarz']+"</td>"+
+                                    "<td><button onclick='usun("+data.result[i]['id']+")'>Usuń termin</button></td>"+
+                                    "</tr>"
+                                );
+                            }
+                        }
+                    }
+                })
+
+                function nowe_zatwierdz(){
+                    dzien = $("#modalTerminDzienZajec").val();
+                    godzinaStart = $("#modalTerminGodzinaStart").val();
+                    godzinaKoniec = $("#modalTerminGodzinaKoniec").val();
+                    temat = $("#modalTerminTemat").val();
+                    komentarz = $("#modalTerminKomentarz").val();
+
+                    datetimeStart = Math.round(Date.parse(dzien) / 1000);
+                    datetimeKoniec = Math.round(Date.parse(dzien) / 1000);
+                    
+                    start = godzinaStart.split(":");
+                    koniec = godzinaKoniec.split(":");
+
+                    datetimeStart += parseInt(start[0])*60*60 + parseInt(start[1])*60 - 7200;
+                    datetimeKoniec += parseInt(koniec[0])*60*60 + parseInt(koniec[1])*60 - 7200;
+
+                    dane_json = {
+                        "id_grupa" : parseInt(id_grupa),
+                        "temat_zajec" : temat,
+                        "komentarz" : komentarz,
+                        "data_start" : parseInt(datetimeStart),
+                        "data_koniec" : parseInt(datetimeKoniec)
+                    }
+
+                    $.ajax({
+                    url: '/api/grupa/terminy/nowy',
+                    type: "POST",
+                    data: JSON.stringify(dane_json),
+                    contentType: "application/json; charset=UTF-8",
+                    success: function (data) {
+                        if(data.status != 200){
+                            if (data.status == 401){
+                                wyloguj();
+                            } else {
+                                alert("Wystąpił błąd.");
+                            }
+                        } else if (data.status == 200){
+                            window.location.reload(true);
+                        }
+                    }
+                });
+                }
+            }
+
+            function usun(id){
+                conf = confirm("Czy napewno chcesz usunąć wybrany termin zajęć?")
+
+                if(conf){
+
+					data_json = {
+						"id" : parseInt(id)
+					}
+
+                    $.ajax({
+						url: '/api/grupa/terminy/usun',
+						type: "POST",
+						data: JSON.stringify(data_json),
+						contentType: "application/json; charset=UTF-8",
+						success: function (data) {
+							console.log(data.status);
+							console.log(data.result);
+							
+							if(data.status != 200){
+								console.log("Wystąpił błąd!");
+							} else if (data.status == 200){
+								window.location.reload(true);
+							}
+						}
+					});
+                }
+            }
+		</script>
+	</body>
+</html>

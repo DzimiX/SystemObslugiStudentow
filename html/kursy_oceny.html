@@ -70,7 +70,8 @@
                     <td><b>Termin zajęć</b></td>
                     <td><b>Sala</b></td>
                     <td><b>Ocena końcowa</b></td>
-					<td><b>Szczegóły</b></td>
+					<td><b>Szczegóły ocen</b></td>
+					<td><b>Terminy zajęć</b></td>
                 </tr>
             </table>
 		</div>
@@ -199,15 +200,15 @@
 																"<td>"+data2.result[0]['termin']+"</td>"+
 																"<td>"+data2.result[0]['sala']+"</td>"+
 																"<td>"+ocena_koncowa+"</td>"+
-																"<td><button onclick='szczegoly("+parseInt(data.result[i]['id_grupa'])+","+parseInt(data.result[i]['id'])+")'>Szczegóły</button></td>"+
+																"<td><button onclick='szczegoly("+parseInt(data.result[i]['id_grupa'])+","+parseInt(data.result[i]['id'])+")'>Oceny</button></td>"+
+																"<td><button onclick='zajecia("+parseInt(data.result[i]['id_grupa'])+")'>Terminy</button></td>"+
 															"</tr>"
 														);
 														$("#select-zapisy").trigger("change");
+														sortTable("kursy",2,0);
 													}
 												}
 											});
-											
-											
 										}
 									});
 								}
@@ -219,6 +220,10 @@
 
 			function szczegoly(id_grupa, id_uczestnik){
 				window.location.href = "/kursy_oceny_uczestnik.html?id_grupa="+id_grupa+"&id_uczestnik="+id_uczestnik;
+			}
+
+			function zajecia(id_grupa){
+				window.location.href = "/kursy_terminy.html?id_grupa="+id_grupa;
 			}
 
 		</script>

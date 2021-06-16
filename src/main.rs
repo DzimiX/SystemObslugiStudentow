@@ -23,6 +23,7 @@ mod models_courses;
 mod models_groups;
 mod models_scores;
 mod models_applications;
+mod models_groups_frequency;
 
 mod router_user;
 mod router_messages;
@@ -125,6 +126,11 @@ fn rocket() {
             router_groups::uczestnik_prowadzone,
             router_groups::uczestnik_grupy,
             router_groups::uczestnik_grupa_zapisy,
+
+            router_groups_frequency::grupa_terminy,
+            router_groups_frequency::grupa_termin_nowy,
+            router_groups_frequency::grupa_termin_usun,
+            router_groups_frequency::grupa_termin_aktualizuj,
 
             router_scores::ocena_grupa_uczestnik,
             router_scores::ocena_nowa,

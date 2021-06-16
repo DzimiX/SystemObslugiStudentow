@@ -55,10 +55,10 @@ table! {
     kursy_grupy_terminy (id) {
         id -> Integer,
         id_grupa -> Integer,
+        temat_zajec -> Varchar,
+        komentarz -> Varchar,
         data_start -> Bigint,
         data_koniec -> Bigint,
-        temat_zajec -> Nullable<Varchar>,
-        komentarz -> Nullable<Varchar>,
     }
 }
 
