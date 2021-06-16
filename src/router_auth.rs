@@ -4,7 +4,7 @@ use serde_json::Value;
 use rocket::http::{Cookie, Cookies};
 use chrono::{Local};
 
-use crate::models_auth::{AuthLogin, Auth, AuthNowy};
+use crate::models_auth::{AuthLogin, Auth, AuthNowy, AuthIdUzytkownik};
 
 #[post("/login", format = "application/json", data = "<login_dane>")] 
 pub fn logowanie(conn: DbConn, login_dane: Json<AuthLogin>, mut cookies : Cookies) -> Json<Value> { // 2h zabawy czemu 
@@ -76,6 +76,35 @@ pub fn autoryzacja(conn: DbConn, cookies : Cookies) -> Json<Value> {
         return Json(json!({
             "status" : 200,
             "result" : "Authorized",
+        }))
+    } else {
+        return Json(json!({
+            "status" : 401,
+            "result" : "Unauthorized",
+        }))
+    }
+}
+
+#[post("/auth/aktywne", format = "application/json", data = "<uzytkownik>")] 
+pub fn czy_aktywne(conn: DbConn, uzytkownik: Json<AuthIdUzytkownik>, cookies : Cookies) -> Json<Value> {
+
+    let cookie_temp = Cookie::new("token", "False");
+    let token = String::from(cookies.get("token").unwrap_or(&cookie_temp).value());
+
+    let auth : Auth = AuthLogin::check_token(&token, &conn);
+    
+    let now_timestamp = Local::now().timestamp();
+
+    if auth.token != "False" && now_timestamp < auth.data {
+        
+        let czy_aktywne = AuthLogin::check_account_enabled(uzytkownik.id_uzytkownik, &conn);
+        let mut status = 400;
+        if czy_aktywne {
+            status = 200;
+        }
+        return Json(json!({
+            "status" : status,
+            "result" : czy_aktywne,
         }))
     } else {
         return Json(json!({

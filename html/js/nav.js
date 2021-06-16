@@ -1,4 +1,25 @@
 //userdata.id_uprawnien = 2; // nadpisanie widoku
+
+let id_uzytkownik = {
+    "id_uzytkownik" : userdata.id
+}
+
+$.ajax({
+    url: '/api/auth/aktywne',
+    type: "POST",
+    data: JSON.stringify(id_uzytkownik),
+    contentType: "application/json; charset=UTF-8",
+    success: function (data) {            
+        if (data.status != 200){
+            if (data.status == 401){
+                wyloguj();
+            } else {
+                document.location.href = "/konto_wylaczone.html";
+            }
+        }
+    }
+});
+
 $.get("navbar.html", function(data){
     $("#navbar").html(data);
    
@@ -92,10 +113,6 @@ $.get("navbar.html", function(data){
         document.location.href = "/logowanie.html";
     });
 
-    let uzytkownik_id = {
-        "id" : userdata.id
-    }
-
     switch (userdata.id_uprawnien) {
         case 6 :
             document.getElementById("auth-ranga").innerHTML = "DEBUG";
@@ -117,6 +134,10 @@ $.get("navbar.html", function(data){
             break;
         default:
             document.getElementById("auth-ranga").innerHTML = "";
+    }
+
+    let uzytkownik_id = {
+        "id" : userdata.id
     }
 
     $.ajax({

@@ -152,6 +152,7 @@ fn rocket() {
             
             router_auth::logowanie,
             router_auth::autoryzacja,
+            router_auth::czy_aktywne,
         ])
         .launch();
 }

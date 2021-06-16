@@ -35,7 +35,14 @@ pub struct AuthLogin {
     pub haslo: String,
 }
 
-#[derive(Queryable, Serialize, Deserialize)]
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "tokeny"]
+pub struct AuthIdUzytkownik {
+    pub id_uzytkownik: i32
+}
+
+#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[table_name = "tokeny"]
 pub struct AuthToken {
     pub token: String,
 }
@@ -254,6 +261,26 @@ impl AuthLogin {
 
         if updated_row == false {
             println!("Problem połączenia z bazą danych, ale to nie krytyczna funkcja...")
+        }
+    }
+
+    pub fn check_account_enabled(id: i32, conn: &MysqlConnection) -> bool{
+        let data : Result<UzytkownikUprawnienia,diesel::result::Error> = uzytkownicy_uprawnienia::table
+            .filter(uzytkownicy_uprawnienia::id_uzytkownik.eq(id))
+            .filter(uzytkownicy_uprawnienia::id_uprawnienie.eq(1))
+            .first(conn);
+        
+        let mut temp = -1;
+
+        match data {
+            Ok(data) => temp = data.id_uprawnienie,
+            Err(_error) => temp = -1,
+        };
+
+        if temp == 1 {
+            return true;
+        } else {
+            return false;
         }
     }
 }
