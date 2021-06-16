@@ -270,14 +270,14 @@ impl AuthLogin {
             .filter(uzytkownicy_uprawnienia::id_uprawnienie.eq(1))
             .first(conn);
         
-        let mut temp = -1;
+        let mut _temp;
 
         match data {
-            Ok(data) => temp = data.id_uprawnienie,
-            Err(_error) => temp = -1,
+            Ok(data) => _temp = data.id_uprawnienie,
+            Err(_error) => _temp = -1,
         };
 
-        if temp == 1 {
+        if _temp == 1 {
             return true;
         } else {
             return false;

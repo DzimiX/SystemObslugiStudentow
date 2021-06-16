@@ -1,4 +1,4 @@
-//userdata.id_uprawnien = 2; // nadpisanie widoku
+userdata.id_uprawnien = 2; // nadpisanie widoku
 
 let id_uzytkownik = {
     "id_uzytkownik" : userdata.id

@@ -207,10 +207,10 @@ pub fn ocena_koncowa_usun(conn: DbConn, ocena: Json<OcenaKoncowaId>, cookies : C
 #[post("/ocena/koncowa/feedback", format = "application/json", data = "<ankieta>")]
 pub fn ocena_koncowa_feedback(conn: DbConn, ankieta: Json<AnkietaNowa>, cookies : Cookies) -> Json<Value> { 
     //niebezpiecznie
-    let tempId = OcenaKoncowaId {
+    let temp_id = OcenaKoncowaId {
         id : ankieta.id_ocena_koncowa
     };
-    let verify = OcenaKoncowa::get_by_id(tempId, &conn);
+    let verify = OcenaKoncowa::get_by_id(temp_id, &conn);
 
     if verify.id == ankieta.id_ocena_koncowa && verify.id_grupa == ankieta.id_grupa {
         Json(json!({

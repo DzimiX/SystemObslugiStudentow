@@ -124,10 +124,10 @@ CREATE TABLE `sprawy` (
 CREATE TABLE `kursy_grupy_terminy` (
   `id` int(11) NOT NULL,
   `id_grupa` int(11) NOT NULL,
+  `temat_zajec` varchar(255) NOT NULL,
+  `komentarz` varchar(512) NOT NULL,
   `data_start` bigint(8) NOT NULL,
-  `data_koniec` bigint(8) NOT NULL,
-  `temat_zajec` varchar(255) DEFAULT NULL,
-  `komentarz` varchar(512) DEFAULT NULL
+  `data_koniec` bigint(8) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `kursy_grupy_terminy_obecnosc` (
@@ -398,10 +398,10 @@ INSERT INTO `zapisy` (`id`, `nazwa`, `czy_publiczne`) VALUES
   (2, 'Semestr zimowy 2021/2022', 0);
 
 INSERT INTO `kursy` (`id`, `kod`, `nazwa`, `ects`) VALUES
-  (1, 'MAT001412W', 'Analiza matematyczna 1.1 A', 5),
-  (2, 'MAT001412C', 'Analiza matematyczna 1.1 A ', 3),
-  (3, 'MAT001424C', 'Analiza matematyczna 2.2 A ', 3),
-  (4, 'MAT001424W', 'Analiza matematyczna 2.2 A ', 5),
+  (1, 'MAT001412W', 'Analiza matematyczna 1.1 A Wykład', 5),
+  (2, 'MAT001412C', 'Analiza matematyczna 1.1 A Ćwiczenia', 3),
+  (3, 'MAT001424C', 'Analiza matematyczna 2.2 A Ćwiczenia', 3),
+  (4, 'MAT001424W', 'Analiza matematyczna 2.2 A Wykład', 5),
   (5, 'FLH121611W', 'Etyka w biznesie', 2);
 
 INSERT INTO `kursy_grupy` (`id`, `id_kursu`, `id_zapisy`, `kod_grupy`, `termin`, `sala`) VALUES

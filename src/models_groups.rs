@@ -216,16 +216,16 @@ impl Uczestnik {
     }
 
     pub fn delete(id: i32, conn: &MysqlConnection) -> bool {
-        diesel::delete(kursy_grupy_uczestnicy::table
+        let result = diesel::delete(kursy_grupy_uczestnicy::table
             .filter(kursy_grupy_uczestnicy::id.eq(id))
         )
         .execute(conn);
-    
+        // nie ma znaczenia czy zostanie coś zwrócone - liczy się tylko wyczyszczenie ewentualnego rekordu w bazie danych
         return true
     }
 
     pub fn delete_grupa_uczestnik(uczestnik: UczestnikGrupaUczestnikId, conn: &MysqlConnection) -> bool {
-        diesel::delete(kursy_grupy_uczestnicy::table
+        let result = diesel::delete(kursy_grupy_uczestnicy::table
             .filter(kursy_grupy_uczestnicy::id_grupa.eq(uczestnik.id_grupa))
             .filter(kursy_grupy_uczestnicy::id_uczestnik.eq(uczestnik.id_uczestnik))
         )
