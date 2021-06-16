@@ -58,9 +58,9 @@
             <button onclick="window.history.back();">Wróć</button>
             <button id="nowe">Dodaj nową grupę</button></br></br>
 
-            <b><p style="color:red">[NIESPRAWNE] Filtruj grupy dostępnością w zapisach:
+            <b><p>Filtruj grupy dostępnością w zapisach:
                 <select id="select-zapisy">
-                    <option value="-1" selected>Nie filtruj</option>
+                    <option value="" selected>Nie filtruj</option>
                 </select>
             </p></b>
 
@@ -108,6 +108,11 @@
 		</div>
 
         <script>
+
+			$('#select-zapisy').on('change', function() {
+				filterTable("kursy",0,this.value)
+			});
+
 			$("#modalGrupyEdytuj").hide();
             $("#modalGrupyDodaj").hide();
 			$("#modalGrupyUsun").hide();
