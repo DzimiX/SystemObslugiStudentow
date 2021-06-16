@@ -55,7 +55,8 @@
 		<div class="content">
 			<div class="header">
 				<h2>Terminy grupy zajęciowej "<span id="kodgrupy"></span>"</h2>
-				<button id='nowy-termin'>Nowy termin</button></br></br>
+                <button onclick="window.history.back();">Wróć</button>
+				<button id='nowe'>Nowy termin</button></br></br>
 			</div>
 			<table id="terminy">
 				<tr>
@@ -67,22 +68,57 @@
 			</table>
 		</div>
 
-		<div id="modalWiadomosc" class="modal">
+		<div id="modalTermin" class="modal">
 			<div class="modal-content">
 				<div class="modal-header">
 					<span id="modalZamknij" class="close">&times;</span>
-					<h2 id='modalWiadomoscTytul'></h2>
+					<h2 disabled id='modalOgloszenieTytul'>Termin zajęć</h2>
 				</div>
 				<div class="modal-body">
-					<p id='modalWiadomoscNadawca'></p>
-					<p id='modalWiadomoscData'></p>
-					<p id='modalWiadomoscTresc'></p>
+                    <label for="modalTerminDzienZajec">Dzień zajęć:</label>
+                    <input id="modalTerminDzienZajec" type="date"></input></br>
+
+                    <label for="modalTerminGodzinaStart">Czas rozpoczęcia:</label>
+                    <input id="modalTerminGodzinaStart"></input></br>
+
+                    <label for="modalTerminGodzinaKoniec">Czas zakończenia:</label>
+                    <input id="modalTerminGodzinaKoniec"></input></br>
+                    
+                    <label for="modalTerminTemat">Temat:</label>
+					<input id="modalTerminTemat"></input>
+
+                    <label for="modalTerminKomentarz">Komentarz:</label>
+					<input id="modalTerminKomentarz"></input>
+
+                    <button id="modalTerminDodaj" onclick="nowe_zatwierdz()">Dodaj termin</button>
 				</div>
 			</div>
 		</div>
 		
 		<script src="/js/nav.js"></script>
 		<script>
+
+            $("#modalTerminEdytuj").hide();
+            $("#modalTerminDodaj").hide();
+			$("#modalTerminUsun").hide();
+
+			$("#modalZamknij").click(function() {
+				$("#modalTermin").hide();
+				$("#modalTerminId").val("");
+                $("#modalTerminIdSelect").val("");
+                $("#modalTerminProwadzacy").val("");
+                $("#modalTerminEdytuj").hide();
+                $("#modalTerminDodaj").hide();
+				$("#modalTerminUsun").hide();
+			});
+
+			$("#nowe").click(function() {
+				$("#modalTermin").show();
+                $("#modalTerminDodaj").show();
+				$("#modalTerminId").hide();
+				$("#modalTerminIdNazwa").hide();
+                $('label[for="modalTerminId"]').hide();
+			});
 			
             var id_grupa = getUrlParameter('id_grupa');
 
@@ -155,13 +191,23 @@
                                     "<td>"+datestring_koniec+"</td>"+
                                     "<td>"+data.result[i]['temat_zajec']+"</td>"+
                                     "<td>"+data.result[i]['komentarz']+"</td>"+
-                                    "<td><button onclick='szczegoly("+data.result[i]['id']+")'>Szczegóły</button></td>"+
+                                    "<td><button onclick='usun("+data.result[i]['id']+")'>Usuń termin</button></td>"+
                                     "</tr>"
                                 );
                             }
                         }
                     }
                 })
+
+                function nowe_zatwierdz(){
+
+                    dzien = $("#modalTerminDzienZajec");
+                    godzinaStart = $("#modalTerminGodzinaStart");
+                    godzinaKoniec = $("#modalTerminGodzinaKoniec");
+                    temat = $("#modalTerminTemat");
+                    komentarz = $("#modalTerminKomentarz");
+
+                }
 
             }
 		</script>

@@ -379,10 +379,6 @@ INSERT INTO `uzytkownicy_dane` (`id_uzytkownik`, `miasto`, `ulica`, `nr_domu`, `
 
 INSERT INTO `ogloszenia` (`id`, `nadawca`, `temat`, `dane`, `widok_od`, `widok_do`) VALUES
   (1, 'Administracja Systemu', 'Konserwacja', 'Trwa konserwacja...', 1620242061, 1731242061);
-
-INSERT INTO `tokeny` (`id`, `id_uzytkownik`, `id_uprawnienie`, `token`) VALUES
-  (1, 2, 4, '5ybvJkeimJ%&g((po#ajfArJ1nmcHhfTGQReEn#f)%l0Wn&9flXUXj7QzXjPx@nRN@(CWh3N4zIguw%I2AodFY9l8XGx^sP&DXUENeHLkfXeHz7v2KD&bGzr16n&e~RjhxOk&5sbO5HPwfOAskdU$yDhoOW&%dALe(3em)HQ#LfDhd1Mv7yAytD08OYT&!ZE)%b3pjMDzuL&o3KZuf)N^j7l3ln0&MaIu12xL9p%vk8Aj)!NA8^Oj0OP%TU$ibPmIAbX#un^nnt56RC7fuA@9az%SyvwnoSHYW!kiNPiedUJI!E3S~e0(99Rq!wh0m!7f#^WTL%BA*^WoxU0hIytQGsrYVh#ml*8yz!F8KlNycT3ywp~uU4BER^ZqpjUSYegxFdTK^WWNJ(oHi&^mlmwAWuGN^HdlZ(DQTcDC4&0YIkHAazG*lJJHchhHZaNCK56snsR5J8jk4cVA#)Np%mvv6P*rO9IVM!dmVaw~6hLc(DKu46U@Xe5epK3xy*@WEi^'),
-  (2, 1, 5, 'f6*E%E^%L%GpJ45OW$#e~*3VBto~o^psc%utIKQqD&z$HQq)qMLQ%m8CKbt66tY%ofgavySw)~7Hdcajk32I6&M7wS&50mKQGOa^jR~^YWJDf4aUxtqj~1DDdtuqVCo(ZC&6BkQKo0@gurdu(3*C6lCeyO~yKRj*hBs1H1waa@uh4zgi9W#HFGgDyjx~)(fW%h(!%GvokZ(E)qVT1%*FvAY98i1##Kgbc8y6rrAwL*u5s$honqyo!J6H3bgrQGl)JjIw1nt^hKTQV8qq^FxCiH*rGcS^6SvH&&je&)UMGfDGLv9@B#7D**yzEnl43l)qgYMcNQH#kga(U@tj~V6a$t(smOib92fLb8JiZ3RoR8Lz^^3G~wh9J^G2nm*2@%cOs^w*&YveGQM1Nmem2ls2I5d~h18#40dcm7FgSI#M@AIwUc4Ii$dqcm0U76SA2P(#Iva)lQXhrRa*Zvc!aMcvUHN#*2nGRfj9cXCLd815a^q^qiNTzxFKo)IV@QcH4)Zf');
   
 INSERT INTO `wiadomosci` (`id`, `id_uzytkownik`, `temat`, `data`, `dane`) VALUES
   (1, 2, 'Test tematu', 1620198119, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
