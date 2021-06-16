@@ -51,7 +51,7 @@ function wyloguj(){
 }
 
 //https://www.w3schools.com/howto/howto_js_sort_table.asp
-function sortTable(tbname,collumn) {
+function sortTable(tbname,collumn,order) {
     var table, rows, switching, i, x, y, shouldSwitch;
     table = document.getElementById(tbname);
     switching = true;
@@ -61,8 +61,14 @@ function sortTable(tbname,collumn) {
         rows = table.rows;
         for (i = 1; i < (rows.length - 1); i++) {
             shouldSwitch = false;
-            x = rows[i+1].getElementsByTagName("TD")[collumn];
-            y = rows[i].getElementsByTagName("TD")[collumn];
+            if(order){
+                x = rows[i+1].getElementsByTagName("TD")[collumn];
+                y = rows[i].getElementsByTagName("TD")[collumn];
+            } else {
+                x = rows[i].getElementsByTagName("TD")[collumn];
+                y = rows[i+1].getElementsByTagName("TD")[collumn];
+            }
+            
             if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
                 shouldSwitch = true;
                 break;

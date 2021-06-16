@@ -208,8 +208,6 @@
 						if(data.status != 200){
 							console.log("Wystąpił błąd!");
 						} else if (data.status == 200){
-							if (data.result.length > 0) {
-							}
 							for(let i = 0; i < data.result.length; i++){
 								$("#kursy").append(
 									"<tr>"+
@@ -223,6 +221,7 @@
 										"<td><button onclick='ankiety("+data.result[i]['id']+")'>ANKIETY</button></td>"+
 									"</tr>"
 								);
+								sortTable("kursy",1,0);
                         	}
 						}
 					}
