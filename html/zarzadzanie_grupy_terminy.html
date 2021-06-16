@@ -79,10 +79,10 @@
                     <input id="modalTerminDzienZajec" type="date"></input></br>
 
                     <label for="modalTerminGodzinaStart">Czas rozpoczęcia:</label>
-                    <input id="modalTerminGodzinaStart"></input></br>
+                    <input id="modalTerminGodzinaStart" placeholder="9:15"></input></br>
 
                     <label for="modalTerminGodzinaKoniec">Czas zakończenia:</label>
-                    <input id="modalTerminGodzinaKoniec"></input></br>
+                    <input id="modalTerminGodzinaKoniec" placeholder="11:00"></input></br>
                     
                     <label for="modalTerminTemat">Temat:</label>
 					<input id="modalTerminTemat"></input>
@@ -200,15 +200,75 @@
                 })
 
                 function nowe_zatwierdz(){
+                    dzien = $("#modalTerminDzienZajec").val();
+                    godzinaStart = $("#modalTerminGodzinaStart").val();
+                    godzinaKoniec = $("#modalTerminGodzinaKoniec").val();
+                    temat = $("#modalTerminTemat").val();
+                    komentarz = $("#modalTerminKomentarz").val();
 
-                    dzien = $("#modalTerminDzienZajec");
-                    godzinaStart = $("#modalTerminGodzinaStart");
-                    godzinaKoniec = $("#modalTerminGodzinaKoniec");
-                    temat = $("#modalTerminTemat");
-                    komentarz = $("#modalTerminKomentarz");
+                    datetimeStart = Math.round(Date.parse(dzien) / 1000);
+                    datetimeKoniec = Math.round(Date.parse(dzien) / 1000);
+                    
+                    start = godzinaStart.split(":");
+                    koniec = godzinaKoniec.split(":");
 
+                    datetimeStart += parseInt(start[0])*60*60 + parseInt(start[1])*60 - 7200;
+                    datetimeKoniec += parseInt(koniec[0])*60*60 + parseInt(koniec[1])*60 - 7200;
+
+                    dane_json = {
+                        "id_grupa" : parseInt(id_grupa),
+                        "temat_zajec" : temat,
+                        "komentarz" : komentarz,
+                        "data_start" : parseInt(datetimeStart),
+                        "data_koniec" : parseInt(datetimeKoniec)
+                    }
+
+                    $.ajax({
+                    url: '/api/grupa/terminy/nowy',
+                    type: "POST",
+                    data: JSON.stringify(dane_json),
+                    contentType: "application/json; charset=UTF-8",
+                    success: function (data) {
+                        if(data.status != 200){
+                            if (data.status == 401){
+                                wyloguj();
+                            } else {
+                                alert("Wystąpił błąd.");
+                            }
+                        } else if (data.status == 200){
+                            window.location.reload(true);
+                        }
+                    }
+                });
                 }
+            }
 
+            function usun(id){
+                conf = confirm("Czy napewno chcesz usunąć wybrany termin zajęć?")
+
+                if(conf){
+
+					data_json = {
+						"id" : parseInt(id)
+					}
+
+                    $.ajax({
+						url: '/api/grupa/terminy/usun',
+						type: "POST",
+						data: JSON.stringify(data_json),
+						contentType: "application/json; charset=UTF-8",
+						success: function (data) {
+							console.log(data.status);
+							console.log(data.result);
+							
+							if(data.status != 200){
+								console.log("Wystąpił błąd!");
+							} else if (data.status == 200){
+								window.location.reload(true);
+							}
+						}
+					});
+                }
             }
 		</script>
 	</body>
