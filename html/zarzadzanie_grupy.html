@@ -58,9 +58,9 @@
             <button onclick="window.history.back();">Wróć</button>
             <button id="nowe">Dodaj nową grupę</button></br></br>
 
-            <b><p style="color:red">[NIESPRAWNE] Filtruj grupy dostępnością w zapisach:
+            <b><p>Filtruj grupy dostępnością w zapisach:
                 <select id="select-zapisy">
-                    <option value="-1" selected>Nie filtruj</option>
+                    <option value="" selected>Nie filtruj</option>
                 </select>
             </p></b>
 
@@ -108,6 +108,11 @@
 		</div>
 
         <script>
+
+			$('#select-zapisy').on('change', function() {
+				filterTable("kursy",0,this.value)
+			});
+
 			$("#modalGrupyEdytuj").hide();
             $("#modalGrupyDodaj").hide();
 			$("#modalGrupyUsun").hide();
@@ -208,8 +213,6 @@
 						if(data.status != 200){
 							console.log("Wystąpił błąd!");
 						} else if (data.status == 200){
-							if (data.result.length > 0) {
-							}
 							for(let i = 0; i < data.result.length; i++){
 								$("#kursy").append(
 									"<tr>"+
@@ -223,6 +226,7 @@
 										"<td><button onclick='ankiety("+data.result[i]['id']+")'>ANKIETY</button></td>"+
 									"</tr>"
 								);
+								sortTable("kursy",1,0);
                         	}
 						}
 					}

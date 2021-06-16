@@ -124,9 +124,12 @@
 							if (data.result.length > 0) {
 							}
 							for(let i = 0; i < data.result.length; i++){
-								$("#kursy").append(
-                                    "<tr><td>"+data.result[i]['feedback']+"</td></tr>"
-								);
+								if (data.result[i]['feedback'] != ""){
+									$("#kursy").append(
+										"<tr><td>"+data.result[i]['feedback']+"</td></tr>"
+									);
+									sortTable("kursy",0,0);
+								}
                         	}
 						}
 					}

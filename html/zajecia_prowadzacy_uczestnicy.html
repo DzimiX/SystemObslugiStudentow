@@ -32,14 +32,14 @@
 		<link rel="stylesheet" href="/css/modal.css">
 		<link rel="stylesheet" href="/css/select2.min.css">
 		<style>
-            #kursy td {
+            #oceny td {
                 padding: 5px;
                 border-bottom: 1px solid rgb(0, 110, 255);
             }
-			#kursy td:not(:nth-last-child(1)) {
+			#oceny td:not(:nth-last-child(1)) {
 				border-right: 1px solid rgb(0, 110, 255);
 			}
-            #kursy {
+            #oceny {
 				padding: 20px;
 				border-radius: 10px;
 				background-color: rgb(0, 73, 168, 0.6);
@@ -64,7 +64,7 @@
 
             <button onclick="window.history.back();">Wróć</button></br></br>
 
-            <table id="kursy">
+            <table id="oceny">
                 <tr>
                     <td><b>Uczestnik</b></td>
 					<td><b>Ocena końcowa</b></td>
@@ -146,7 +146,7 @@
             var id = getUrlParameter('id_grupa');
 
             if(id < 1){
-                window.location.replace("/zarzadzanie_kursy.html");
+                window.location.replace("/zarzadzanie_oceny.html");
             } else {
 
 				data_json_grupa = {
@@ -231,13 +231,14 @@
                                                     if ( data3.result.length > 0 ){
                                                         ocena_koncowa = data3.result[0]['ocena'];
                                                     }
-													$("#kursy").append(
+													$("#oceny").append(
                                                         "<tr>"+
-                                                            "<td>"+imie+" "+nazwisko+"</td>"+
+                                                            "<td>"+nazwisko+" "+imie+"</td>"+
                                                             "<td>"+ocena_koncowa+"</td>"+
                                                             "<td><button onclick='oceny("+data.result[i]['id']+")'>Oceny</button></td>"+
                                                         "</tr>"
 												    );
+													sortTable("oceny",0,0);
 												}
 											}
 										}

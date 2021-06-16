@@ -49,3 +49,53 @@ function wyloguj(){
     deleteAllCookies();
     document.location.href = "/logowanie.html";
 }
+
+//https://www.w3schools.com/howto/howto_js_sort_table.asp
+function sortTable(tbname,collumn,order) {
+    var table, rows, switching, i, x, y, shouldSwitch;
+    table = document.getElementById(tbname);
+    switching = true;
+
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            if(order){
+                x = rows[i+1].getElementsByTagName("TD")[collumn];
+                y = rows[i].getElementsByTagName("TD")[collumn];
+            } else {
+                x = rows[i].getElementsByTagName("TD")[collumn];
+                y = rows[i+1].getElementsByTagName("TD")[collumn];
+            }
+            
+            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                shouldSwitch = true;
+                break;
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+        }
+    }
+}
+
+function filterTable(tbname,collumn,variable) {
+    var filter, table, tr, td, i, txtValue;
+    filter = variable.toUpperCase();
+    table = document.getElementById(tbname);
+    tr = table.getElementsByTagName("tr");
+  
+    for (i = 1; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[collumn];
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+  }

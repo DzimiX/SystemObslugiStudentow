@@ -30,23 +30,27 @@
 		<link rel="stylesheet" href="/css/modal.css">
 		<link rel="stylesheet" href="/css/main.css">
 		<style>
-			#odpowiedzAJAX {
+			#wiadomosci {
 				padding: 20px;
 				border-radius: 10px;
 				background-color: rgb(0, 73, 168, 0.6);
 			}
 
-			#odpowiedzAJAX td {
+			#wiadomosci td {
                 padding: 5px;
                 border-bottom: 1px solid rgb(0, 110, 255);
             }
-			#odpowiedzAJAX td:not(:nth-last-child(1)) {
+			#wiadomosci td:not(:nth-last-child(1)) {
 				border-right: 1px solid rgb(0, 110, 255);
 			}
-            #odpowiedzAJAX {
+            #wiadomosci {
 				padding: 20px;
 				border-radius: 10px;
 				background-color: rgb(0, 73, 168, 0.6);
+			}
+
+			table td:nth-child(1) {
+				display : none;
 			}
 		</style>
 	</head>
@@ -57,7 +61,7 @@
 				<h2>Skrzynka odbiorcza</h2>
 				<a href="/wiadomosc_nowa.html"><button>Nowa wiadomość</button></a></br></br>
 			</div>
-			<table id="odpowiedzAJAX">
+			<table id="wiadomosci">
 				<tr>
 					<td><b>ID</b></td>
 					<td><b>Nadawca</b></td>
@@ -148,7 +152,7 @@
 									wlasna = "";
 								}
 
-								$("#odpowiedzAJAX").append(
+								$("#wiadomosci").append(
 								"<tr"+wlasna+">"+
 									"<td>"+data.result['id']+"</td>"+
 									"<td>"+json.result['imie']+" "+json.result['nazwisko']+"</td>"+
@@ -157,6 +161,8 @@
 									"<td><button onclick=\"szczegoly_wiadomosci(\'"+data.result['id']+"\',\'"+json.result['imie']+"\',\'"+json.result['nazwisko']+"\')\">Pokaż szczegóły</button></td>"+
 								"</tr>"
                             	);
+
+								sortTable("wiadomosci",0,1);
 							});
                         }
                     }

@@ -42,11 +42,10 @@
 				border-radius: 10px;
 				background-color: rgb(0, 73, 168, 0.6);
 			}
-			/*
-            table#kursy td:nth-child(1) { // id_zapisy
+            table#kursy td:nth-child(1) {
                 display: none;
             }
-			*/
+
 		</style>
 	</head>
 	<body>
@@ -58,7 +57,7 @@
 
             <button onclick="window.history.back();">Wróć</button></br></br>
 
-            <b><p style="color:red">[Niesprawne] Semestr:
+            <b><p>Semestr:
                 <select id="select-zapisy">
                 </select>
             </p></b>
@@ -77,6 +76,11 @@
 		</div>
 
 		<script>
+
+			$('#select-zapisy').on('change', function() {
+				filterTable("kursy",0,this.value)
+			});
+
 			$.ajax({
 				url: '/api/zapisy',
 				type: "POST",
@@ -198,6 +202,7 @@
 																"<td><button onclick='szczegoly("+parseInt(data.result[i]['id_grupa'])+","+parseInt(data.result[i]['id'])+")'>Szczegóły</button></td>"+
 															"</tr>"
 														);
+														$("#select-zapisy").trigger("change");
 													}
 												}
 											});
