@@ -110,7 +110,31 @@
 					}
 				});
 			});
+            $("#form-haslo").keyup(function(event) {
+            if (event.keyCode === 13) {
+                $("login-button").click();
+                data_json = {
+					"login" : document.getElementById("form-login").value,
+					"haslo" : document.getElementById("form-haslo").value
+				}
+				
+				console.log(data_json);
 
+				$.ajax({
+					url: '/api/login',
+					type: "POST",
+					data: JSON.stringify(data_json),
+					contentType: "application/json; charset=UTF-8",
+					success: function (data) {
+						if(data.status != 200){
+							alert("Niepoprawne dane logowania")
+						} else if (data.status == 200){
+							document.location.href = "/";
+						}
+					}
+				});
+			}
+            });
         </script>
 	</body>
 </html>
