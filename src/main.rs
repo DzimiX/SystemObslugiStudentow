@@ -81,6 +81,8 @@ fn rocket() {
             router_user::uzytkownik_usun,
             router_user::uzytkownik_usun_haslo,
             router_user::uprawnienie,
+            router_user::uzytkownicy_nowy_rejestracja,
+            router_user::uzytkownik_nowe_haslo_rejestracja,
 
             router_messages::wiadomosci_nowa,
             router_messages::wiadomosci_pokaz,
@@ -102,6 +104,7 @@ fn rocket() {
             router_user::dane_osobowe_nowe,
             router_user::dane_osobowe_aktualizuj,
             router_user::dane_osobowe_usun,
+            router_user::dane_osobowe_nowe_rejestracja,
 
             router_courses::kurs,
             router_courses::kursy,

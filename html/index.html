@@ -16,7 +16,7 @@
 				}
 
 				if (userdata.id_uprawnien < 1){ // minimalny poziom uprawnień (zabezpieczenie api osobno)
-					document.location.href = "/";
+					document.location.href = "/konto_wylaczone.html";
 					document.body.innerHTML = "";
 					window.stop();
 				}
@@ -69,18 +69,19 @@
 						}
 						for(let i = 0; i < data.result.length; i++){
 
-							let date = new Date(data.result[i]['widok_od'] * 1000);
-							if(date.getMonth() < 9){ month_append = 0; } else { month_append = ""; }
-							if(date.getDate() < 10){ date_append = 0; } else { date_append = ""; }
-							let datestring = date.getFullYear()+"/"+month_append+(date.getMonth()+1)+"/"+date_append+date.getDate();
+							let teraz = new Date().valueOf()/1000;
+							let widok_od = data.result[i]['widok_od'];
+							let widok_do = data.result[i]['widok_do'];
+							if (widok_od < teraz && widok_do > teraz) {
 
-							$("#ogloszenia").append(
-								"<div class='ogloszenie'>"+
-									"<p>Nadawca: <i>"+data.result[i]['nadawca']+"</i></p>"+
-									"<h3>"+data.result[i]['temat']+"</h3>"+
-									"<p class='text'>"+data.result[i]['dane']+"</p>"+
-								"</div>"
-							);
+								$("#ogloszenia").append(
+									"<div class='ogloszenie'>"+
+										"<p>Nadawca: <i>"+data.result[i]['nadawca']+"</i></p>"+
+										"<h3>"+data.result[i]['temat']+"</h3>"+
+										"<p class='text'>"+data.result[i]['dane']+"</p>"+
+									"</div>"
+								);
+							}
 						}
 					}
 				}

@@ -29,7 +29,6 @@ pub struct SprawyNowe {
 #[table_name = "sprawy"]
 pub struct SprawyId {
     pub id: i32,
-
 }
 
 impl Sprawy {
