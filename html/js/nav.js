@@ -140,6 +140,11 @@ $.get("navbar.html", function(data){
         "id" : userdata.id
     }
 
+    if(getCookie("imie") != null && getCookie("nazwisko") != null){
+        document.getElementById("auth-imie").innerHTML = getCookie("imie");
+        document.getElementById("auth-nazwisko").innerHTML = getCookie("nazwisko");
+    }
+
     $.ajax({
         url: '/api/uzytkownik',
         type: "POST",
@@ -153,6 +158,8 @@ $.get("navbar.html", function(data){
             } else if (data.status == 200){
                 document.getElementById("auth-imie").innerHTML = data.result['imie'];
                 document.getElementById("auth-nazwisko").innerHTML = data.result['nazwisko'];
+                setCookie("imie", data.result['imie']);
+                setCookie("nazwisko", data.result['nazwisko']);
             }
         }
     });
