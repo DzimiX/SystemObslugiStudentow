@@ -14,7 +14,7 @@
 					"id" : parseInt(getCookie("id")),
 					"id_uprawnien" : parseInt(getCookie("id_uprawnienie"))
 				}
-
+				
 				if (userdata.id_uprawnien < 1){ // minimalny poziom uprawnień (zabezpieczenie api osobno)
 					document.location.href = "/konto_wylaczone.html";
 					document.body.innerHTML = "";
