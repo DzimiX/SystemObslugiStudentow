@@ -131,6 +131,12 @@ $.get("navbar.html", function(data){
             $("#dropdown-sprawy-pracownik").show();
             $("#dropdown-sprawyz").show();
         }
+
+
+        $("#dropdown-sprawy").hide();
+        $("#dropdown-sprawy-pracownik").hide();
+        $("#dropdown-sprawyz").hide();
+
     }
 
     $("#wyloguj_navbar").click(function() {
