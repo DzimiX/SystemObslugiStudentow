@@ -20,10 +20,35 @@ $.ajax({
     }
 });
 
+function rola(mode){
+    if (mode != 0){
+        setCookie("mode", "fake");
+        setCookie("rola", mode);
+        window.location.reload(true);
+    } else {
+        setCookie("mode", "true");
+        setCookie("rola", 0);
+    }
+}
+
 $.get("navbar.html", function(data){
     $("#navbar").html(data);
-   
-    widok(userdata.id_uprawnien)
+
+    if(userdata.id_uprawnien < 2){
+        $("#rola-uzytkownik").hide();
+    }
+    if(userdata.id_uprawnien < 3){
+        $("#rola-student").hide();
+    }
+    if(userdata.id_uprawnien < 4){
+        $("#rola-prowadzacy").hide();
+    }
+
+    if (getCookie("mode") == "fake"){
+        widok(parseInt(getCookie("rola")));
+    } else {
+        widok(userdata.id_uprawnien);
+    }
 
     function widok(id_uprawnien){
         
