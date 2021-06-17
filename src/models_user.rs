@@ -105,13 +105,6 @@ impl Uzytkownik {
             .expect("Problem z wczytaniem użytkownika.")
     }
 
-    pub fn get_by_login(login: String, conn: &MysqlConnection) -> Vec<Uzytkownik> {
-        uzytkownicy::table
-            .filter(uzytkownicy::login.eq(login))
-            .load::<Uzytkownik>(conn)
-            .expect("Problem z wczytaniem użytkownika.")
-    }
-
     pub fn set_password(mut data: NoweHaslo, conn: &MysqlConnection) -> bool {
 
         let hash = bcrypt::hash(format!("{}",data.haslo), 8);

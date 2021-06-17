@@ -13,7 +13,7 @@ use super::UZYTKOWNIK;
 use crate::models_user::{Uzytkownik, UzytkownikID, NowyUzytkownik, NoweHaslo};
 use crate::models_user::{DaneOsobowe, DaneOsoboweId};
 use crate::models_auth::{UzytkownikUprawnieniaNowe, UzytkownikIdUprawnienia};
-use crate::models_auth::{AuthLogin, Auth, AuthNowy};
+use crate::models_auth::{AuthLogin, Auth};
 
 #[post("/uzytkownicy", format = "application/json")]
 pub fn uzytkownicy_index(conn: DbConn, cookies: Cookies) -> Json<Value> {
@@ -52,12 +52,12 @@ pub fn uzytkownicy_index(conn: DbConn, cookies: Cookies) -> Json<Value> {
                 }))
             }
         }
+    } else {
+        return Json(json!({
+            "status" : 401,
+            "result" : "Unauthorized",
+        }))
     }
-
-    return Json(json!({
-        "status" : 401,
-        "result" : "Unauthorized",
-    }))
 }
 
 #[post("/uzytkownik/nowy", format = "application/json", data = "<nowy_uzytkownik>")]
@@ -126,8 +126,6 @@ pub fn uzytkownik(conn: DbConn, id: Json<UzytkownikID>, cookies: Cookies) -> Jso
             
             let result = Uzytkownik::get(id.id, &conn);
             let status = if result.is_empty() { 404 } else { 200 };
-
-            // rozbudować pobieranie dodatkowych informacji o użytkowniku
             
             if status == 200 {
                 return Json(json!({
