@@ -16,7 +16,7 @@
 				}
 
 				if (userdata.id_uprawnien < 1){ // minimalny poziom uprawnień (zabezpieczenie api osobno)
-					document.location.href = "/";
+					document.location.href = "/konto_wylaczone.html";
 					document.body.innerHTML = "";
 					window.stop();
 				}
@@ -113,10 +113,7 @@
 					url: '/api/kursy',
 					type: "POST",
 					contentType: "application/json; charset=UTF-8",
-					success: function (data) {
-						console.log(data.status);
-						console.log(data.result);
-						
+					success: function (data) {					
 						if(data.status != 200){
 							console.log("Wystąpił błąd!");
 						} else if (data.status == 200){
@@ -171,10 +168,7 @@
 					type: "POST",
 					data: JSON.stringify(data_json),
 					contentType: "application/json; charset=UTF-8",
-					success: function (data) {
-						console.log(data.status);
-						console.log(data.result);
-						
+					success: function (data) {					
 						if(data.status != 200){
 							console.log("Wystąpił błąd!");
 						} else if (data.status == 200){
@@ -203,9 +197,6 @@
 					data: JSON.stringify(data_json),
 					contentType: "application/json; charset=UTF-8",
 					success: function (data) {
-						console.log(data.status);
-						console.log(data.result);
-						
 						if(data.status != 200){
 							console.log("Wystąpił błąd!");
 						} else if (data.status == 200){
@@ -234,9 +225,6 @@
 							data: JSON.stringify(data_json),
 							contentType: "application/json; charset=UTF-8",
 							success: function (data) {
-								console.log(data.status);
-								console.log(data.result);
-								
 								if(data.status != 200){
 									console.log("Wystąpił błąd!");
 								} else if (data.status == 200){

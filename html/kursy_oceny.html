@@ -86,10 +86,7 @@
 				url: '/api/zapisy',
 				type: "POST",
 				contentType: "application/json; charset=UTF-8",
-				success: function (data) {
-					console.log(data.status);
-					console.log(data.result);
-					
+				success: function (data) {					
 					if(data.status != 200){
 						console.log("Wystąpił błąd!");
 					} else if (data.status == 200){
@@ -170,7 +167,6 @@
 												"id_grupa" : parseInt(data2.result[0]['id']),
 												"id_uczestnik" : parseInt(data.result[i]["id"])
 											}
-											console.log(data_json_koncowa);
 											$.ajax({
 												url: '/api/ocena/koncowa',
 												type: "POST",
@@ -191,7 +187,6 @@
 																ocena_koncowa += " <span style='color:red'><b>(niezaakceptowana)</b></span>";
 															}
 														}
-														console.log(data4.result);
 														$("#kursy").append(
 															"<tr>"+
 																"<td>"+data2.result[0]['id_zapisy']+"</td>"+
